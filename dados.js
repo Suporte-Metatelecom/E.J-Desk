@@ -10,9 +10,12 @@
    ===================================================================== */
 (function(){
 "use strict";
-const C = window.EJD_CONFIG || {};
+const C = Object.assign({}, window.EJD_CONFIG || {});
+// aceita o endereço copiado com "/rest/v1/" ou barra no fim: o cliente precisa só do endereço base
+if(C.supabaseUrl) C.supabaseUrl = String(C.supabaseUrl).trim().replace(/\/(rest|auth|storage)\/v1\/?.*$/,"").replace(/\/+$/,"");
+if(C.supabaseAnonKey) C.supabaseAnonKey = String(C.supabaseAnonKey).trim();
 if(!C.supabaseUrl || !C.supabaseAnonKey || /COLE_AQUI/.test(C.supabaseUrl+C.supabaseAnonKey)){
-  document.getElementById("root").innerHTML = `<div class="login"><div class="card stack" style="max-width:520px"><h2>Configuração pendente</h2><p class="small">Preencha <b>supabaseUrl</b> e <b>supabaseAnonKey</b> no arquivo <span class="mono">config.js</span>. Os dois ficam em Supabase › Project Settings › API.</p></div></div>`;
+  document.getElementById("root").innerHTML = `<div class="login"><div class="card stack" style="max-width:520px"><h2>Configuração pendente</h2><p class="small">Preencha <b>supabaseUrl</b> e <b>supabaseAnonKey</b> no arquivo <span class="mono">config.js</span>. No Supabase, use o botão <b>Connect</b> no topo do projeto, ou Project Settings › API Keys (chave publishable ou anon) e Project Settings › Data API (Project URL). Veja o Passo 6 do guia.</p></div></div>`;
   window.EJD_BLOQUEADO = true; return;
 }
 const sb = window.supabase.createClient(C.supabaseUrl, C.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
