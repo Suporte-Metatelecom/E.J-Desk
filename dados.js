@@ -233,8 +233,26 @@ async function salvarChamado(t, antes, tS){
   }
   // retorno enviado: fica na fila de e-mails até o endereço só de envio existir (item 37)
   const novosR = (t.retornos||[]).slice((antes.retornos||[]).length);
-  if(novosR.length) await q(sb.from("emails_pendentes").insert(novosR.map(r=>({chamado_id:t.id, para:r.para, assunto:r.assunto, corpo:r.corpo}))));
+  if(novosR.length){
+    await q(sb.from("emails_pendentes").insert(novosR.map(r=>({chamado_id:t.id, para:r.para, assunto:r.assunto, corpo:r.corpo}))));
+    enviarFila();        // envia na hora (sem travar a tela); se falhar, fica na fila e é tentado de novo no próximo envio
+  }
 }
+
+/* Dispara a função que envia os e-mails da fila (Gmail). O resultado aparece num aviso. */
+async function enviarFila(){
+  try{
+    const {data, error} = await sb.functions.invoke("enviar-emails", {body:{}});
+    if(error) throw error;
+    if(data?.erro) throw new Error(data.erro);
+    if(data?.enviados) toast(`E-mail de retorno enviado (${data.enviados})`);
+    if(data?.erros) toast(`Não foi possível enviar ${data.erros} e-mail(s): ${(data.detalhes?.[0]?.erro||"").slice(0,120)}. Ele fica na fila e será tentado de novo.`);
+  }catch(e){
+    console.warn(e);
+    toast("O retorno foi registrado, mas o e-mail não saiu agora: "+(e.message||e)+". Ele fica na fila e será tentado de novo.");
+  }
+}
+window.ejdEnviarFila = enviarFila;
 
 async function sincronizar(){
   if(!carregado || !BASE) return;
