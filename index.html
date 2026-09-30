@@ -4,8 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<style>html,body{margin:0;padding:0}</style>
-<title>E.J. Desk — Protótipo</title>
+<style>html,body{margin:0;padding:0}
+/* Produção: esconde o que só existe no protótipo */
+.sim,[data-act="baseExemplo"],[data-act="avancar24"],.ad,[data-go="decisoes"]{display:none!important}</style>
+<title>E.J. Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
@@ -109,6 +111,29 @@ p{margin:0}
 .sim .seg button.on{background:#fff;color:#0F1724;font-weight:600}
 .sim .seg button:focus-visible{outline:2px solid var(--primary)}
 .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px 6px 0;border-top:1px solid #1E2838}
+.flag.f-uni{color:var(--primary);background:var(--primary-soft)}
+.dup-item{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.dup-item:first-of-type{border-top:0}
+.anx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:8px}
+.anx{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+.anx-thumb{all:unset;cursor:zoom-in;display:block;height:140px;background:var(--surface-2)}
+.anx-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.anx-video{width:100%;height:160px;background:#000;display:block}
+.anx-txt{margin:0;height:140px;overflow:auto;padding:8px 10px;font:11.5px/1.45 var(--mono);background:var(--surface-2);white-space:pre-wrap;overflow-wrap:anywhere}
+.anx-ico{height:90px;display:flex;align-items:center;justify-content:center;background:var(--surface-2)}
+.anx-ico svg{width:40px;height:40px}
+.anx-info{padding:8px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.anx-info b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anx-view{position:fixed;inset:0;z-index:90;background:rgba(8,12,20,.82);display:grid;place-items:center;padding:24px;cursor:zoom-out}
+.anx-view iframe{width:min(1000px,100%);height:100%;border:0;border-radius:8px;background:#fff}
+.anx-view pre{width:min(900px,100%);max-height:100%;overflow:auto;margin:0;padding:16px;border-radius:8px;background:var(--surface);color:var(--ink);font:13px/1.5 var(--mono);white-space:pre-wrap;cursor:auto}
+.anx-pdf{width:min(900px,100%);max-height:100%;overflow:auto;background:var(--surface-2);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:12px;align-items:center;cursor:auto}
+.anx-xls{align-items:stretch;background:var(--surface);color:var(--ink)}
+.xls-sheet table{font-size:12px}.xls-sheet td{white-space:nowrap;padding:4px 8px;border:1px solid var(--line)}
+.anx-pdf canvas{max-width:100%;height:auto;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.anx-view video{max-width:100%;max-height:100%;border-radius:8px}
+.anx-view .anx-x{position:fixed;top:14px;right:18px;color:#fff;font-size:13px;opacity:.85}
+.anx-view img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .ico-xls{flex:none;vertical-align:-3px}
 .dd-card{display:flex;gap:16px;align-items:center;justify-content:space-between}
 .dd-card p{margin-top:4px;max-width:720px}
@@ -330,6 +355,12 @@ pre.msg{white-space:pre-wrap;font-family:var(--sans);font-size:13px;margin:0;bac
 .chip:focus-visible{outline:2px solid var(--primary)}
 .platcard .pill{flex:none;white-space:nowrap}
 .s-Instavel{color:var(--atrasado);background:var(--atrasado-bg)}
+.n-normal{color:var(--resolvido);background:var(--resolvido-bg)}
+.n-atencao{color:#8A6D00;background:#FFF6C7}
+.n-possivel{color:#C2410C;background:#FFE8D9}
+.n-instab{color:#fff;background:#C0262D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .n-atencao{color:#F2D24C;background:rgba(242,210,76,.14)}:root:not([data-theme="light"]) .n-possivel{color:#FF9D66;background:rgba(255,157,102,.14)}}
+:root[data-theme="dark"] .n-atencao{color:#F2D24C;background:rgba(242,210,76,.14)} :root[data-theme="dark"] .n-possivel{color:#FF9D66;background:rgba(255,157,102,.14)}
 .basegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
 .basegrid > div{display:flex;flex-direction:column;gap:4px}
 table.increg td{vertical-align:middle}
@@ -385,13 +416,16 @@ const LV = {Bronze:1, Prata:2, Ouro:3, Diamante:4};
 /* Setor Financeiro oculto por enquanto (29/09): será usado em projetos futuros.
    Para reativar: FINANCEIRO_ATIVO = true e recadastrar os usuários do setor. Menu, telas e permissões continuam no código. */
 const FINANCEIRO_ATIVO = false;
+/* Painel de incidentes 2 (plataformas) oculto por enquanto (29/09). O código continua aqui; para reativar: PLATAFORMAS_ATIVO = true. */
+const PLATAFORMAS_ATIVO = false;
+const NOME_P1 = PLATAFORMAS_ATIVO ? "Painel de incidentes 1" : "Painel de incidentes";
 let CASOS = ["Vivo M2M","Claro M2M","Arqia M2M","Emnify M2M","Links Field M2M","Algar M2M","Vivo BL","Claro BL","Financeiro","Comercial","Parlacom","Outros"];
 let CATEGORIAS = ["Conectividade","Linha / SIM Card","Equipamento","Configuração","SMS","APN","Reprogramação","Incidente","Dúvida","Outros"];
 
 /* Horas úteis (28/09): encerramento do retorno e prazo de "Atrasado" contam só o expediente.
    Horário de expediente e feriados ainda a decidir: o protótipo usa seg–sex, 08h–18h, sem feriados. */
 const EXPEDIENTE = {dias:[1,2,3,4,5], inicio:8, fim:18, feriados:[]};
-const HORAS_RETORNO = 24;                                    // 24 horas úteis após o envio
+const HORAS_RETORNO = 10;                                    // 1 dia útil após o envio (29/09) = 10 horas de expediente (08h–18h)
 function ehUtil(d){return EXPEDIENTE.dias.includes(d.getDay()) && !EXPEDIENTE.feriados.includes(d.toISOString().slice(0,10))}
 function somarHorasUteis(ms, horas){
   let d=new Date(ms), resta=horas*60;
@@ -417,11 +451,18 @@ function horasUteisEntre(a, b){           // minutos úteis entre dois instantes
 
 const S = {
   logged:false, q:"", sla:null, route:"abertura", navOpen:{}, lf:{}, tab:"info", level:"Diamante", setor:"suporte", me:"u1", wanted:null, week:"37", filter:null, sel:null, retSel:null,
-  noreply:"suporte-noreply@exemplo.com.br",
+  noreply:"suporte-noreply@metatelecom.com.br", replyTo:"suporte@metatelecom.com.br",   // 29/09: envio só de saída + "Responder para" o hub (a criar com a TI)
   users:[
-    {id:"u1", nome:"Bruno", email:"bruno.silva@exemplo.com.br", setor:"suporte", nivel:"Diamante", ativo:true, cargo:"Coordenador", acum:19},
-    {id:"u2", nome:"Lucas Ribeiro", email:"lucas.ribeiro@exemplo.com.br", setor:"suporte", nivel:"Ouro", ativo:true, cargo:"Suporte", acum:15},
-    {id:"u3", nome:"Marina Alves", email:"marina.alves@exemplo.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:9}
+    {id:"u1", nome:"Júnior", email:"ely.junior@metatelecom.com.br", setor:"suporte", nivel:"Diamante", ativo:true, cargo:"Coordenador", acum:19},
+    {id:"u2", nome:"Daniel Mello", email:"daniel.mello@metatelecom.com.br", setor:"suporte", nivel:"Ouro", ativo:true, cargo:"Suporte", acum:15},
+    {id:"u3", nome:"Julia Nunes", email:"julia.nunes@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:9},
+    // 30/09 (item 29): novos usuários do Suporte
+    {id:"u6", nome:"Guilherme Altarugio", email:"guilherme.altarugio@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
+    {id:"u7", nome:"Pedro Henrique", email:"pedro.henrique@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
+    {id:"u8", nome:"Patrick Moura", email:"patrick.moura@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
+    {id:"u9", nome:"Alessa Sanchez", email:"alessa.sanchez@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
+    {id:"u10", nome:"Julia Munhoz", email:"julia.munhoz@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
+    {id:"u11", nome:"Luis Amstalden", email:"luis.amstalden@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0}
   ],
   clientes:[
     {id:"c1", nome:"Empresa XYZ Rastreamento", doc:"12.345.678/0001-90", email:"contato@empresaxyz.com.br", tel:"(11) 4002-1100"},
@@ -435,33 +476,33 @@ const S = {
 };
 function T(o){return Object.assign({linha:"", pausas:[], setor:"suporte", tipo:null, prioridade:"Normal", rascunho:null, encaminhamentos:[], bo:"", protAt:"", cep:"", equip:"", comandos:"", feito:"", caso:"", anexos:[], flags:{atrasado:false,atipico:false}, hist:[], coments:[], solucao:null, obs:"", excluido:null, retornos:[]}, o)}
 S.tickets = [
-  T({id:"EJD-001245", titulo:"Problema de conexão — equipamento XYZ", cat:"Conectividade", resp:"Bruno", status:"Em análise", aberto:"17/09/2026 12:14", criadoPor:"Bruno", cliente:"c1", caso:"Vivo M2M",
-    bo:"Equipamento XYZ perde conexão de dados várias vezes ao dia. Cliente relata quedas desde 15/09.", protAt:"VIVO-20260917-88123", cep:"04571-010", equip:"Rastreador XYZ-400, SIM Vivo M2M", comandos:"AT+CGATT? / AT+CSQ", feito:"Reset remoto do equipamento e reenvio de APN.", quemAbriu:"Bruno",
-    hist:[["12:14","Chamado aberto por Bruno"],["12:18","Atribuído para Bruno"],["12:24","Análise iniciada"],["12:32","Arquivo anexado"]],
-    coments:[{a:"Bruno", t:"12:40", txt:"Já verifiquei o equipamento remotamente, aguardando confirmação do cliente."}]}),
-  T({id:"EJD-001244", titulo:"Troca de equipamento com defeito", cat:"Equipamento", resp:"Lucas Ribeiro", status:"Novo", aberto:"17/09/2026 10:02", criadoPor:"Marina Alves", cliente:"c4", caso:"Claro M2M",
-    bo:"Equipamento não liga após instalação. Cliente pede troca.", protAt:"CLARO-557812", cep:"30130-100", equip:"Telemetria TX-2", comandos:"Não se aplica", feito:"Testado com outro SIM, sem sucesso.", quemAbriu:"Marina Alves",
-    hist:[["10:02","Chamado aberto por Marina Alves"],["10:05","Atribuído para Lucas Ribeiro"]]}),
-  T({id:"EJD-001243", titulo:"Ajuste de APN da linha corporativa", cat:"Configuração", resp:"Marina Alves", status:"Resolvido", aberto:"16/09/2026 15:40", criadoPor:"Lucas Ribeiro", cliente:"c2", caso:"Arqia M2M",
-    bo:"Linhas novas sem tráfego de dados.", protAt:"ARQ-2026-4471", cep:"06454-000", equip:"Modem industrial MI-3", comandos:"AT+CGDCONT=1,\"IP\",\"arqia.br\"", feito:"Conferido cadastro das linhas.", quemAbriu:"Lucas Ribeiro",
+  T({id:"EJD-001245", titulo:"Problema de conexão — equipamento XYZ", cat:"Conectividade", resp:"Júnior", status:"Em análise", aberto:"17/09/2026 12:14", criadoPor:"Júnior", cliente:"c1", caso:"Vivo M2M",
+    bo:"Equipamento XYZ perde conexão de dados várias vezes ao dia. Cliente relata quedas desde 15/09.", protAt:"VIVO-20260917-88123", cep:"04571-010", equip:"Rastreador XYZ-400, SIM Vivo M2M", comandos:"AT+CGATT? / AT+CSQ", feito:"Reset remoto do equipamento e reenvio de APN.", quemAbriu:"Júnior",
+    hist:[["12:14","Chamado aberto por Júnior"],["12:18","Atribuído para Júnior"],["12:24","Análise iniciada"],["12:32","Arquivo anexado"]],
+    coments:[{a:"Júnior", t:"12:40", txt:"Já verifiquei o equipamento remotamente, aguardando confirmação do cliente."}]}),
+  T({id:"EJD-001244", titulo:"Troca de equipamento com defeito", cat:"Equipamento", resp:"Daniel Mello", status:"Novo", aberto:"17/09/2026 10:02", criadoPor:"Julia Nunes", cliente:"c4", caso:"Claro M2M",
+    bo:"Equipamento não liga após instalação. Cliente pede troca.", protAt:"CLARO-557812", cep:"30130-100", equip:"Telemetria TX-2", comandos:"Não se aplica", feito:"Testado com outro SIM, sem sucesso.", quemAbriu:"Julia Nunes",
+    hist:[["10:02","Chamado aberto por Julia Nunes"],["10:05","Atribuído para Daniel Mello"]]}),
+  T({id:"EJD-001243", titulo:"Ajuste de APN da linha corporativa", cat:"Configuração", resp:"Julia Nunes", status:"Resolvido", aberto:"16/09/2026 15:40", criadoPor:"Daniel Mello", cliente:"c2", caso:"Arqia M2M",
+    bo:"Linhas novas sem tráfego de dados.", protAt:"ARQ-2026-4471", cep:"06454-000", equip:"Modem industrial MI-3", comandos:"AT+CGDCONT=1,\"IP\",\"arqia.br\"", feito:"Conferido cadastro das linhas.", quemAbriu:"Daniel Mello",
     solucao:"APN corrigida para o perfil corporativo do cliente; tráfego normalizado.",
-    hist:[["15:40","Chamado aberto por Lucas Ribeiro"],["15:52","Atribuído para Marina Alves"],["16:10","Análise iniciada"],["17:25","Resolvido por Marina Alves"]]}),
-  T({id:"EJD-001240", titulo:"Linha sem sinal — SIM Card", cat:"Linha / SIM Card", resp:"Lucas Ribeiro", status:"Em análise", aberto:"15/09/2026 09:12", criadoPor:"Lucas Ribeiro", cliente:"c3", caso:"Vivo M2M",
-    bo:"SIM sem registro na rede desde a ativação.", protAt:"VIVO-20260915-11002", cep:"20040-002", equip:"SIM Vivo M2M 128K", comandos:"AT+CREG?", feito:"Solicitada reativação à operadora.", quemAbriu:"Lucas Ribeiro",
+    hist:[["15:40","Chamado aberto por Daniel Mello"],["15:52","Atribuído para Julia Nunes"],["16:10","Análise iniciada"],["17:25","Resolvido por Julia Nunes"]]}),
+  T({id:"EJD-001240", titulo:"Linha sem sinal — SIM Card", cat:"Linha / SIM Card", resp:"Daniel Mello", status:"Em análise", aberto:"15/09/2026 09:12", criadoPor:"Daniel Mello", cliente:"c3", caso:"Vivo M2M",
+    bo:"SIM sem registro na rede desde a ativação.", protAt:"VIVO-20260915-11002", cep:"20040-002", equip:"SIM Vivo M2M 128K", comandos:"AT+CREG?", feito:"Solicitada reativação à operadora.", quemAbriu:"Daniel Mello",
     flags:{atrasado:true, atipico:false},
-    hist:[["09:12","Chamado aberto por Lucas Ribeiro"],["09:20","Atribuído para Lucas Ribeiro"],["09:31","Análise iniciada"]]}),
-  T({id:"EJD-001238", titulo:"Dúvida sobre reprogramação de linha", cat:"Dúvida", resp:"Bruno", status:"Em análise", aberto:"14/09/2026 14:05", criadoPor:"Marina Alves", cliente:"c5", caso:"Emnify M2M",
-    bo:"Cliente pergunta se é possível reprogramar a linha para outro plano sem troca de SIM.", protAt:"EMN-99231", cep:"13010-111", equip:"SIM Emnify", comandos:"Não se aplica", feito:"Consultado contrato.", quemAbriu:"Marina Alves",
+    hist:[["09:12","Chamado aberto por Daniel Mello"],["09:20","Atribuído para Daniel Mello"],["09:31","Análise iniciada"]]}),
+  T({id:"EJD-001238", titulo:"Dúvida sobre reprogramação de linha", cat:"Dúvida", resp:"Júnior", status:"Em análise", aberto:"14/09/2026 14:05", criadoPor:"Julia Nunes", cliente:"c5", caso:"Emnify M2M",
+    bo:"Cliente pergunta se é possível reprogramar a linha para outro plano sem troca de SIM.", protAt:"EMN-99231", cep:"13010-111", equip:"SIM Emnify", comandos:"Não se aplica", feito:"Consultado contrato.", quemAbriu:"Julia Nunes",
     flags:{atrasado:false, atipico:true},
-    hist:[["14:05","Chamado aberto por Marina Alves"],["14:30","Atribuído para Bruno"],["15:00","Marcado como atípico por Bruno"]]}),
-  T({id:"EJD-001241", titulo:"Oscilação de sinal em rastreadores da frota", cat:"Conectividade", resp:"Lucas Ribeiro", status:"Aguardando retorno", aberto:"16/09/2026 08:30", criadoPor:"Lucas Ribeiro", cliente:"c4", caso:"Claro M2M",
-    bo:"Rastreadores perdem sinal em rota na região de Contagem.", protAt:"CLARO-558120", cep:"32010-000", equip:"Rastreador TX-2, SIM Claro M2M", comandos:"AT+CSQ", feito:"Troca de APN e teste em campo.", quemAbriu:"Lucas Ribeiro",
+    hist:[["14:05","Chamado aberto por Julia Nunes"],["14:30","Atribuído para Júnior"],["15:00","Marcado como atípico por Júnior"]]}),
+  T({id:"EJD-001241", titulo:"Oscilação de sinal em rastreadores da frota", cat:"Conectividade", resp:"Daniel Mello", status:"Aguardando retorno", aberto:"16/09/2026 08:30", criadoPor:"Daniel Mello", cliente:"c4", caso:"Claro M2M",
+    bo:"Rastreadores perdem sinal em rota na região de Contagem.", protAt:"CLARO-558120", cep:"32010-000", equip:"Rastreador TX-2, SIM Claro M2M", comandos:"AT+CSQ", feito:"Troca de APN e teste em campo.", quemAbriu:"Daniel Mello",
     solucao:"Perfil de rede ajustado junto à operadora; sinal estável nos testes.", encerraEm:somarHorasUteis(Date.now(),4),
-    hist:[["08:30","Chamado aberto por Lucas Ribeiro"],["08:40","Análise iniciada"],["11:10","Resolvido por Lucas Ribeiro"],["11:20","Retorno enviado para operacao@omegafrotas.com.br · Aguardando retorno (encerra em 24h)"]]}),
-  T({id:"EJD-001236", titulo:"Cobrança duplicada de pacote SMS", cat:"SMS", resp:"Bruno", status:"Encerrado", aberto:"12/09/2026 11:20", criadoPor:"Bruno", cliente:"c2", caso:"Financeiro",
-    bo:"Fatura com pacote de SMS cobrado duas vezes.", protAt:"FIN-7781", cep:"06454-000", equip:"Não se aplica", comandos:"Não se aplica", feito:"Conferida fatura.", quemAbriu:"Bruno",
+    hist:[["08:30","Chamado aberto por Daniel Mello"],["08:40","Análise iniciada"],["11:10","Resolvido por Daniel Mello"],["11:20","Retorno enviado para operacao@omegafrotas.com.br · Aguardando retorno (encerra em 1 dia útil)"]]}),
+  T({id:"EJD-001236", titulo:"Cobrança duplicada de pacote SMS", cat:"SMS", resp:"Júnior", status:"Encerrado", aberto:"12/09/2026 11:20", criadoPor:"Júnior", cliente:"c2", caso:"Financeiro",
+    bo:"Fatura com pacote de SMS cobrado duas vezes.", protAt:"FIN-7781", cep:"06454-000", equip:"Não se aplica", comandos:"Não se aplica", feito:"Conferida fatura.", quemAbriu:"Júnior",
     solucao:"Estorno solicitado ao financeiro; crédito na próxima fatura.",
-    hist:[["11:20","Chamado aberto por Bruno"],["11:40","Análise iniciada"],["16:00","Resolvido por Bruno"],["16:15","Retorno enviado para ti@clienteabc.com.br · Encerrado"]]})
+    hist:[["11:20","Chamado aberto por Júnior"],["11:40","Análise iniciada"],["16:00","Resolvido por Júnior"],["16:15","Retorno enviado para ti@clienteabc.com.br · Encerrado"]]})
 ];
 
 const FIN_TIPOS_NOMES = {cancelamento:"Cancelamento", contestacao:"Contestação", boletos:"Boletos/Fatura/NF", reativacao:"Reativação"};
@@ -487,27 +528,44 @@ const diaISO = ms => {const d=new Date(ms);return d.getFullYear()+"-"+String(d.g
 /* Turno sugerido pela hora atual; nos intervalos entre turnos, sugere o próximo (ou o último, depois das 23:30). */
 function turnoAtual(){const d=new Date(agora()), m=d.getHours()*60+d.getMinutes(); if(m<=TURNOS.manha.fim) return "manha"; if(m<=TURNOS.tarde.fim) return "tarde"; return "noite";}
 const ordReg = (a,b) => a.dia<b.dia?-1:a.dia>b.dia?1:ORD_TURNO[a.turno]-ORD_TURNO[b.turno];
-const pct = r => S.incBase[r.operadora] ? Math.round(r.linhas/S.incBase[r.operadora]*1000)/10 : null;
-const instavel = r => { const b=S.incBase[r.operadora]; return !!b && r.linhas < b*S.incLimite/100; };
-const situacao = r => !S.incBase[r.operadora] ? '<span class="small muted">sem base</span>' : instavel(r) ? '<span class="pill s-Instavel">Instabilidade</span>' : '<span class="pill s-Resolvido">Normal</span>';
+/* 29/09 (itens 54 e 59 + ideia do Patrick Moura): 4 situações pela QUEDA em relação à base (100% − linhas online/base).
+   Cada registro guarda a base do momento (snapshot), então mudar a base depois não altera o histórico.
+   Linhas BL não têm dado de conexão: a equipe escolhe a situação manualmente. */
+const NIVEIS_INC = [
+  {k:"normal",   nome:"Normal",                 cls:"n-normal",   ate:5},
+  {k:"atencao",  nome:"Atenção",                cls:"n-atencao",  ate:15},
+  {k:"possivel", nome:"Possível instabilidade", cls:"n-possivel", ate:30},
+  {k:"instab",   nome:"Instabilidade",          cls:"n-instab",   ate:Infinity}
+];
+const NIVEL_COR = {normal:"#1C7A43", atencao:"#D4A017", possivel:"#EA7A3A", instab:"#C0262D"};
+const NIVEIS_HIST = ["possivel","instab"];      // o que entra no Histórico de instabilidades e nos alertas (a decidir)
+const isBL = o => /\sBL$/.test(o||"");
+const baseDe = r => r.base!=null ? r.base : (S.incBase[r.operadora]||null);
+const pct = r => { const b=baseDe(r); return b && r.linhas!=null ? Math.round(r.linhas/b*1000)/10 : null; };
+const queda = r => { const p=pct(r); return p==null ? null : Math.max(0, Math.round((100-p)*10)/10); };
+const nivelDe = r => { if(r.nivel) return NIVEIS_INC.find(n=>n.k===r.nivel); const q=queda(r); return q==null ? null : NIVEIS_INC.find(n=>q<=n.ate); };
+const instavel = r => { const n=nivelDe(r); return !!n && NIVEIS_HIST.includes(n.k); };
+const pillNivel = n => n ? `<span class="pill ${n.cls}">${esc(n.nome)}</span>` : '<span class="small muted">sem base</span>';
+const situacao = r => pillNivel(nivelDe(r)) + (r.nivel?' <span class="small muted">manual</span>':"");
 S.incBase = {};                 // base de linhas por operadora: será criada em breve (a decidir)
-S.incLimite = 90;               // % da base abaixo do qual o registro aponta instabilidade (a decidir)
+S.incLimite = 90;               // substituído pelas 4 situações (29/09); mantido só por compatibilidade
+S.incBaseEm = null; S.incBasePor = null; S.incSeq = 100;      // última atualização da base (Diamante, mensal)
 S.incidentes = [
-  {dia:"2026-09-28", turno:"manha", em:"28/09/2026 08:40", operadora:"Vivo", linhas:12480, obs:"", por:"Bruno", exemplo:true},
-  {dia:"2026-09-28", turno:"tarde", em:"28/09/2026 13:05", operadora:"Vivo", linhas:11920, obs:"Oscilação na região Sul", por:"Lucas Ribeiro", exemplo:true},
-  {dia:"2026-09-28", turno:"manha", em:"28/09/2026 09:10", operadora:"Claro", linhas:8640, obs:"", por:"Lucas Ribeiro", exemplo:true}
+  {id:"r1", dia:"2026-09-28", turno:"manha", em:"28/09/2026 08:40", operadora:"Vivo", linhas:12480, obs:"", por:"Júnior", exemplo:true},
+  {id:"r2", dia:"2026-09-28", turno:"tarde", em:"28/09/2026 13:05", operadora:"Vivo", linhas:11920, obs:"Oscilação na região Sul", por:"Daniel Mello", exemplo:true},
+  {id:"r3", dia:"2026-09-28", turno:"manha", em:"28/09/2026 09:10", operadora:"Claro", linhas:8640, obs:"", por:"Daniel Mello", exemplo:true}
 ];
 S.incPlat = [
-  {id:"p1", plat:"nsend", status:"instavel", inicio:"29/09/2026 08:15", desc:"Atraso na entrega de mensagens", por:"Bruno", exemplo:true},
-  {id:"p2", plat:"wati", status:"fora", inicio:"28/09/2026 14:02", fim:"28/09/2026 15:40", desc:"Login indisponível", por:"Lucas Ribeiro", exemplo:true}
+  {id:"p1", plat:"nsend", status:"instavel", inicio:"29/09/2026 08:15", desc:"Atraso na entrega de mensagens", por:"Júnior", exemplo:true},
+  {id:"p2", plat:"wati", status:"fora", inicio:"28/09/2026 14:02", fim:"28/09/2026 15:40", desc:"Login indisponível", por:"Daniel Mello", exemplo:true}
 ];
 S.incOp = null; S.incDia = null; S.incTurno = null; S.incFiltro = [];
 
 const WEEKS = {
-  "34":{"Bruno":12,"Lucas Ribeiro":13,"Marina Alves":7},
-  "35":{"Bruno":16,"Lucas Ribeiro":12,"Marina Alves":11},
-  "36":{"Bruno":14,"Lucas Ribeiro":17,"Marina Alves":8},
-  "37":{"Bruno":19,"Lucas Ribeiro":15,"Marina Alves":9}
+  "34":{"Júnior":12,"Daniel Mello":13,"Julia Nunes":7},
+  "35":{"Júnior":16,"Daniel Mello":12,"Julia Nunes":11},
+  "36":{"Júnior":14,"Daniel Mello":17,"Julia Nunes":8},
+  "37":{"Júnior":19,"Daniel Mello":15,"Julia Nunes":9}
 };
 const KPIS = [
   {k:"Novos", n:12, c:"var(--novo)", f:{status:"Novo"}},
@@ -521,43 +579,52 @@ const KPIS = [
 /* ===== Pontos em aberto (fonte: Especificação Inicial MVP, seções 9 e 12) ===== */
 const DECISOES = [
   {id:"lgpd", g:"Já definido", t:"Retenção dos dados do cliente: por enquanto, os dados são mantidos sem prazo de exclusão (28/09). Revisar com o jurídico antes de produção.", st:"ok", o:[]},
-  {id:"sla_valores", g:"Já definido", t:"Prazo para \"Atrasado\": 24 horas úteis a partir da abertura, igual para todas as categorias (28/09). Ajustável por categoria em Configurações.", st:"ok", o:[]},
-  {id:"fin_oculto", g:"Já definido", t:"Setor Financeiro oculto por enquanto; será usado em projetos futuros. Usuárias Fernanda e Paula removidas do protótipo (29/09)", st:"ok", o:[]},
+  {id:"sla_valores", g:"Já definido", t:"Prazo para \"Atrasado\": 1 dia útil a partir da abertura, igual para todas as categorias; ajustável por categoria (29/09)", st:"ok", o:[]},
+  {id:"fin_oculto", g:"Já definido", t:"Setor Financeiro oculto por enquanto; será usado em projetos futuros. Usuárias Nathália e Mariana removidas do protótipo (29/09)", st:"ok", o:[]},
   {id:"hist_def", g:"Já definido", t:"Histórico de incidentes dos Painéis 1 e 2: a plataforma guarda 3 meses, exporta em Excel pelo botão e gera um Excel de arquivo automático; avisa antes de apagar; exporta por painel e \"Exportar tudo\" (abas Resumo, Operadoras e Plataformas); no Painel 1 entram só as instabilidades (29/09)", st:"ok", o:[]},
-  {id:"hist_arquivo", g:"Histórico de incidentes (29/09)", t:"Excel automático de arquivo: quando é gerado e onde fica guardado?", st:"d", nota:"O protótipo simula um arquivo por mês, gerado no dia 1 do mês seguinte, e deixa baixar pela lista \"Arquivo mensal\". Na versão real o arquivo precisa ir para algum lugar fixo.", o:[["A — Mensal, pasta compartilhada (OneDrive/SharePoint)","Depende de integração com a Microsoft."],["B — Mensal, enviado por e-mail","Ex.: para o Diamante ou uma caixa do Suporte."],["C — Semanal","Arquivos menores e mais frequentes."]]},
-  {id:"hist_aviso", g:"Histórico de incidentes (29/09)", t:"Com quantos dias de antecedência avisar que incidentes vão completar 3 meses e ser apagados?", st:"d", nota:"O protótipo avisa 7 dias antes, no topo dos Painéis 1 e 2, com o botão \"Exportar agora\".", o:[["A — 7 dias",""],["B — 15 dias",""],["C — Outro prazo",""]]},
-  {id:"hist_prazo", g:"Histórico de incidentes (29/09)", t:"\"3 meses\" conta pelo calendário (ex.: 29/06 a 29/09) ou 90 dias corridos? E no Painel 2 conta pela data em que o incidente foi normalizado?", st:"d", nota:"O protótipo conta 3 meses de calendário. No Painel 1 usa o dia do registro; no Painel 2 usa a data de normalização, e incidentes em andamento nunca são apagados.", o:[["A — 3 meses de calendário",""],["B — 90 dias corridos",""]]},
-  {id:"hist_base", g:"Histórico de incidentes (29/09)", t:"O histórico do Painel 1 usa a base atual ou a base do momento do registro?", st:"d", nota:"Hoje a instabilidade é calculada com a base e o limite atuais. Se a base mudar, instabilidades antigas podem aparecer ou sumir do histórico. Guardar a base e o limite junto com cada registro evita isso.", o:[["A — Guardar a base e o limite em cada registro","O histórico não muda depois. Sugestão."],["B — Usar sempre a base atual","Mais simples, mas o histórico pode mudar."]]},
-  {id:"hist_quem", g:"Histórico de incidentes (29/09)", t:"Quem pode exportar o histórico em Excel?", st:"d", nota:"O protótipo deixa exportar quem vê o painel (a partir de Prata no Suporte).", o:[["A — Quem vê o painel",""],["B — Só Ouro e Diamante",""],["C — Só Diamante",""]]},
-  {id:"foto_regras", g:"Meu perfil (29/09)", t:"Regras da foto de perfil: formatos, tamanho máximo e onde a imagem fica guardada", st:"d", nota:"O protótipo aceita JPG, PNG e WEBP até 5 MB, recorta a foto em quadrado de 256 px e guarda só neste navegador. Na implementação real a foto precisa ir para o servidor, para aparecer para toda a equipe.", o:[["A — Manter JPG/PNG/WEBP até 5 MB","Recorte automático em quadrado."],["B — Outros limites","Definir formatos e tamanho."]]},
-  {id:"foto_quem", g:"Meu perfil (29/09)", t:"Quem pode trocar a foto: só a própria pessoa ou também um Diamante em Usuários?", st:"d", nota:"O protótipo deixa cada pessoa trocar só a própria foto, em Meu perfil.", o:[["A — Só a própria pessoa","Mais simples."],["B — Também o Diamante","Permite padronizar as fotos da equipe."]]},
-  {id:"prioridade_mvp", g:"Área de chamados (28/09)", t:"Prioridade volta para o MVP com Baixa / Normal / Alta / Urgente?", st:"d", nota:"Em 24/09 a prioridade tinha ficado para a Fase 2. O pedido de 28/09 pede o campo; o protótipo já mostra, com Normal como padrão e alteração por Ouro/Diamante na página do chamado.", o:[["A — Sim, no MVP","Substitui a decisão de 24/09."],["B — Manter na Fase 2","O campo sai do protótipo."]]},
-  {id:"pendente_status", g:"Área de chamados (28/09)", t:"\"Pendentes\" nos cards e na fila rápida = chamados Aguardando retorno?", st:"d", nota:"Não existe status \"Pendente\". O protótipo usa Aguardando retorno no lugar.", o:[["A — Sim, Pendente = Aguardando retorno","Nenhum status novo."],["B — Criar o status Pendente","Mais um status no fluxo; precisa definir quando entra e sai."]]},
-  {id:"resolver_solucao", g:"Área de chamados (28/09)", t:"Ao marcar como resolvido, a solução aplicada é obrigatória?", st:"d", nota:"A especificação (4.4) pede solução aplicada; o pedido de 28/09 pede uma confirmação simples. O protótipo deixa o campo opcional.", o:[["A — Opcional","Resolver fica rápido na lista."],["B — Obrigatória","Garante o registro da solução para o retorno e o PDF."]]},
-  {id:"status_manual", g:"Área de chamados (28/09)", t:"Quais mudanças de status manuais são permitidas?", st:"d", nota:"Hoje Ouro/Diamante podem mudar livremente entre Novo, Em análise, Resolvido e Encerrado. Aguardando retorno só pelo envio do retorno.", o:[["A — Livre (como está)","Mais flexível; permite encerrar sem enviar retorno."],["B — Só na sequência do fluxo","Evita pular etapas; encerrar só pelo retorno ou pela rotina de 24h."]]},
+  {id:"hist_arquivo", g:"Já definido", t:"Excel mensal: no MVP, alguém baixa o arquivo todo dia 1 e salva na pasta compartilhada; a gravação automática fica para quando houver integração (30/09)", st:"ok", o:[]},
+  {id:"hist_aviso", g:"Já definido", t:"Aviso 7 dias antes de incidentes completarem 3 meses (29/09)", st:"ok", o:[]},
+  {id:"hist_prazo", g:"Já definido", t:"\"3 meses\" conta pelo calendário (29/09)", st:"ok", o:[]},
+  {id:"hist_base", g:"Já definido", t:"Cada registro de turno guarda a base do momento; mudar a base depois não altera o histórico (29/09, ideia do Patrick Moura)", st:"ok", o:[]},
+  {id:"hist_quem", g:"Já definido", t:"Exportar o histórico em Excel: quem vê o painel (29/09)", st:"ok", o:[]},
+  {id:"foto_regras", g:"Já definido", t:"Foto de perfil: JPG, PNG ou WEBP até 5 MB, recorte automático em quadrado; na versão real fica no servidor (29/09)", st:"ok", o:[]},
+  {id:"foto_quem", g:"Já definido", t:"Só a própria pessoa troca a foto de perfil (29/09)", st:"ok", o:[]},
+  {id:"prioridade_mvp", g:"Já definido", t:"Prioridade no MVP com Baixa / Normal / Alta / Urgente, definida já na abertura (29/09)", st:"ok", nota:"Em 24/09 a prioridade tinha ficado para a Fase 2. O pedido de 28/09 pede o campo; o protótipo já mostra, com Normal como padrão e alteração por Ouro/Diamante na página do chamado.", o:[["A — Sim, no MVP","Substitui a decisão de 24/09."],["B — Manter na Fase 2","O campo sai do protótipo."]]},
+  {id:"pendente_status", g:"Já definido", t:"\"Pendentes\" = chamados Aguardando retorno; nenhum status novo (29/09)", st:"ok", o:[]},
+  {id:"resolver_solucao", g:"Já definido", t:"Solução aplicada obrigatória para marcar como resolvido, sem limite de caracteres (29/09)", st:"ok", o:[]},
+  {id:"status_manual", g:"Já definido", t:"Status manual só na sequência do fluxo (Novo → Em análise → Resolvido); Encerrado pelo retorno ou pela rotina; Diamante pode encerrar direto com motivo (29/09)", st:"ok", o:[]},
+  {id:"encerrar_direto_aviso", g:"Já definido", t:"Encerramento direto pelo Diamante não avisa o cliente; só registra o motivo no histórico (30/09)", st:"ok", o:[]},
+  {id:"inc_niveis_def", g:"Já definido", t:"Painel de incidentes: 4 situações pela queda em relação à base — Normal até 5%, Atenção até 15%, Possível instabilidade até 30%, Instabilidade acima de 30%; BL com situação escolhida manualmente (29/09, Patrick Moura)", st:"ok", o:[]},
+  {id:"inc_niveis", g:"Já definido", t:"Histórico e Excel: entram Possível instabilidade e Instabilidade (Atenção fica só no painel). Faixas iguais para todas por 1 mês; depois, revisar pela Análise do mês as operadoras que ficam muito em Atenção (30/09)", st:"ok", o:[]},
+  {id:"unificar_chamados", g:"Já definido", t:"Unificar chamados: a plataforma avisa quando há chamado em aberto com o mesmo protocolo ou do mesmo cliente, e Ouro/Diamante juntam manualmente (histórico, comentários e anexos somados no principal) (30/09)", st:"ok", o:[]},
+  {id:"usuario_desativado", g:"Já definido", t:"Ao desativar um usuário, os chamados em aberto em que ele é o responsável continuam com ele até alguém reatribuir (30/09)", st:"ok", o:[]},
+  {id:"usuario_desativar_def", g:"Já definido", t:"Diamante pode desativar e reativar usuários em Usuários › Editar; o status passa a mostrar \"Desativado\" (30/09)", st:"ok", o:[]},
+  {id:"usuarios_novos", g:"Já definido", t:"Suporte com 9 usuários: Júnior (Diamante), Daniel Mello (Ouro); Julia Nunes, Guilherme Altarugio, Pedro Henrique, Patrick Moura, Alessa Sanchez, Julia Munhoz e Luis Amstalden (Prata) (30/09)", st:"ok", o:[]},
   {id:"encaminhar_regra", g:"Já definido", t:"Não há encaminhamento de chamados entre setores (28/09). O setor responsável é o do chamado.", st:"ok", o:[]},
   {id:"responsavel_nivel", g:"Já definido", t:"Responsável pelo chamado: só Ouro ou acima, com acesso ao setor do chamado (28/09)", st:"ok", o:[]},
   {id:"busca_linha", g:"Já definido", t:"Busca por linha no texto do chamado: MSISDN/ICCID, B.O, equipamentos e protocolo do atendimento (28/09)", st:"ok", o:[]},
-  {id:"janela_uteis", g:"Já definido", t:"Encerramento automático do retorno conta 24 horas úteis (28/09)", st:"ok", o:[]},
-  {id:"expediente", g:"Horas úteis (28/09)", t:"O que conta como hora útil? (horário de expediente e feriados)", st:"d", nota:"O protótipo usa segunda a sexta, 08h às 18h, sem feriados. Com esse expediente, 24 horas úteis são cerca de 2,4 dias úteis: um retorno enviado na segunda às 10h encerra na quarta às 14h.", o:[["A — 24 horas de expediente (≈ 2,4 dias úteis)","É o que o protótipo faz hoje."],["B — 1 dia útil","Um retorno na segunda às 10h encerra na terça às 10h. Mais comum no uso do dia a dia de \"24h úteis\"."]]},
-  {id:"email_retorno", g:"Horas úteis (28/09)", t:"Como estruturar o e-mail do retorno? (hoje o hub usa suporte@exemplo.com.br)", st:"d", nota:"Ideia do Bruno (28/09). Sugestão enviada no chat: enviar por um endereço só de envio com \"Responder para\" suporte@.", o:[["A — Endereço só de envio + Responder para suporte@","Respostas do cliente caem no hub; a equipe registra no chamado. Precisa criar o alias e configurar SPF/DKIM."],["B — Enviar direto como suporte@","Sem endereço novo; o cliente responde normalmente e a equipe registra no chamado."]]},
+  {id:"janela_uteis", g:"Já definido", t:"Encerramento automático do retorno: 1 dia útil sem resposta do cliente (29/09)", st:"ok", o:[]},
+  {id:"expediente", g:"Já definido", t:"\"24 horas úteis\" = 1 dia útil: um retorno enviado na segunda às 10h encerra na terça às 10h; o prazo de Atrasado também é de 1 dia útil (29/09)", st:"ok", o:[]},
+  {id:"expediente_horario", g:"Já definido", t:"Expediente: segunda a sexta, 08h às 18h; feriados não entram na conta (30/09)", st:"ok", o:[]},
+  {id:"email_retorno", g:"Horas úteis (28/09)", t:"E-mail do retorno: endereço só de envio + \"Responder para\" suporte@ (escolhido em 29/09); falta criar com a TI", st:"d", nota:"Criar o alias só de envio (ex.: suporte-noreply@metatelecom.com.br) e configurar SPF/DKIM. O protótipo já mostra o \"Responder para\" no e-mail.", o:[]},
   {id:"atraso_espera", g:"Já definido", t:"O prazo de \"Atrasado\" pausa enquanto o chamado está Aguardando retorno (28/09)", st:"ok", o:[]},
   {id:"fin_estrutura", g:"Futuro — Setor Financeiro", t:"Campos, status e fluxo dos chamados do Financeiro (Cancelamento, Contestação, Boletos/Fatura/NF, Reativação)", st:"f", nota:"O menu e as permissões já existem. As telas mostram linhas ilustrativas até isso ser definido.", o:[]},
   {id:"fin_origem", g:"Futuro — Setor Financeiro", t:"Quem abre chamado do Financeiro? Um chamado do Suporte com \"O caso é sobre: Financeiro\" vai para o Financeiro?", st:"f", o:[]},
   {id:"fin_niveis", g:"Futuro — Setor Financeiro", t:"O que cada nível faz dentro do Financeiro", st:"f", nota:"Hoje vale a regra existente: ver chamados a partir de Prata. Um Bronze do Financeiro vê só Conta.", o:[]},
-  {id:"fin_email", g:"Futuro — Setor Financeiro", t:"Para que é usado o e-mail financeiro@exemplo.com.br?", st:"f", nota:"Ex.: remetente do retorno do Financeiro, contato exibido ao cliente ou caixa compartilhada.", o:[]},
+  {id:"fin_email", g:"Futuro — Setor Financeiro", t:"Para que é usado o e-mail financeiro@metatelecom.com.br?", st:"f", nota:"Ex.: remetente do retorno do Financeiro, contato exibido ao cliente ou caixa compartilhada.", o:[]},
   {id:"fin_gamificacao", g:"Futuro — Setor Financeiro", t:"O Financeiro participa do Painel e da gamificação?", st:"f", nota:"Hoje o ranking conta só chamados resolvidos do Suporte.", o:[]},
   {id:"setor_def", g:"Já definido", t:"Permissão por Setor + Nível de acesso: Diamante acessa todos os setores; os demais níveis, só o próprio setor + Conta", st:"ok", o:[]},
-  {id:"i1", g:"Ideias da equipe (a avaliar)", t:"Permitir foto e vídeo na abertura do chamado", st:"i", nota:"Tiago Moreira · 24/09. Foto já entra como imagem (até 10 MB). Vídeo ficou fora dos tipos aprovados."},
-  {id:"i2", g:"Já definido", t:"Campo MSISDN ou ICCID na abertura, obrigatório quando \"O caso é sobre\" é uma operadora M2M ou BL (ideia do Tiago, aprovada em 28/09)", st:"ok", o:[]},
-  {id:"linha_formato", g:"Painel de incidentes e linha (28/09)", t:"Formato do campo MSISDN ou ICCID: validar quantidade de dígitos?", st:"d", nota:"Hoje o campo aceita qualquer texto. MSISDN costuma ter 12 a 13 dígitos (com 55 e DDD) e ICCID 19 a 20 dígitos.", o:[["A — Validar só números com 12–13 (MSISDN) ou 19–20 (ICCID) dígitos","Evita erro de digitação."],["B — Texto livre","Aceita qualquer formato, inclusive vários números."]]},
-  {id:"i3", g:"Ideias da equipe (a avaliar)", t:"Perfil do cliente com todos os chamados vinculados", st:"i", nota:"Lucas · 24/09."},
+  {id:"i1", g:"Recusadas", t:"Vídeo na abertura do chamado (Patrick Moura) — recusado em 29/09; seguem imagens, PDF, Excel e TXT", st:"r", o:[]},
+  {id:"i2", g:"Já definido", t:"Campo MSISDN ou ICCID na abertura, obrigatório quando \"O caso é sobre\" é uma operadora M2M ou BL (ideia do Patrick, aprovada em 28/09)", st:"ok", o:[]},
+  {id:"linha_formato", g:"Já definido", t:"MSISDN/ICCID validado: só números, 12–13 dígitos (MSISDN) ou 19–20 (ICCID); vários números separados por vírgula (29/09)", st:"ok", o:[]},
+  {id:"i3", g:"Recusadas", t:"Perfil do cliente com todos os chamados vinculados (Daniel) — recusado em 29/09", st:"r", o:[]},
   {id:"i4", g:"Já definido", t:"Painel de incidentes: começar por um protótipo da tela para comparar com a planilha (28/09). Tela criada em Suporte › Painel de incidentes.", st:"ok", o:[]},
-  {id:"op_logos", g:"Painel de incidentes e linha (28/09)", t:"Logos das operadoras e cor da Emnify", st:"d", nota:"Logos de Algar, Arqia, Claro, Emnify, Links Field e Vivo aplicadas em 28/09 a partir de imagens enviadas pela equipe (algumas vieram do WhatsApp/sites de imagens: trocar pelos arquivos oficiais dos kits de marca antes de produção). Algar usa o quadrado verde do arquivo enviado (logo branco). TIM saiu do painel e Claro BL / Vivo BL entraram no final da lista, com a logo da operadora e outra tonalidade de cor. Falta: cor da Emnify e onde as logos serão cadastradas na plataforma real.", o:[]},
-  {id:"plat_regras", g:"Painel de incidentes e linha (28/09)", t:"Painel de incidentes 2 (plataformas): regras", st:"d", nota:"Esboço de 29/09 com MonadoWP, Wati, Metatex, Nsend e WhatsApp. O protótipo usa 3 situações (Operando normalmente, Instabilidade, Fora do ar), registro por Ouro/Diamante e botão para marcar como normalizado. Os links foram encurtados para a página de entrada de cada plataforma, porque os endereços enviados tinham códigos de sessão que expiram.", o:[]},
-  {id:"inc_turnos", g:"Painel de incidentes e linha (28/09)", t:"Regras dos 3 turnos de registro", st:"d", nota:"Definido em 28/09: Manhã 08:00–11:30, Tarde 12:00–16:00, Noite 16:30–23:30; 3 registros por dia por operadora, feitos a qualquer hora. O protótipo bloqueia um segundo registro no mesmo turno e sugere o turno pela hora atual. Falta definir: é possível corrigir um registro já feito? Fim de semana e feriado também têm registro?", o:[]},
-  {id:"inc_base", g:"Painel de incidentes e linha (28/09)", t:"Base de linhas por operadora e limite de alerta", st:"d", nota:"A base será criada em breve. O protótipo deixa preencher a base para testar e aponta instabilidade abaixo de 90% da base (no exemplo do Bruno, 40.000 de 50.000 = 80%). Falta definir o percentual de alerta, quem mantém a base e de onde vêm os números.", o:[["A — Alerta abaixo de 90% da base",""],["B — Outro percentual (informar)",""]]},
-  {id:"incidentes_acesso", g:"Painel de incidentes e linha (28/09)", t:"Quem vê e quem registra no Painel de incidentes?", st:"d", nota:"O protótipo: Prata ou acima do Suporte veem; Ouro ou acima registram as linhas online.", o:[["A — Como está no protótipo",""],["B — Todos do Suporte veem e registram","Mais gente alimentando os dados no lugar da planilha."]]},
+  {id:"op_logos", g:"Já definido", t:"Logos: mantidas as imagens atuais; Emnify mantém a cor atual (29/09)", st:"ok", o:[]},
+  {id:"plat_oculto", g:"Já definido", t:"Painel de incidentes 2 (plataformas) oculto por enquanto; o Painel de incidentes 1 passa a se chamar só \"Painel de incidentes\" (29/09)", st:"ok", o:[]},
+  {id:"plat_regras", g:"Futuro — Painel de plataformas", t:"Painel de plataformas (oculto): situações Normal, Instabilidade e Fora do ar; horário de fim corrigível; só Ouro e Diamante registram e marcam como normalizado (30/09)", st:"f", o:[]},
+  {id:"inc_turnos", g:"Já definido", t:"Turnos: registro todos os dias, inclusive fim de semana e feriado; correção no mesmo dia por Ouro/Diamante, depois só Diamante com motivo; o valor anterior fica guardado (29/09)", st:"ok", o:[]},
+  {id:"inc_base", g:"Já definido", t:"Base de linhas: Diamante atualiza manualmente todo mês; a data da última atualização aparece no painel (29/09)", st:"ok", o:[]},
+  {id:"incidentes_acesso", g:"Já definido", t:"Painel de incidentes: todos do Suporte veem; Prata ou acima registram (29/09)", st:"ok", o:[]},
   {id:"bronze", g:"Já definido", t:"Bronze acompanha os próprios chamados em \"Meus chamados\", só leitura, sem comentários e sem ações", st:"ok", o:[]},
   {id:"cliente_dup", g:"Já definido", t:"CNPJ/CPF duplicado é bloqueado e o cadastro existente é mostrado; Prata, Ouro e Diamante podem unificar cadastros de um mesmo cliente com mais de um CNPJ", st:"ok", o:[]},
   {id:"reset", g:"Já definido", t:"Nível de gamificação reinicia em janeiro, para todos ao mesmo tempo", st:"ok", o:[]},
@@ -571,18 +638,19 @@ const DECISOES = [
   {id:"retorno_nivel", g:"Já definido", t:"Retorno ao cliente: enviado por Ouro e Diamante", st:"ok", o:[]},
   {id:"cliente_cad", g:"Já definido", t:"Todos os níveis cadastram e editam clientes", st:"ok", o:[]},
   {id:"ranking", g:"Já definido", t:"Ranking de gamificação visível para os 10 colaboradores", st:"ok", o:[]},
-  {id:"categoria", g:"Já definido", t:"Categoria é definida por Ouro/Diamante na triagem", st:"ok", o:[]},
+  {id:"categoria", g:"Já definido", t:"Categoria e prioridade podem ser escolhidas na abertura do chamado; Ouro/Diamante ajustam na triagem (29/09, substitui a decisão de 24/09)", st:"ok", o:[]},
+  {id:"abertura_cat_prio", g:"Já definido", t:"Categoria e prioridade obrigatórias na abertura; qualquer nível pode escolher qualquer prioridade (30/09)", st:"ok", o:[]},
   {id:"atribuicao", g:"Já definido", t:"Chamado novo cai na fila geral; Ouro assume manualmente", st:"ok", o:[]},
   {id:"casos", g:"Já definido", t:"Lista \"O caso é sobre\" editável pelo Diamante", st:"ok", o:[]},
   {id:"comint", g:"Já definido", t:"Comentários são internos, visíveis só à equipe", st:"ok", o:[]},
   {id:"auth", g:"Já definido", t:"Autenticação com login e senha próprios do E.J. Desk", st:"ok", o:[]},
   {id:"mobile", g:"Já definido", t:"Não precisa ser otimizado para celular no MVP", st:"ok", o:[]},
-  {id:"aguardando", g:"Já definido", t:"Status \"Aguardando retorno\" depois do envio do retorno: encerra sozinho em 24h sem resposta do cliente; se o cliente responder, volta para Em análise (25/09, substitui a decisão de 23/09)", st:"ok", o:[]},
+  {id:"aguardando", g:"Já definido", t:"Status \"Aguardando retorno\" depois do envio do retorno: encerra sozinho em 1 dia útil sem resposta do cliente; se o cliente responder, a equipe registra e o chamado volta para Em análise", st:"ok", o:[]},
   {id:"d1", g:"Já definido", t:"Colaborador abre o chamado em nome de um cliente cadastrado", st:"ok", o:[]},
   {id:"d2", g:"Já definido", t:"Reabertura sempre manual, pela plataforma (nunca por resposta ao e-mail)", st:"ok", o:[]},
   {id:"d3", g:"Já definido", t:"Retorno por e-mail no-reply do E.J. Desk; a resposta do cliente chega pelos canais de atendimento e a equipe registra no chamado", st:"ok", o:[]},
   {id:"d4", g:"Já definido", t:"Exclusão é lógica (quem, quando, motivo) — nunca apaga do banco", st:"ok", o:[]},
-  {id:"prioridade", g:"Futuro", t:"Prioridade (Normal / Alta / Crítica) — Fase 2", st:"f", o:[]},
+  {id:"prioridade", g:"Já definido", t:"Prioridade fica no MVP: Baixa / Normal / Alta / Urgente, escolhida na abertura (30/09)", st:"ok", o:[]},
   {id:"notif", g:"Futuro", t:"Notificações — fora do MVP (Fase 3 na especificação)", st:"f", o:[]},
   {id:"f1", g:"Futuro", t:"Semáforo operacional, pesquisa de satisfação, subcategorias", st:"f", o:[]}
 ];
@@ -598,7 +666,7 @@ const can = n => LV[S.level] >= LV[n];
    3) adicione o grupo e os itens em NAV e as telas em VIEWS. Nada mais precisa mudar. */
 const SETORES_TODOS = {
   suporte:    {nome:"Suporte",    email:null},
-  financeiro: {nome:"Financeiro", email:"financeiro@exemplo.com.br"}   // oculto: projeto futuro
+  financeiro: {nome:"Financeiro", email:"financeiro@metatelecom.com.br"}   // oculto: projeto futuro
 };
 const SETORES = Object.fromEntries(Object.entries(SETORES_TODOS).filter(([k])=>k!=="financeiro"||FINANCEIRO_ATIVO));
 const AREAS_GLOBAIS = ["conta","admin","prototipo"];   // não dependem do setor, só do nível
@@ -610,12 +678,13 @@ const RECURSOS = {
   // Suporte — páginas
   "abertura":{area:"suporte", min:"Bronze"},
   "painel":{area:"suporte", min:"Prata"},
-  "incidentes":{area:"suporte", min:"Prata"},
-  "inc-registro":{area:"suporte", min:"Prata"},
-  "inc-base":{area:"suporte", min:"Prata"},
-  "inc-plataformas":{area:"suporte", min:"Prata"},
+  "incidentes":{area:"suporte", min:"Bronze"},        // 29/09 (item 46): todos do Suporte veem
+  "inc-registro":{area:"suporte", min:"Bronze"},
+  "inc-base":{area:"suporte", min:"Bronze"},
+  ...(PLATAFORMAS_ATIVO?{"inc-plataformas":{area:"suporte", min:"Prata"}}:{}),
   "plataformas.registrar":{area:"suporte", min:"Ouro"},
-  "incidentes.registrar":{area:"suporte", min:"Ouro"},
+  "incidentes.registrar":{area:"suporte", min:"Prata"},   // 29/09 (item 46): Prata ou acima registram
+  "incidentes.base":{area:"suporte", min:"Diamante"},      // 29/09 (item 55): Diamante atualiza a base (mensal)
   "meus":{area:"suporte", min:"Bronze", only:"Bronze"},
   "chamados":{area:"suporte", min:"Prata"},
   "retorno":{area:"suporte", min:"Ouro"},
@@ -671,7 +740,7 @@ const fmtDataHora = ms => {const d=new Date(ms);return d.toLocaleDateString("pt-
 const falta = ms => {const m=Math.max(0,Math.round(horasUteisEntre(agora(),ms)*60));return Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"min úteis"};
 /* Rotina de encerramento automático: mesma regra do job do backend.
    Encerra chamados em "Aguardando retorno" cujo prazo venceu sem resposta do cliente. */
-const PRAZO_ATRASO_PADRAO = 24;           // 24 horas úteis a partir da abertura (28/09)
+const PRAZO_ATRASO_PADRAO = 10;           // 1 dia útil a partir da abertura (29/09) = 10 horas de expediente
 const prazoCat = cat => { const v=+((S.sla||{})[cat]); return v>0 ? v : PRAZO_ATRASO_PADRAO; };
 /* Marca "Atrasado" nos chamados abertos no sistema (com criadoEmMs). Os exemplos fictícios mantêm a marcação que já tinham.
    Enquanto o chamado está Aguardando retorno, a contagem fica pausada (decidido em 28/09). */
@@ -687,14 +756,23 @@ function rotinaEncerramento(){
   S.tickets.forEach(t=>{
     if(t.status==="Aguardando retorno" && t.encerraEm && agora()>=t.encerraEm){
       t.status="Encerrado"; t.encerradoAuto=true; t.encerraEm=null; n++;
-      t.hist.push([fmtDataHora(agora()),"Status alterado de \"Aguardando retorno\" para \"Encerrado\" pelo sistema: 24 horas úteis sem resposta do cliente"]);
+      t.hist.push([fmtDataHora(agora()),"Status alterado de \"Aguardando retorno\" para \"Encerrado\" pelo sistema: 1 dia útil sem resposta do cliente"]);
     }
   });
   return n;
 }
 const today = () => {const d=new Date();return d.toLocaleDateString("pt-BR")};
 const pill = st => `<span class="pill s-${st.split(" ")[0].replace("í","i")}">${esc(st)}</span>`;
-const flags = t => (t.flags.atrasado?`<span class="flag f-atr">Atrasado</span>`:"")+(t.flags.atipico?`<span class="flag f-ati">Atípico</span>`:"");
+const flags = t => (t.flags.atrasado?`<span class="flag f-atr">Atrasado</span>`:"")+(t.flags.atipico?`<span class="flag f-ati">Atípico</span>`:"")+(t.vinculadoA?`<span class="flag f-uni" title="Unificado ao ${esc(t.vinculadoA)}">Unificado → ${esc(t.vinculadoA)}</span>`:"");
+/* 30/09 (item 66): unificar chamados. A plataforma aponta chamados em aberto com o mesmo protocolo do atendimento
+   ou do mesmo cliente; Ouro/Diamante juntam manualmente (histórico, comentários e anexos somados no principal). */
+const normProt = v => (v||"").trim().toLowerCase();
+function duplicadosDe(ref){                        // ref: {id?, cliente, protAt}
+  return S.tickets.filter(x=>x.id!==ref.id && !x.excluido && x.status!=="Encerrado" && !x.vinculadoA && podeChamado("ver",x)
+      && ((normProt(ref.protAt) && normProt(x.protAt)===normProt(ref.protAt)) || (ref.cliente && x.cliente===ref.cliente)))
+    .map(x=>({t:x, motivo: normProt(ref.protAt)&&normProt(x.protAt)===normProt(ref.protAt) ? "mesmo protocolo" : "mesmo cliente"}))
+    .sort((a,b)=>(a.motivo==="mesmo protocolo"?0:1)-(b.motivo==="mesmo protocolo"?0:1));
+}
 const ad = (id,txt="a decidir") => `<span class="ad" role="button" tabindex="0" data-dec="${id}" title="Ver opções em Pontos em aberto">${esc(txt)}</span>`;
 const lvl = n => `<span class="lvl l-${n}">${n}</span>`;
 function toast(msg){document.querySelectorAll(".toast").forEach(x=>x.remove());const el=document.createElement("div");el.className="toast";el.setAttribute("role","status");el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2800)}
@@ -758,8 +836,8 @@ const NAV = [
   {fold:"f-incidentes", t:"Incidentes", e:"☢️"},
   {r:"inc-base", t:"Registro de base", i:"base"},
   {r:"inc-registro", t:"Registro de incidentes", i:"registro"},
-  {r:"incidentes", t:"Painel de incidentes 1", i:"pulso"},
-  {r:"inc-plataformas", t:"Painel de incidentes 2", i:"alert", novo:true},
+  {r:"incidentes", t:NOME_P1, i:"pulso"},
+  ...(PLATAFORMAS_ATIVO?[{r:"inc-plataformas", t:"Painel de incidentes 2", i:"alert", novo:true}]:[]),
   {fold:null},
   {g:"Financeiro", area:"financeiro"},
   {r:"fin-cancelamento", t:"Cancelamento", i:"xcirc"},
@@ -772,9 +850,7 @@ const NAV = [
   {g:"Conta"},
   {r:"perfil", t:"Meu perfil", i:"me", novo:true},
   {r:"fase2", t:"Indicadores avançados", i:"chart", off:true, tag:"Fase 2"},
-  {g:"Protótipo"},
-  {r:"decisoes", t:"Pontos em aberto", i:"q"}
-];
+];   // Pontos em aberto só no protótipo
 /* Monta o menu a partir de NAV + pode(): grupos e subtítulos só aparecem se tiverem algum item permitido. */
 /* Monta o menu a partir de NAV + pode(). Grupos (g) e pastas que abrem e fecham (fold) só aparecem se tiverem algum item permitido.
    A pasta da página atual fica sempre aberta. */
@@ -799,10 +875,10 @@ function menuHTML(cur){
 function vLogin(){
   return `<div class="login"><form class="card stack" id="fLogin" novalidate>
     <div class="brand" style="padding:0"><div class="mark">EJ</div><div><b style="color:var(--ink)">E.J. Desk</b><small style="color:var(--muted)">Central de chamados e suporte técnico</small></div></div>
-    <div class="field"><label for="lgEmail">E-mail corporativo</label><input class="in" id="lgEmail" type="email" value="bruno.silva@exemplo.com.br"></div>
+    <div class="field"><label for="lgEmail">E-mail corporativo</label><input class="in" id="lgEmail" type="email" value="ely.junior@metatelecom.com.br"></div>
     <div class="field"><label for="lgPass">Senha</label><input class="in" id="lgPass" type="password" value="••••••••"></div>
     <span class="errtxt" id="lgErr"></span><button class="btn primary" style="justify-content:center">Entrar</button>
-    <p class="hint">Protótipo visual, sem autenticação real. O acesso será por login e senha próprios do E.J. Desk. Para testar outro perfil, use o e-mail de um usuário cadastrado (ex.: lucas.ribeiro@ ou marina.alves@exemplo.com.br).</p>
+    <p class="hint">Protótipo visual, sem autenticação real. O acesso será por login e senha próprios do E.J. Desk. Para testar outro perfil, use o e-mail de um usuário cadastrado (ex.: daniel.mello@ ou julia.nunes@metatelecom.com.br).</p>
   </form></div>`;
 }
 
@@ -821,17 +897,22 @@ function vAbertura(){
       <div class="field"><label for="abProt">Protocolo do atendimento <i>*</i></label><input class="in mono" id="abProt" required placeholder="Ex.: VIVO-20260923-00000"></div>
       <div class="field"><label for="abCep">CEP da localização da linha <i>*</i></label><input class="in mono" id="abCep" required inputmode="numeric" maxlength="9" placeholder="00000-000"></div>
       <div class="field"><label for="abEq">Quais equipamentos usa? <i>*</i></label><input class="in" id="abEq" required placeholder="Modelo do equipamento e do SIM"></div>
-      <div class="field"><label for="abCmd">Comandos (quando aplicável) <i>*</i></label><input class="in mono" id="abCmd" required placeholder="Ex.: AT+CSQ ou “Não se aplica”"></div>
-      <div class="field" style="grid-column:1/-1"><label for="abFeito">O que já foi feito? <i>*</i></label><textarea class="in" id="abFeito" required placeholder="Testes e tentativas feitos antes de abrir"></textarea></div>
+      <div class="field"><label for="abFeito">O que já foi feito? <i>*</i></label><input class="in" id="abFeito" required placeholder="Testes e tentativas feitos antes de abrir"></div>
+      <div class="field" style="grid-column:1/-1"><label for="abCmd">Comandos (quando aplicável) <i>*</i></label><textarea class="in mono" id="abCmd" required placeholder="Ex.: AT+CSQ&#10;AT+CGDCONT?&#10;ou “Não se aplica”" style="min-height:120px"></textarea></div>
       <div class="field" style="grid-column:1/-1"><label for="abAnx">Anexos (opcional)</label><input class="in" type="file" id="abAnx" multiple accept="image/*,.pdf,.xls,.xlsx,.csv,.txt"><span class="hint">Imagens, PDF, Excel e TXT · até 10 MB por arquivo.</span></div>
       <div class="field"><label for="abQuem">Quem abriu o ticket? <i>*</i></label>
-        <select class="in" id="abQuem" required><option value="">Selecione</option>${S.users.map(u=>`<option ${u.id===S.me?"selected":""}>${esc(u.nome)}</option>`).join("")}</select></div>
+        <select class="in" id="abQuem" required><option value="">Selecione</option>${S.users.filter(u=>!u.desativado).map(u=>`<option ${u.id===S.me?"selected":""}>${esc(u.nome)}</option>`).join("")}</select></div>
       <div class="field"><label for="abCaso">O caso é sobre <i>*</i></label>
         <select class="in" id="abCaso" required><option value="">Selecione</option>${CASOS.map(c=>`<option>${c}</option>`).join("")}</select></div>
-      <div class="field" style="grid-column:1/-1"><label for="abLinha">MSISDN ou ICCID <i id="abLinhaReq" hidden>*</i></label><input class="in mono" id="abLinha" inputmode="numeric" placeholder="Ex.: 5511987654321 (MSISDN) ou 89550000000000000000 (ICCID)">
-        <span class="hint" id="abLinhaHint">Obrigatório quando o caso é de uma operadora M2M ou BL. Formato e validação ${ad("linha_formato")}</span></div>
+      <div class="field"><label for="abCat">Categoria <i>*</i></label>
+        <select class="in" id="abCat" required><option value="">Selecione</option>${CATEGORIAS.map(c=>`<option>${esc(c)}</option>`).join("")}</select></div>
+      <div class="field"><label for="abPrio">Prioridade <i>*</i></label>
+        <select class="in" id="abPrio" required><option value="">Selecione</option>${PRIORIDADES.map(p=>`<option>${p}</option>`).join("")}</select></div>
+      <div class="field" style="grid-column:1/-1"><label for="abLinha">MSISDN ou ICCID <i id="abLinhaReq" hidden>*</i></label><input class="in mono" id="abLinha" inputmode="numeric" placeholder="Ex.: 5511987654321 ou 89550000000000000000, 5511912345678">
+        <span class="hint" id="abLinhaHint">Obrigatório quando o caso é de uma operadora M2M ou BL. Só números: MSISDN com 12 ou 13 dígitos ou ICCID com 19 ou 20. Vários números: separe por vírgula.</span></div>
     </div>
-    <div class="info">O e-mail de retorno é o e-mail cadastrado do cliente. Não precisa ser digitado aqui. A categoria é definida por Ouro/Diamante na triagem. O chamado entra na fila geral.</div>
+    <div id="abDup"></div>
+    <div class="info">O e-mail de retorno é o e-mail cadastrado do cliente. Não precisa ser digitado aqui. Categoria e prioridade são obrigatórias; Ouro/Diamante podem ajustar depois, na triagem. O chamado entra na fila geral.</div>
     <div class="row" style="justify-content:space-between"><span id="abErr" class="errtxt"></span><button class="btn primary">Abrir chamado</button></div>
   </form></div>`;
 }
@@ -841,7 +922,7 @@ function vPainel(){
   return `<div class="page">
   <div class="head"><div class="t"><h1>Painel</h1><p class="muted">Resumo da operação e desempenho da equipe.</p></div></div>
   <div class="kpis">${KPIS.map((k,i)=>`<button class="kpi" data-kpi="${i}"><span class="k"><span class="dot" style="background:${k.c}"></span><span class="label">${k.k}</span></span><span class="n">${k.n}</span></button>`).join("")}</div>
-  <p class="hint">Números ilustrativos. Clique num card para abrir Chamados já filtrado.</p>
+  <p class="hint">Clique num card para abrir Chamados já filtrado.</p>
   <div class="grid2">
     <section class="card pad stack">
       <div class="row" style="justify-content:space-between"><h2>Chamados resolvidos por colaborador</h2>
@@ -868,13 +949,73 @@ function vPainel(){
    Toda ação passa por podeChamado(), a mesma regra usada na página do chamado e nas rotas. */
 const STATUS = ["Novo","Em análise","Aguardando retorno","Resolvido","Encerrado"];
 const STATUS_MANUAL = ["Novo","Em análise","Resolvido","Encerrado"];   // "Aguardando retorno" só pelo envio do retorno
+/* 29/09 (item 42): mudança manual só na sequência do fluxo. Resolver exige a solução aplicada.
+   Encerrar direto: só Diamante, com motivo. Voltar para Novo: só pelo "Reabrir" (Encerrado). */
+function transicao(t, novo){                 // -> {ok, act?, motivo?}
+  const at=t.status;
+  if(novo===at) return {ok:false, motivo:"atual"};
+  if(novo==="Aguardando retorno") return {ok:false, motivo:"Só pelo envio do retorno"};
+  if(at==="Novo" && novo==="Em análise") return {ok:true};
+  if(at==="Em análise" && novo==="Resolvido") return {ok:true, act:"resolver"};
+  if(at==="Novo" && novo==="Resolvido") return {ok:false, motivo:"Passe antes por Em análise"};
+  if(novo==="Encerrado") return S.level==="Diamante" && at!=="Encerrado" ? {ok:true, act:"encerrarDireto"} : {ok:false, motivo:"Pelo retorno ou pela rotina de 1 dia útil"};
+  if(novo==="Novo") return at==="Encerrado" ? {ok:true, act:"reabrir"} : {ok:false, motivo:"Só reabrindo um chamado encerrado"};
+  return {ok:false, motivo:"Fora da sequência do fluxo"};
+}
 const PRIORIDADES = ["Baixa","Normal","Alta","Urgente"];
+/* Anexos: no protótipo o arquivo fica só na memória do navegador (some ao recarregar). Na versão real vai para o armazenamento do servidor. */
+const tipoArq = n => /\.(png|jpe?g|gif|webp|bmp|heic)$/i.test(n)?"img":/\.(mp4|mov|webm|m4v)$/i.test(n)?"video":/\.pdf$/i.test(n)?"pdf":/\.(txt|csv)$/i.test(n)?"txt":/\.xlsx?$/i.test(n)?"xls":"outro";
+const tamArq = b => b>=1048576?(b/1048576).toFixed(1).replace(".",",")+" MB":Math.max(1,Math.round(b/1024))+" KB";
+const PDFJS="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+const carregarPDFjs = () => window.pdfjsLib ? Promise.resolve() : new Promise((ok,er)=>{const sc=document.createElement("script");sc.src=PDFJS+"pdf.min.js";sc.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+"pdf.worker.min.js";ok()};sc.onerror=er;document.head.appendChild(sc)});
+async function mostrarPDF(a, box){           // mostra até 20 páginas do PDF dentro da própria página
+  try{ await carregarPDFjs(); const doc=await pdfjsLib.getDocument({data:new Uint8Array(await (await blobDe(a)).arrayBuffer())}).promise; box.innerHTML="";
+    const n=Math.min(doc.numPages,20);
+    for(let i=1;i<=n;i++){const pg=await doc.getPage(i), vp=pg.getViewport({scale:1.4}), cv=document.createElement("canvas");cv.width=vp.width;cv.height=vp.height;box.appendChild(cv);await pg.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise}
+    if(doc.numPages>n) box.insertAdjacentHTML("beforeend",`<p class="small">Mostrando ${n} de ${doc.numPages} páginas. Baixe o arquivo para ver o resto.</p>`);
+  }catch(e){ box.innerHTML=`<p class="small">Não foi possível mostrar este PDF aqui. Use "Baixar".</p>`; }
+}
+async function mostrarPlanilha(a, box){     // prévia: primeiras 60 linhas de cada aba (até 5 abas)
+  if(/\.xls$/i.test(a.nome)){ box.innerHTML=`<p class="small">Arquivos .xls antigos não têm prévia. Use "Baixar" e abra no Excel.</p>`; return; }
+  try{ await carregarExcelJS(); const wb=new ExcelJS.Workbook(); await wb.xlsx.load(await (await blobDe(a)).arrayBuffer());
+    const txt=c=>{if(c.isMerged&&c.master!==c) return ""; const v=c.value; if(v==null) return ""; if(v instanceof Date) return (v.getUTCHours()||v.getUTCMinutes())?v.toLocaleString("pt-BR",{timeZone:"UTC",dateStyle:"short",timeStyle:"short"}):v.toLocaleDateString("pt-BR",{timeZone:"UTC"}); if(typeof v==="object") return v.result!=null?String(v.result):v.text!=null?v.text:v.richText?v.richText.map(r=>r.text).join(""):""; return String(v)};
+    box.innerHTML = wb.worksheets.slice(0,5).map(ws=>{const rows=[];ws.eachRow({includeEmpty:false},(r,i)=>{if(rows.length<60)rows.push(r)});
+      const nc=Math.min(20,Math.max(1,...rows.map(r=>r.cellCount)));
+      return `<div class="xls-sheet"><b>${esc(ws.name)}</b>${ws.rowCount>60?` <span class="small muted">(primeiras 60 de ${ws.rowCount} linhas)</span>`:""}<div class="tbl-wrap"><table>${rows.map(r=>`<tr>${Array.from({length:nc},(_,j)=>`<td>${esc(txt(r.getCell(j+1)))}</td>`).join("")}</tr>`).join("")}</table></div></div>`}).join("") || `<p class="small">Planilha vazia.</p>`;
+  }catch(e){ box.innerHTML=`<p class="small">Não foi possível mostrar esta planilha aqui. Use "Baixar" e abra no Excel.</p>`; }
+}
+async function salvarArquivo(nome, blob){
+  const dl = window.claude ? await claude.use("downloads").catch(()=>null) : null;
+  if(dl){ try{ await dl.save({filename:nome, data:blob}); } catch(e){ toast(e?.code==="declined"?"Download cancelado":e?.code==="rejected_extension"?"Esse tipo de arquivo não pode ser baixado aqui":"Não foi possível baixar o arquivo aqui."); } }
+  else { const x=document.createElement("a"); x.href=URL.createObjectURL(blob); x.download=nome; document.body.appendChild(x); x.click(); setTimeout(()=>{URL.revokeObjectURL(x.href);x.remove()},1000); }
+}
+function guardarArquivos(files, por){
+  return files.map(f=>{const a={id:"a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), nome:f.name, tipo:tipoArq(f.name), tam:f.size, url:URL.createObjectURL(f), blob:f, por, em:stamp(), txt:null};
+    if(a.tipo==="txt") f.text().then(x=>{a.txt=x.slice(0,1200);if(S.route==="detalhe")render()}).catch(()=>{});
+    return a;});
+}
+const ICO_ARQ = {pdf:`<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M6 2h9l5 5v15H6z" fill="#FDE7E4" stroke="#B42318" stroke-width="1.4"/><text x="13" y="17" text-anchor="middle" font-size="6" font-weight="700" fill="#B42318" font-family="sans-serif">PDF</text></svg>`,
+  txt:`<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M6 2h9l5 5v15H6z" fill="#EEF1F6" stroke="#5B6677" stroke-width="1.4"/><path d="M9 11h8M9 14h8M9 17h5" stroke="#5B6677" stroke-width="1.3"/></svg>`,
+  outro:`<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M6 2h9l5 5v15H6z" fill="#EEF1F6" stroke="#5B6677" stroke-width="1.4"/></svg>`};
+function anexosHTML(t){
+  const arqs=t.arqs||[], semArq=t.anexos.filter(n=>!arqs.some(a=>a.nome===n));
+  if(!arqs.length&&!semArq.length) return "";
+  const card=a=>{const baixar=`<button class="btn sm" data-anxdl="${a.id}">Baixar</button>`, meta=`<span class="small muted">${tamArq(a.tam)} · ${esc(a.por)} · ${esc(a.em)}</span>`;
+    const topo = a.tipo==="img" ? `<button class="anx-thumb" data-anx="${a.id}" title="Ampliar"><img src="${a.url}" alt="${esc(a.nome)}"></button>`
+      : a.tipo==="video" ? `<video class="anx-video" src="${a.url}" controls preload="metadata"></video>`
+      : a.tipo==="txt" ? `<pre class="anx-txt">${a.txt==null?"Carregando…":esc(a.txt)+(a.txt.length>=1200?"\n…":"")}</pre>`
+      : `<div class="anx-ico">${a.tipo==="xls"?ICO_XLS.replace('width="16" height="16"','width="40" height="40"'):ICO_ARQ[a.tipo]||ICO_ARQ.outro}</div>`;
+    const abrir = (a.tipo==="pdf"||a.tipo==="txt"||a.tipo==="img"||a.tipo==="video"||a.tipo==="xls") ? `<button class="btn sm" data-anx="${a.id}">Abrir</button>` : "";
+    return `<div class="anx">${topo}<div class="anx-info"><b title="${esc(a.nome)}">${esc(a.nome)}</b>${meta}<span class="row" style="gap:6px">${abrir}${baixar}</span></div></div>`;};
+  return `<div style="grid-column:1/-1"><span class="label">Anexos · ${arqs.length+semArq.length}</span>
+    <div class="anx-grid">${arqs.map(card).join("")}${semArq.map(n=>`<div class="anx"><div class="anx-ico">${ICO_ARQ.outro}</div><div class="anx-info"><b>${esc(n)}</b><span class="small muted">Arquivo de exemplo, sem conteúdo no protótipo.</span></div></div>`).join("")}</div></div>`;
+}
 const prioBadge = p => `<span class="prio p-${esc(p||"Normal")}" title="Prioridade">${esc(p||"Normal")}</span>`;
 const respNome = t => t.resp==="—" ? "Fila geral" : t.resp;
 const dataAbertura = t => {const m=/(\d{2})\/(\d{2})\/(\d{4})/.exec(t.aberto||"");return m?new Date(+m[3],+m[2]-1,+m[1]):null};
 const setoresVisiveis = () => Object.keys(SETORES).filter(k=>temArea(k));
 /* Usuários que podem ser responsáveis (28/09): acesso ao setor do chamado (ou Diamante) e nível Ouro ou acima. */
-const elegiveis = t => S.users.filter(u=>u.ativo && (u.setor===t.setor || u.nivel===NIVEL_TODOS_SETORES) && LV[u.nivel]>=LV.Ouro);
+const elegiveis = t => S.users.filter(u=>u.ativo && !u.desativado && (u.setor===t.setor || u.nivel===NIVEL_TODOS_SETORES) && LV[u.nivel]>=LV.Ouro);
 const LF_VAZIO = {q:"", status:"", cat:"", resp:"", prio:"", setor:"", de:"", ate:"", atrasados:false, rapido:"todos"};
 const lf = rota => (S.lf[rota] ||= {...LF_VAZIO});
 
@@ -991,9 +1132,9 @@ function abrirPop(btn){
   const tipo=btn.dataset.pop; let itens=[];
   const it=(label,act,extra={})=>`<button role="menuitem" class="${extra.cls||""}" data-act="${act}" data-id="${t.id}" ${extra.val!==undefined?`data-val="${esc(extra.val)}"`:""} ${extra.dis?"disabled":""}>${label}${extra.hint?`<small>${extra.hint}</small>`:""}</button>`;
   if(tipo==="status"){
-    itens=STATUS.map(s=>s==="Aguardando retorno"
-      ? it(pill(s),"setStatus",{val:s,dis:true,hint:"Só pelo envio do retorno"})
-      : it(pill(s)+(s===t.status?' <span class="muted small">atual</span>':""),"setStatus",{val:s,dis:s===t.status}));
+    itens=STATUS.map(s=>{const tr=transicao(t,s);
+      return s===t.status ? it(pill(s)+' <span class="muted small">atual</span>',"setStatus",{val:s,dis:true})
+        : it(pill(s),"setStatus",{val:s,dis:!tr.ok,hint:tr.ok?(tr.act==="resolver"?"Pede a solução aplicada":tr.act==="encerrarDireto"?"Diamante · pede o motivo":tr.act==="reabrir"?"Pede o motivo":""):tr.motivo})});
   } else if(tipo==="resp"){
     itens=[it("Fila geral (sem responsável)","setResp",{val:"—",dis:t.resp==="—"}), ...elegiveis(t).map(u=>it(`${esc(u.nome)} <span class="muted small">${esc(u.nivel)}</span>`,"setResp",{val:u.nome,dis:u.nome===t.resp}))];
   } else {
@@ -1001,7 +1142,7 @@ function abrirPop(btn){
     itens.push(it("Abrir chamado","abrir"));
     if(trat&&!enc) itens.push(it("Atribuir responsável","atribuir"));
     if(trat) itens.push(it("Alterar status","alterarStatus"));
-    if(trat&&(t.status==="Novo"||t.status==="Em análise")) itens.push(it("Marcar como resolvido","resolver"));
+    if(trat&&t.status==="Em análise") itens.push(it("Marcar como resolvido","resolver"));
     if(trat&&!enc) itens.push(it(t.flags.atipico?"Remover marcação de atípico":"Marcar como atípico","atipico"));
     if(!ex&&!enc&&podeChamado("retorno",t)) itens.push(it("Preparar retorno ao cliente","retornoPrep"));
     itens.push(it("Extrair em PDF","pdf"));
@@ -1027,8 +1168,10 @@ function avisoTimer(t){
     <button class="btn sm" data-act="avancar24" title="Só existe no protótipo">Protótipo: avançar até o prazo</button></div></div>`;
 }
 
+const bronzeD = () => S.level==="Bronze";
 function vDetalhe(){
   const t = tk(S.sel); if(!t) return vNegado();
+  if(window.prepararTxt) prepararTxt(t);
   const c = cli(t.cliente);
   const ouro = !t.excluido && podeChamado("tratar",t), dia = podeChamado("excluir",t);
   const enc = t.status==="Encerrado";
@@ -1036,7 +1179,7 @@ function vDetalhe(){
   if(t.excluido){ acts.push(`<div class="info">Excluído por ${esc(t.excluido.por)} em ${esc(t.excluido.quando)}. Motivo: ${esc(t.excluido.motivo)}</div>`) }
   else if(ouro){
     if(t.status==="Novo") acts.push(`<button class="btn block" data-act="assumir">Assumir chamado</button>`);
-    if(t.status==="Novo"||t.status==="Em análise") acts.push(`<button class="btn primary block" data-act="resolver">Marcar como resolvido</button>`);
+    if(t.status==="Em análise") acts.push(`<button class="btn primary block" data-act="resolver">Marcar como resolvido</button>`);
     if(!enc) acts.push(`<button class="btn block" data-act="atribuir">Atribuir responsável</button>`);
     acts.push(`<button class="btn block" data-act="alterarStatus">Alterar status</button>`);
     if(!enc) acts.push(`<button class="btn block" data-act="atipico">${t.flags.atipico?"Remover marcação de atípico":"Marcar como atípico"}</button>`);
@@ -1049,7 +1192,9 @@ function vDetalhe(){
 
   const bronze = S.level==="Bronze";
   const podeComentar = podeChamado("comentar",t);
-  const aviso = (!t.excluido && t.status==="Aguardando retorno" && t.encerraEm) ? avisoTimer(t) : (t.encerradoAuto && enc ? `<div class="info">Este chamado foi encerrado automaticamente porque o cliente não respondeu em 24 horas úteis.</div>` : "");
+  const dups = (!t.excluido && !enc && !t.vinculadoA && !bronzeD()) ? duplicadosDe(t) : [];
+  const uniBanner = t.vinculadoA ? `<div class="info">Este chamado foi unificado ao <button class="linkbtn" data-open="${esc(t.vinculadoA)}">${esc(t.vinculadoA)}</button>. Histórico, comentários e anexos foram levados para lá.</div>` : (t.unificados&&t.unificados.length ? `<div class="info">Chamados unificados neste: ${t.unificados.map(i=>`<button class="linkbtn" data-open="${esc(i)}">${esc(i)}</button>`).join(", ")}.</div>` : "");
+  const aviso = uniBanner + ((!t.excluido && t.status==="Aguardando retorno" && t.encerraEm) ? avisoTimer(t) : (t.encerradoAuto && enc ? `<div class="info">Este chamado foi encerrado automaticamente porque o cliente não respondeu em 1 dia útil.</div>` : ""));
   const abas = [["info","Informações"],["cliente","Cliente"],["hist",`Histórico <span class="cnt">${t.hist.length}</span>`]].concat(bronze?[]:[["com",`Comentários <span class="cnt">${t.coments.length}</span>`]]);
   const aba = abas.some(a=>a[0]===S.tab)?S.tab:"info";
   const catOpts = t.setor==="financeiro" ? Object.values(FIN_TIPOS).map(x=>x.nome) : ["Sem categoria",...CATEGORIAS];
@@ -1077,9 +1222,9 @@ function vDetalhe(){
           <div><span class="label">CEP da linha</span><span class="mono">${val(t.cep)}</span></div>
           <div><span class="label">MSISDN ou ICCID</span><span class="mono">${val(t.linha)}</span></div>
           <div><span class="label">Equipamentos</span><span>${val(t.equip)}</span></div>
-          <div><span class="label">Comandos</span><span class="mono">${val(t.comandos)}</span></div>
+          <div><span class="label">Comandos</span><span class="mono" style="white-space:pre-wrap">${val(t.comandos)}</span></div>
           <div style="grid-column:1/-1"><span class="label">O que já foi feito</span><span>${val(t.feito)}</span></div>
-          ${t.anexos.length?`<div style="grid-column:1/-1"><span class="label">Anexos</span><span>${t.anexos.map(esc).join(" · ")}</span></div>`:""}
+          ${anexosHTML(t)}
         </div>
       </section>
       ${t.solucao?`<section class="card pad stack"><h2>Resolução</h2><p>${esc(t.solucao)}</p>${t.obs?`<p class="muted small">Observações finais: ${esc(t.obs)}</p>`:""}</section>`:""}
@@ -1106,6 +1251,8 @@ function vDetalhe(){
     <aside class="stack">
       ${bronze?`<div class="info">Consulta apenas. Para qualquer ajuste, fale com a equipe de suporte.</div>`:`<section class="card pad stack"><h2>Ações</h2>${acts.join("")}
         <p class="hint">As ações seguem o setor do chamado e o seu nível de acesso. Reabertura é sempre manual, pela plataforma.</p></section>`}
+      ${dups.length?`<section class="card pad stack"><h2>Possíveis duplicados · ${dups.length}</h2><p class="small muted">Chamados em aberto com o mesmo protocolo do atendimento ou do mesmo cliente.</p>
+        ${dups.map(d=>`<div class="dup-item"><span class="row" style="gap:6px"><button class="linkbtn mono" data-open="${d.t.id}">${d.t.id}</button>${pill(d.t.status)}<span class="small muted">${esc(d.motivo)}</span></span><span class="small">${esc(d.t.titulo)}</span>${ouro&&podeChamado("tratar",d.t)?`<button class="btn sm" data-act="unificarChamado" data-id="${t.id}" data-outro="${d.t.id}" data-motivo="${esc(d.motivo)}">Juntar a este chamado</button>`:""}</div>`).join("")}</section>`:""}
     </aside>
   </div></div>`;
 }
@@ -1159,12 +1306,12 @@ const OPERADORAS = () => { const all=[...new Set(CASOS.map(operadoraDe).filter(B
 /* Gráfico geral (28/09): todas as operadoras em % da base, por turno. Só entra quem tem base cadastrada.
    Clique no card da operadora = só ela; chips da legenda = seleção de várias. */
 function graficoGeral(ops){
-  const comBase=ops.filter(o=>S.incBase[o]), semBase=ops.filter(o=>!S.incBase[o]);
+  const comBase=ops.filter(o=>!isBL(o)&&S.incBase[o]), semBase=ops.filter(o=>!isBL(o)&&!S.incBase[o]);
   const filtro=(S.incFiltro||[]).filter(o=>comBase.includes(o)), vis=filtro.length?filtro:comBase;
   const ult=o=>S.incidentes.filter(r=>r.operadora===o).sort(ordReg).pop();
-  const agoraInst=comBase.filter(o=>{const u=ult(o);return u&&instavel(u)});
+  const agoraInst=ops.map(o=>{const u=ult(o), n=u&&nivelDe(u);return n&&n.k!=="normal"?{o,n}:null}).filter(Boolean);
   const chips=`<div class="chips" role="group" aria-label="Filtrar operadoras"><button class="chip ${filtro.length?"":"on"}" data-gfil="*">Todas</button>${comBase.map(o=>`<button class="chip ${filtro.includes(o)?"on":""}" data-gfil="${esc(o)}" style="--c:${opCor(o)}" aria-pressed="${filtro.includes(o)}">${opMarca(o,16)}${esc(o)}</button>`).join("")}</div>`;
-  const cab=`<div class="row" style="justify-content:space-between"><h2>Gráfico geral das operadoras</h2>${agoraInst.length?`<span class="pill s-Instavel">Instabilidade agora: ${agoraInst.map(esc).join(", ")}</span>`:comBase.length?`<span class="pill s-Resolvido">Nenhuma instabilidade no último registro</span>`:""}</div>`;
+  const cab=`<div class="row" style="justify-content:space-between"><h2>Gráfico geral das operadoras</h2>${agoraInst.length?`<span class="row" style="gap:6px">${agoraInst.map(x=>`<span class="pill ${x.n.cls}">${esc(x.o)} · ${esc(x.n.nome)}</span>`).join("")}</span>`:comBase.length?`<span class="pill n-normal">Todas normais no último registro</span>`:""}</div>`;
   if(!comBase.length) return `<section class="card pad stack">${cab}<div class="empty">O gráfico geral usa o <b>Registro de base</b>. Ele aparece quando a base das operadoras estiver preenchida.<br><button class="btn sm" data-go="inc-base" style="margin-top:10px">Ir para Registro de base</button></div></section>`;
   const regs=S.incidentes.filter(r=>vis.includes(r.operadora)&&!r.antigo);   // exemplos antigos (aviso de 3 meses) ficam fora do gráfico
   const slots=[...new Set(regs.map(r=>r.dia+"|"+r.turno))].sort((a,b)=>{const[x,y]=a.split("|"),[z,w]=b.split("|");return x<z?-1:x>z?1:ORD_TURNO[y]-ORD_TURNO[w]}).slice(-9);
@@ -1172,18 +1319,17 @@ function graficoGeral(ops){
   if(slots.length){
     const W=760,H=240,P={l:46,r:18,t:14,b:40};
     const vals=regs.filter(r=>slots.includes(r.dia+"|"+r.turno)).map(pct);
-    const lo=Math.max(0,Math.floor(Math.min(S.incLimite-10,...vals)/5)*5), hi=Math.max(105,Math.ceil(Math.max(...vals)/5)*5);
+    const lo=Math.max(0,Math.floor(Math.min(65,...vals)/5)*5), hi=Math.max(105,Math.ceil(Math.max(...vals)/5)*5);
     const xs=i=>P.l+(slots.length===1?(W-P.l-P.r)/2:i*(W-P.l-P.r)/(slots.length-1)), ys=v=>P.t+(H-P.t-P.b)*(1-(v-lo)/(hi-lo));
-    const ticks=[lo,Math.round((lo+hi)/2/5)*5,100,hi].filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b);
+    const ticks=[lo,70,85,95,100,hi].filter((v,i,a)=>v>=lo&&a.indexOf(v)===i).sort((a,b)=>a-b);
+    const faixas=[[100,95,"normal"],[95,85,"atencao"],[85,70,"possivel"],[70,lo,"instab"]].filter(f=>f[0]>lo);
     const linhas=vis.map(o=>{const pts=slots.map((sl,i)=>{const[d,t]=sl.split("|");const r=S.incidentes.find(x=>x.operadora===o&&x.dia===d&&x.turno===t);return r?{i,r}:null}).filter(Boolean);
       if(!pts.length) return "";
       return `<g><polyline points="${pts.map(p=>xs(p.i).toFixed(1)+","+ys(pct(p.r)).toFixed(1)).join(" ")}" fill="none" stroke="${opCor(o)}" stroke-width="2"/>
-        ${pts.map(p=>{const inst=instavel(p.r);return `<circle cx="${xs(p.i)}" cy="${ys(pct(p.r))}" r="${inst?5:3.5}" fill="${opCor(o)}" ${inst?'stroke="var(--atrasado)" stroke-width="2.5"':""}><title>${esc(o)} · ${esc(p.r.dia.slice(8,10)+"/"+p.r.dia.slice(5,7))} ${TURNOS[p.r.turno].nome} · ${p.r.linhas.toLocaleString("pt-BR")} de ${S.incBase[o].toLocaleString("pt-BR")} (${pct(p.r)}%)${inst?" · instabilidade":""}</title></circle>`}).join("")}</g>`}).join("");
+        ${pts.map(p=>{const n=nivelDe(p.r), alerta=n&&n.k!=="normal";return `<circle cx="${xs(p.i)}" cy="${ys(pct(p.r))}" r="${alerta?5:3.5}" fill="${opCor(o)}" ${alerta?`stroke="${NIVEL_COR[n.k]}" stroke-width="2.5"`:""}><title>${esc(o)} · ${esc(p.r.dia.slice(8,10)+"/"+p.r.dia.slice(5,7))} ${TURNOS[p.r.turno].nome} · ${p.r.linhas.toLocaleString("pt-BR")} de ${baseDe(p.r).toLocaleString("pt-BR")} (${pct(p.r)}%, queda de ${queda(p.r)}%) · ${n?n.nome:""}</title></circle>`}).join("")}</g>`}).join("");
     svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Linhas online em % da base, por turno" style="width:100%;height:auto">
       ${ticks.map(v=>`<line x1="${P.l}" x2="${W-P.r}" y1="${ys(v)}" y2="${ys(v)}" stroke="var(--line)"/><text x="${P.l-8}" y="${ys(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--mono)">${v}%</text>`).join("")}
-      <rect x="${P.l}" y="${ys(S.incLimite)}" width="${W-P.l-P.r}" height="${Math.max(0,ys(lo)-ys(S.incLimite))}" fill="var(--atrasado)" opacity=".06"/>
-      <line x1="${P.l}" x2="${W-P.r}" y1="${ys(S.incLimite)}" y2="${ys(S.incLimite)}" stroke="var(--atrasado)" stroke-dasharray="4 4"/>
-      <text x="${W-P.r}" y="${ys(S.incLimite)+13}" text-anchor="end" font-size="10.5" fill="var(--atrasado)">abaixo de ${S.incLimite}%: instabilidade</text>
+      ${faixas.map(([a,b,k])=>`<rect x="${P.l}" y="${ys(a)}" width="${W-P.l-P.r}" height="${Math.max(0,ys(Math.max(b,lo))-ys(a))}" fill="${NIVEL_COR[k]}" opacity=".07"/><text x="${W-P.r-4}" y="${ys(a)+12}" text-anchor="end" font-size="10" fill="${NIVEL_COR[k]}">${esc(NIVEIS_INC.find(n=>n.k===k).nome)}</text>`).join("")}
       ${linhas}
       ${slots.map((sl,i)=>{const[d,t]=sl.split("|");return `<text x="${xs(i)}" y="${H-22}" text-anchor="middle" font-size="10.5" fill="var(--muted)" font-family="var(--mono)">${d.slice(8,10)}/${d.slice(5,7)}</text><text x="${xs(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--muted)">${TURNOS[t].curto}</text>`}).join("")}
     </svg>`;
@@ -1191,10 +1337,26 @@ function graficoGeral(ops){
   return `<section class="card pad stack">${cab}
     ${chips}
     ${svg}
-    <p class="hint">Cada linha mostra as linhas online da operadora em % da própria base, turno a turno, para comparar operadoras de tamanhos diferentes. Clique num card acima para ver só aquela operadora, ou selecione várias aqui na legenda.${semBase.length?` Sem base cadastrada (fora do gráfico): ${semBase.map(esc).join(", ")}.`:""}</p>
+    <p class="hint">Cada linha mostra as linhas online da operadora em % da própria base (a base do dia do registro), turno a turno. Faixas pela queda: Normal até 5% · Atenção até 15% · Possível instabilidade até 30% · Instabilidade acima de 30%. Clique num card acima para ver só aquela operadora, ou selecione várias aqui na legenda. As operadoras BL ficam fora do gráfico, porque a situação delas é informada manualmente.${semBase.length?` Sem base cadastrada: ${semBase.map(esc).join(", ")}.`:""}</p>
   </section>`;
 }
 
+/* Análise do mês (pedido do Patrick Moura, 29/09): quanto cada operadora costuma cair,
+   para decidir se uma queda de, por exemplo, 1.000 linhas na Algar ou 200 na Claro é normal. */
+function analiseMes(ops){
+  const d=new Date(agora()), ini=diaISO(new Date(d.getFullYear(),d.getMonth(),1).getTime()), rot=MESES[d.getMonth()]+"/"+d.getFullYear();
+  const linhas=ops.filter(o=>!isBL(o)).map(o=>{const rr=S.incidentes.filter(r=>r.operadora===o&&r.dia>=ini&&queda(r)!=null);
+    if(!rr.length) return `<tr><td><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(o,18)}${esc(o)}</span></td><td colspan="6" class="small muted">Sem registros com base neste mês</td></tr>`;
+    const qs=rr.map(queda), perd=rr.map(r=>Math.max(0,baseDe(r)-r.linhas)), med=qs.reduce((a,b)=>a+b,0)/qs.length;
+    const cont=k=>rr.filter(r=>nivelDe(r).k===k).length, mx=rr.reduce((a,r)=>queda(r)>queda(a)?r:a);
+    return `<tr><td><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(o,18)}${esc(o)}</span></td><td class="mono">${rr.length}</td>
+      <td class="mono">${med.toFixed(1).replace(".",",")}% <span class="small muted">(${Math.round(perd.reduce((a,b)=>a+b,0)/perd.length).toLocaleString("pt-BR")} linhas)</span></td>
+      <td class="mono">${String(queda(mx)).replace(".",",")}% <span class="small muted">${esc(mx.dia.slice(8,10)+"/"+mx.dia.slice(5,7))} ${TURNOS[mx.turno].curto}</span></td>
+      ${NIVEIS_INC.map(n=>`<td class="mono" style="${cont(n.k)&&n.k!=="normal"?`color:${NIVEL_COR[n.k]};font-weight:600`:""}">${cont(n.k)}</td>`).join("")}</tr>`}).join("");
+  return `<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Análise do mês · ${rot}</h2><span class="small muted">o que é queda normal para cada operadora</span></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Operadora</th><th>Registros</th><th>Queda média</th><th>Maior queda</th>${NIVEIS_INC.map(n=>`<th title="${esc(n.nome)}">${({normal:"Normal",atencao:"Atenção",possivel:"Possível",instab:"Instab."})[n.k]}</th>`).join("")}</tr></thead><tbody>${linhas}</tbody></table></div>
+    <p class="hint">Queda = quanto faltou para chegar à base do dia. Se uma operadora vive em "Atenção" sem problema real, a faixa dela pode ser ajustada (revisão das faixas após 1 mês). BL fica fora, porque a situação é manual.</p></section>`;
+}
 function vIncidentes(modo="painel"){
   limparHistorico();
   const ops=OPERADORAS(), abertos=S.tickets.filter(t=>!t.excluido && podeChamado("ver",t) && !["Resolvido","Encerrado"].includes(t.status));
@@ -1202,8 +1364,10 @@ function vIncidentes(modo="painel"){
   const max=Math.max(1,...ops.map(o=>porOp[o].length));
   const sel=S.incOp && ops.includes(S.incOp) ? S.incOp : (ops.find(o=>S.incidentes.some(r=>r.operadora===o))||ops[0]);
   const regsOp=S.incidentes.filter(r=>r.operadora===sel).sort(ordReg);
-  const podeReg=pode("incidentes.registrar");
+  const podeReg=pode("incidentes.registrar"), podeBase=pode("incidentes.base");
   const hoje=diaISO(agora()), dia=S.incDia||hoje, turno=S.incTurno||turnoAtual();
+  const baseInfo = S.incBaseEm ? `Base atualizada em ${esc(S.incBaseEm)} por ${esc(S.incBasePor)}` : "Base ainda não atualizada";
+  const podeCorrigir = r => S.level==="Diamante" || (LV[S.level]>=LV.Ouro && r.dia===hoje);
   // gráfico: registros por turno da operadora selecionada + linha da base
   let graf=`<div class="empty">Sem registros de linhas online para ${esc(sel)}.</div>`;
   const regs=regsOp.slice(-12), base=S.incBase[sel];
@@ -1223,16 +1387,17 @@ function vIncidentes(modo="painel"){
   }
   const regDia=(o)=>S.incidentes.find(r=>r.operadora===o&&r.dia===dia&&r.turno===turno);
   return `<div class="page">
-  <div class="head"><div class="t"><span class="label">Incidentes</span><h1>${({painel:"Painel de incidentes 1",registro:"Registro de incidentes",base:"Registro de base"})[modo]}</h1><p class="muted">${({painel:"Situação de cada operadora: linhas online comparadas com a base e chamados abertos.",registro:"Linhas M2M online de cada operadora, em 3 turnos por dia.",base:"Quantidade de linhas de cada operadora usada para apontar instabilidade."})[modo]}</p></div>
+  <div class="head"><div class="t"><span class="label">Incidentes</span><h1>${({painel:NOME_P1,registro:"Registro de incidentes",base:"Registro de base"})[modo]}</h1><p class="muted">${({painel:"Situação de cada operadora: linhas online comparadas com a base e chamados abertos.",registro:"Linhas M2M online de cada operadora, em 3 turnos por dia.",base:"Quantidade de linhas de cada operadora usada para apontar instabilidade."})[modo]}</p></div>
     <span class="row" style="gap:8px;flex-wrap:nowrap">${modo==="painel"?botoesExport("op"):""}<a class="btn" href="https://downdetector.com.br/" target="_blank" rel="noopener" title="Relatos de usuários em tempo real: ajuda a saber se a falha é isolada ou geral">Abrir o Downdetector ↗</a></span></div>
   ${modo==="painel"?avisoRetencao("op"):""}
   ${modo==="painel"?`
-  <div class="opgrid">${ops.map(o=>{const u=S.incidentes.filter(x=>x.operadora===o).sort(ordReg).pop(), n=porOp[o].length, inst=u&&instavel(u);return `<button class="opcard ${(S.incFiltro||[]).includes(o)?"on":""}" data-incop="${esc(o)}" style="--c:${opCor(o)}" aria-pressed="${(S.incFiltro||[]).includes(o)}">
-      <span class="row" style="justify-content:space-between;width:100%;flex-wrap:nowrap"><span class="row" style="gap:8px;flex-wrap:nowrap">${opMarca(o)}<b>${esc(o)}</b></span>${inst?`<span class="pill s-Instavel">Instabilidade</span>`:n?`<span class="pill s-Em">${n} aberto${n>1?"s":""}</span>`:`<span class="small muted" style="white-space:nowrap">sem chamados</span>`}</span>
-      <span class="small muted">${u?`${TURNOS[u.turno].nome} ${esc(u.dia.slice(8,10)+"/"+u.dia.slice(5,7))}: <b class="mono" style="color:${inst?"var(--atrasado)":"var(--ink)"}">${u.linhas.toLocaleString("pt-BR")}</b>${S.incBase[o]?` de ${S.incBase[o].toLocaleString("pt-BR")} (${pct(u)}%)`:" · sem base"}`:"Sem registro de linhas"}</span></button>`}).join("")}</div>`:""}
+  <div class="opgrid">${ops.map(o=>{const u=S.incidentes.filter(x=>x.operadora===o).sort(ordReg).pop(), n=porOp[o].length, nv=u&&nivelDe(u), inst=nv&&nv.k!=="normal";return `<button class="opcard ${(S.incFiltro||[]).includes(o)?"on":""}" data-incop="${esc(o)}" style="--c:${opCor(o)}" aria-pressed="${(S.incFiltro||[]).includes(o)}">
+      <span class="row" style="justify-content:space-between;width:100%;flex-wrap:nowrap"><span class="row" style="gap:8px;flex-wrap:nowrap">${opMarca(o)}<b>${esc(o)}</b></span>${inst?pillNivel(nv):n?`<span class="pill s-Em">${n} aberto${n>1?"s":""}</span>`:`<span class="small muted" style="white-space:nowrap">sem chamados</span>`}</span>
+      <span class="small muted">${u?(u.nivel?`${TURNOS[u.turno].nome} ${esc(u.dia.slice(8,10)+"/"+u.dia.slice(5,7))}: <b>${esc(nv.nome)}</b> · informado manualmente`:`${TURNOS[u.turno].nome} ${esc(u.dia.slice(8,10)+"/"+u.dia.slice(5,7))}: <b class="mono" style="color:${inst?NIVEL_COR[nv.k]:"var(--ink)"}">${u.linhas.toLocaleString("pt-BR")}</b>${baseDe(u)?` de ${baseDe(u).toLocaleString("pt-BR")} (queda ${queda(u)}%)`:" · sem base"}`):(isBL(o)?"Situação informada manualmente":"Sem registro de linhas")}</span></button>`}).join("")}</div>
+  <p class="hint">${baseInfo}.</p>`:""}
 
-  ${modo==="registro"?`<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Registrar linhas online</h2><span class="row" style="gap:6px">${ad("incidentes_acesso","quem registra")}${ad("inc_turnos","regras do turno")}</span></div>
-    <p class="small muted">3 registros por dia para cada operadora, um em cada turno: <b>Manhã</b> 08:00–11:30 · <b>Tarde</b> 12:00–16:00 · <b>Noite</b> 16:30–23:30. O registro pode ser feito a qualquer hora; o turno escolhido é o que conta.</p>
+  ${modo==="registro"?`<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Registrar linhas online</h2><span class="small muted">Prata ou acima registram</span></div>
+    <p class="small muted">3 registros por dia para cada operadora, todos os dias (inclusive fim de semana e feriado), um em cada turno: <b>Manhã</b> 08:00–11:30 · <b>Tarde</b> 12:00–16:00 · <b>Noite</b> 16:30–23:30. O registro pode ser feito a qualquer hora; o turno escolhido é o que conta. Nas operadoras <b>BL</b>, que não têm dado de conexão, a equipe escolhe a situação.</p>
     ${podeReg?`<form id="fInc" class="stack" style="gap:12px">
       <div class="frow">
         <label class="fsel"><span>Dia</span><input class="in" type="date" id="incDia" value="${esc(dia)}" max="${hoje}"></label>
@@ -1240,40 +1405,45 @@ function vIncidentes(modo="painel"){
       </div>
       <div class="tbl-wrap"><table class="increg"><thead><tr><th>Operadora</th><th>Base de linhas</th><th>Linhas online · ${TURNOS[turno].nome}</th><th>Situação</th></tr></thead><tbody>
         ${ops.map((o,i)=>{const r=regDia(o);return `<tr><td><span class="row" style="gap:8px;flex-wrap:nowrap">${opMarca(o,20)}${esc(o)}</span></td>
-          <td class="mono">${S.incBase[o]?S.incBase[o].toLocaleString("pt-BR"):'<span class="muted">sem base</span>'}</td>
-          <td>${r?`<span class="mono">${r.linhas.toLocaleString("pt-BR")}</span> <span class="small muted">registrado por ${esc(r.por)}</span>`:`<input class="in mono" type="number" min="0" data-incl="${esc(o)}" id="incL${i}" placeholder="—" style="max-width:150px;padding:5px 8px">`}</td>
+          <td class="mono">${isBL(o)?'<span class="muted" style="font-family:var(--sans)">manual</span>':S.incBase[o]?S.incBase[o].toLocaleString("pt-BR"):'<span class="muted">sem base</span>'}</td>
+          <td>${r?`${r.nivel?'<span class="small muted">—</span>':`<span class="mono">${r.linhas.toLocaleString("pt-BR")}</span>`} <span class="small muted">registrado por ${esc(r.por)}</span>`:isBL(o)?`<select class="in" data-incn="${esc(o)}" id="incN${i}" style="max-width:220px;padding:5px 8px"><option value="">— situação —</option>${NIVEIS_INC.map(n=>`<option value="${n.k}">${esc(n.nome)}</option>`).join("")}</select>`:`<input class="in mono" type="number" min="0" data-incl="${esc(o)}" id="incL${i}" placeholder="—" style="max-width:150px;padding:5px 8px">`}</td>
           <td>${r?situacao(r):'<span class="small muted">a registrar</span>'}</td></tr>`}).join("")}
       </tbody></table></div>
       <div class="row" style="justify-content:space-between"><span class="errtxt" id="incErr"></span><button class="btn primary">Registrar turno</button></div>
-    </form>`:`<p class="small muted">Você pode consultar os registros. O registro de linhas online fica com Ouro e Diamante.</p>`}
+    </form>`:`<p class="small muted">Você pode consultar os registros. O registro de linhas online fica com Prata ou acima.</p>`}
   </section>`:""}
 
   ${modo==="painel"?`${graficoGeral(ops)}
   <div>
     <section class="card pad stack"><h2>Chamados abertos por operadora</h2>
       <div class="bars">${ops.map(o=>`<div class="bar"><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(o,18)}${esc(o)}</span><div class="track"><div class="fill" style="width:${porOp[o].length/max*100}%;background:${opCor(o)}"></div></div><span class="mono" style="text-align:right">${porOp[o].length}</span></div>`).join("")}</div>
-      <p class="hint">Conta chamados Novos, Em análise e Aguardando retorno que você pode ver, pela operadora do campo "O caso é sobre" ${ad("op_logos","logos")}.</p>
+      <p class="hint">Conta chamados Novos, Em análise e Aguardando retorno que você pode ver, pela operadora do campo "O caso é sobre".</p>
     </section>
   </div>
-  ${(()=>{const h=histOp();return `<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Histórico de instabilidades · ${h.length}</h2><span class="small muted">últimos 3 meses · base usada ${ad("hist_base","a decidir")}</span></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Dia</th><th>Turno</th><th>Operadora</th><th>Linhas online</th><th>% da base</th><th>Registrado por</th><th>Apagado em</th></tr></thead><tbody>
-    ${h.map(r=>`<tr><td class="mono">${esc(r.dia.split("-").reverse().join("/"))}</td><td>${TURNOS[r.turno].nome}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(r.operadora,18)}${esc(r.operadora)}</span></td><td class="mono">${r.linhas.toLocaleString("pt-BR")} <span class="small muted">de ${S.incBase[r.operadora].toLocaleString("pt-BR")}</span></td><td class="mono" style="color:var(--atrasado)">${pct(r)}%</td><td>${esc(r.por)}</td><td class="mono small">${new Date(venceEm(refOp(r))).toLocaleDateString("pt-BR")}</td></tr>`).join("")||`<tr><td colspan="7"><div class="empty">Nenhuma instabilidade nos últimos 3 meses.${Object.keys(S.incBase).length?"":" Preencha a base em Registro de base para calcular."}</div></td></tr>`}
+  ${analiseMes(ops)}
+  ${(()=>{const h=histOp();return `<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Histórico de instabilidades · ${h.length}</h2><span class="small muted">últimos 3 meses · entram ${NIVEIS_HIST.map(k=>NIVEIS_INC.find(n=>n.k===k).nome).join(" e ")}</span></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Dia</th><th>Turno</th><th>Operadora</th><th>Linhas online</th><th>Queda</th><th>Situação</th><th>Registrado por</th><th>Apagado em</th></tr></thead><tbody>
+    ${h.map(r=>`<tr><td class="mono">${esc(r.dia.split("-").reverse().join("/"))}</td><td>${TURNOS[r.turno].nome}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(r.operadora,18)}${esc(r.operadora)}</span></td><td class="mono">${r.nivel?'<span class="small muted" style="font-family:var(--sans)">manual (BL)</span>':`${r.linhas.toLocaleString("pt-BR")} <span class="small muted">de ${baseDe(r).toLocaleString("pt-BR")}</span>`}</td><td class="mono">${r.nivel?"—":queda(r)+"%"}</td><td>${situacao(r)}</td><td>${esc(r.por)}</td><td class="mono small">${new Date(venceEm(refOp(r))).toLocaleDateString("pt-BR")}</td></tr>`).join("")||`<tr><td colspan="8"><div class="empty">Nenhuma instabilidade nos últimos 3 meses.${Object.keys(S.incBase).length?"":" Preencha a base em Registro de base para calcular."}</div></td></tr>`}
     </tbody></table></div></section>`})()}
   ${arquivoMensal()}`:""}
 
-  ${modo==="base"?`<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Base de linhas por operadora</h2>${ad("inc_base","base e limite")}</div>
-    <p class="small muted">A base é a quantidade de linhas M2M ativas de cada operadora. Um registro abaixo de <b>${S.incLimite}%</b> da base aponta instabilidade. Exemplo: base de 50.000 linhas na Algar e 40.000 online (80%) → instabilidade na Algar. A base definitiva será criada em breve; enquanto isso, pode ser preenchida aqui para testar.</p>
-    ${podeReg?`<form id="fBase" class="stack" style="gap:10px"><div class="basegrid">${ops.map((o,i)=>`<label class="fsel"><span class="row" style="gap:6px;flex-wrap:nowrap;text-transform:none;letter-spacing:0">${opMarca(o,16)}${esc(o)}</span><input class="in mono" type="number" min="0" id="incB${i}" data-incb="${esc(o)}" value="${S.incBase[o]||""}" placeholder="sem base"></label>`).join("")}</div>
-      <div class="row" style="justify-content:space-between"><label class="fsel"><span>Alerta abaixo de (% da base)</span><input class="in mono" type="number" min="1" max="100" id="incLim" value="${S.incLimite}" style="max-width:110px"></label><span class="row"><button type="button" class="btn sm" data-act="baseExemplo" title="Só no protótipo">Protótipo: preencher exemplo</button><button class="btn">Salvar base</button></span></div></form>`
-    :`<div class="basegrid">${ops.map(o=>`<div class="small"><span class="row" style="gap:6px">${opMarca(o,16)}${esc(o)}</span><span class="mono">${S.incBase[o]?S.incBase[o].toLocaleString("pt-BR"):"sem base"}</span></div>`).join("")}</div>`}
+  ${modo==="base"?`<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Base de linhas por operadora</h2><span class="small muted">${baseInfo}</span></div>
+    <p class="small muted">A base é a quantidade de linhas M2M ativas de cada operadora. O Diamante atualiza uma vez por mês. Cada registro de turno guarda a base daquele dia, então mudar a base não altera o histórico. As operadoras BL não usam base: a situação delas é escolhida no registro.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>Situação</th><th>Queda em relação à base</th><th>Exemplo com base de 50.000</th></tr></thead><tbody>
+      ${NIVEIS_INC.map((n,i)=>{const de=i?NIVEIS_INC[i-1].ate:0;return `<tr><td>${pillNivel(n)}</td><td class="mono">${n.ate===Infinity?`acima de ${de}%`:`${i?"acima de "+de+"% até ":"até "}${n.ate}%`}</td><td class="mono small">${n.ate===Infinity?`menos de ${(50000*(1-de/100)).toLocaleString("pt-BR")} online`:`a partir de ${(50000*(1-n.ate/100)).toLocaleString("pt-BR")} online`}</td></tr>`}).join("")}
+    </tbody></table></div>
+    <p class="hint">Faixas propostas pelo Patrick Moura (29/09). Começam iguais para todas as operadoras; a Análise do mês no painel ajuda a ajustar por operadora.</p>
+    ${podeBase?`<form id="fBase" class="stack" style="gap:10px"><div class="basegrid">${ops.filter(o=>!isBL(o)).map((o,i)=>`<label class="fsel"><span class="row" style="gap:6px;flex-wrap:nowrap;text-transform:none;letter-spacing:0">${opMarca(o,16)}${esc(o)}</span><input class="in mono" type="number" min="0" id="incB${i}" data-incb="${esc(o)}" value="${S.incBase[o]||""}" placeholder="sem base"></label>`).join("")}</div>
+      <div class="row" style="justify-content:flex-end"><span class="row"><button type="button" class="btn sm" data-act="baseExemplo" title="Só no protótipo">Protótipo: preencher exemplo</button><button class="btn">Salvar base</button></span></div></form>`
+    :`<div class="basegrid">${ops.filter(o=>!isBL(o)).map(o=>`<div class="small"><span class="row" style="gap:6px">${opMarca(o,16)}${esc(o)}</span><span class="mono">${S.incBase[o]?S.incBase[o].toLocaleString("pt-BR"):"sem base"}</span></div>`).join("")}</div><p class="small muted">Só o Diamante atualiza a base.${podeReg?` <button type="button" class="btn sm" data-act="baseExemplo" title="Só no protótipo">Protótipo: preencher exemplo</button>`:""}</p>`}
   </section>`:""}
 
   ${modo==="registro"?`<section class="card pad stack"><h2>Histórico de registros</h2>
-    <div class="tbl-wrap"><table><thead><tr><th>Dia</th><th>Turno</th><th>Operadora</th><th>Linhas online</th><th>% da base</th><th>Situação</th><th>Registrado por</th></tr></thead><tbody>
-    ${S.incidentes.slice().sort(ordReg).reverse().map(r=>`<tr><td class="mono">${esc(r.dia.split("-").reverse().join("/"))}</td><td>${TURNOS[r.turno].nome}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(r.operadora,18)}${esc(r.operadora)}</span></td><td class="mono">${r.linhas.toLocaleString("pt-BR")}</td><td class="mono">${S.incBase[r.operadora]?pct(r)+"%":"—"}</td><td>${situacao(r)}</td><td>${esc(r.por)} <span class="small muted mono">${esc(r.em.slice(11,16))}</span>${r.exemplo?' <span class="small muted">(exemplo)</span>':""}</td></tr>`).join("")||`<tr><td colspan="7"><div class="empty">Nenhum registro ainda.</div></td></tr>`}
+    <div class="tbl-wrap"><table><thead><tr><th>Dia</th><th>Turno</th><th>Operadora</th><th>Linhas online</th><th>Base do dia</th><th>Queda</th><th>Situação</th><th>Registrado por</th><th></th></tr></thead><tbody>
+    ${S.incidentes.slice().sort(ordReg).reverse().map(r=>`<tr><td class="mono">${esc(r.dia.split("-").reverse().join("/"))}</td><td>${TURNOS[r.turno].nome}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(r.operadora,18)}${esc(r.operadora)}</span></td><td class="mono">${r.nivel?"—":r.linhas.toLocaleString("pt-BR")}</td><td class="mono">${r.nivel?"—":baseDe(r)?baseDe(r).toLocaleString("pt-BR"):"—"}</td><td class="mono">${queda(r)!=null?queda(r)+"%":"—"}</td><td>${situacao(r)}</td><td>${esc(r.por)} <span class="small muted mono">${esc(r.em.slice(11,16))}</span>${r.exemplo?' <span class="small muted">(exemplo)</span>':""}${r.corr&&r.corr.length?` <span class="flag f-ati" title="${esc(r.corr.map(c=>c.em+" · "+c.por+": "+c.de+" → "+c.para+(c.motivo?" · motivo: "+c.motivo:"")).join("\n"))}">corrigido</span>`:""}</td><td>${podeReg&&podeCorrigir(r)?`<button class="btn sm" data-act="incCorrigir" data-rid="${r.id}">Corrigir</button>`:""}</td></tr>`).join("")||`<tr><td colspan="9"><div class="empty">Nenhum registro ainda.</div></td></tr>`}
     </tbody></table></div>
   </section>`:""}
-  <div class="note"><div>Protótipo da tela, montado a partir da planilha usada hoje. Os registros de exemplo são ilustrativos. Quem vê e quem registra ${ad("incidentes_acesso")} · Regras do turno ${ad("inc_turnos")} · Base e limite de alerta ${ad("inc_base")}</div></div>
+  <div class="note"><div>Protótipo da tela, montado a partir da planilha usada hoje. Os registros de exemplo são ilustrativos. Faixas iguais para todas as operadoras até a revisão de 1 mês</div></div>
   </div>`;
 }
 
@@ -1316,31 +1486,32 @@ function avisoRetencao(escopo){
   const v=vencendo(escopo), n=v.op.length+v.plat.length;
   const desde=new Date(somaMeses(agora(),-RET_MESES)).toLocaleDateString("pt-BR");
   const prox=[...v.op.map(r=>venceEm(refOp(r))),...v.plat.map(x=>venceEm(refPlat(x)))].sort((a,b)=>a-b)[0];
-  return n ? `<div class="note warn-ret"><div><b>${n} incidente${n>1?"s":""} ${n>1?"completam":"completa"} 3 meses ${prox?`em ${new Date(prox).toLocaleDateString("pt-BR")}`:"em breve"}</b> e ${n>1?"serão apagados":"será apagado"} da plataforma. Exporte o histórico antes para guardar no Excel. ${ad("hist_aviso","aviso a decidir")}</div><button class="btn sm primary" data-act="histExport" data-esc="${escopo==="plat"?"plat":escopo==="op"?"op":"tudo"}">${ICO_XLS}Exportar agora</button></div>`
-    : `<p class="hint">A plataforma guarda o histórico dos últimos 3 meses (desde ${desde}). Os mais antigos são apagados; avisamos ${AVISO_DIAS} dias antes ${ad("hist_prazo","prazo a decidir")}.</p>`;
+  return n ? `<div class="note warn-ret"><div><b>${n} incidente${n>1?"s":""} ${n>1?"completam":"completa"} 3 meses ${prox?`em ${new Date(prox).toLocaleDateString("pt-BR")}`:"em breve"}</b> e ${n>1?"serão apagados":"será apagado"} da plataforma. Exporte o histórico antes para guardar no Excel.</div><button class="btn sm primary" data-act="histExport" data-esc="${escopo==="plat"?"plat":escopo==="op"?"op":"tudo"}">${ICO_XLS}Exportar agora</button></div>`
+    : `<p class="hint">A plataforma guarda o histórico dos últimos 3 meses (desde ${desde}). Os mais antigos são apagados; avisamos ${AVISO_DIAS} dias antes.</p>`;
 }
 function arquivoMensal(){
   const d=new Date(agora()), meses=[];
   for(let i=0;i<=RET_MESES;i++){const m=new Date(d.getFullYear(),d.getMonth()-i,1);meses.push(m)}
   const lim=somaMeses(agora(),-RET_MESES);
-  return `<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Arquivo mensal em Excel</h2>${ad("hist_arquivo","quando e onde guardar")}</div>
-    <p class="small muted">Todo mês a plataforma gera um Excel com o histórico do mês anterior (Resumo, Operadoras e Plataformas), para guardar depois que os dados saírem daqui.</p>
+  return `<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Arquivo mensal em Excel</h2><span class="small muted">baixar todo dia 1</span></div>
+    <p class="small muted">Todo dia 1, baixe aqui o Excel do mês anterior (${PLATAFORMAS_ATIVO?"Resumo, Operadoras e Plataformas":"Resumo e Operadoras"}) e salve na pasta compartilhada do Suporte. A gravação automática na pasta fica para quando houver integração com a Microsoft.</p>
     <div class="tbl-wrap"><table><thead><tr><th>Mês</th><th>Situação</th><th></th></tr></thead><tbody>
     ${meses.map((m,i)=>{const ini=m.getTime(), fim=new Date(m.getFullYear(),m.getMonth()+1,1).getTime(), rot=MESES[m.getMonth()]+"/"+m.getFullYear(), ger=new Date(fim).toLocaleDateString("pt-BR");
       const parcial=ini<lim;
-      return `<tr><td><b>${rot}</b></td><td class="small">${i===0?`Em andamento · será gerado em ${ger}`:`Gerado automaticamente em ${ger}${parcial?' <span class="muted">· nesta tela só restam os dias ainda guardados</span>':""}`}</td>
+      return `<tr><td><b>${rot}</b></td><td class="small">${i===0?`Em andamento · disponível em ${ger}`:`Disponível desde ${ger}${parcial?' <span class="muted">· nesta tela só restam os dias ainda guardados</span>':""}`}</td>
         <td style="text-align:right">${i===0?"":`<button class="btn sm" data-act="histExport" data-esc="tudo" data-de="${ini}" data-ate="${fim}" data-rot="${rot.replace("/","-")}">${ICO_XLS}Baixar Excel</button>`}</td></tr>`}).join("")}
     </tbody></table></div>
-    <p class="hint">No protótipo o arquivo é montado na hora com os dados que ainda estão guardados.</p>
+    <p class="hint">O arquivo é montado na hora com os dados que ainda estão guardados.</p>
   </section>`;
 }
 const ICO_XLS = `<svg class="ico-xls" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="3" fill="#1D7A45"/><path d="M5.5 7h9M5.5 10h9M5.5 13h9M9 5.5v9" stroke="#fff" stroke-width="1.3" opacity=".9"/></svg>`;
-const botoesExport = esc => `<button class="btn" data-pop="export" data-esc="${esc}" aria-haspopup="menu">${ICO_XLS}Exportar <span class="car">▾</span></button>`;
+const botoesExport = esc => !PLATAFORMAS_ATIVO ? `<button class="btn" data-act="histExport" data-esc="op" title="Resumo + aba Operadoras">${ICO_XLS}Exportar</button>` : `<button class="btn" data-pop="export" data-esc="${esc}" aria-haspopup="menu">${ICO_XLS}Exportar <span class="car">▾</span></button>`;
 
 /* Exportação em Excel (ExcelJS, carregado só no clique). */
 const carregarExcelJS = () => window.ExcelJS ? Promise.resolve() : new Promise((ok,er)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";sc.onload=ok;sc.onerror=er;document.head.appendChild(sc)});
 const xData = ms => {const d=new Date(ms);return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),d.getHours(),d.getMinutes()))};
 async function exportarHistorico(escopo, per={}){
+  if(!PLATAFORMAS_ATIVO) escopo="op";              // Painel 2 oculto: exporta só operadoras
   if(!pode("incidentes")){toast("Você não tem permissão para esta ação");return}
   limparHistorico();
   try{ toast("Gerando Excel…"); await carregarExcelJS(); }catch(e){ toast("Não foi possível carregar o gerador de Excel. Verifique a conexão."); return; }
@@ -1357,18 +1528,18 @@ async function exportarHistorico(escopo, per={}){
     rows.forEach((r,k)=>{const row=ws.getRow(linha0+1+k);r.forEach((v,i)=>{const cel=row.getCell(i+1);cel.value=v;cel.border=borda;cel.alignment={vertical:"top",wrapText:!!cols[i].wrap};if(cols[i].fmt)cel.numFmt=cols[i].fmt;if(k%2)cel.fill={type:"pattern",pattern:"solid",fgColor:{argb:C.zebra}};const cc=cor&&cor(cols[i].k,v);if(cc){cel.fill={type:"pattern",pattern:"solid",fgColor:{argb:cc[0]}};cel.font={bold:true,color:{argb:cc[1]}}}})});
     if(!rows.length){ws.mergeCells(linha0+1,1,linha0+1,cols.length);const c=ws.getCell(linha0+1,1);c.value="Nenhum registro no período.";c.font={italic:true,color:{argb:C.muted}};}
     return linha0+1+Math.max(rows.length,1);};
-  const corSit=(k,v)=>k!=="sit"?null:v==="Fora do ar"?[C.verm,C.vermT]:v==="Instabilidade"?[C.amar,C.amarT]:v==="Normalizado"?[C.verde,C.verdeT]:v==="Em andamento"?[C.amar,C.amarT]:null;
+  const corSit=(k,v)=>k!=="sit"?null:v==="Fora do ar"?[C.verm,C.vermT]:v==="Instabilidade"?["FFC0262D","FFFFFFFF"]:v==="Possível instabilidade"?["FFFFE8D9","FFC2410C"]:v==="Atenção"?[C.amar,C.amarT]:v==="Normalizado"?[C.verde,C.verdeT]:v==="Em andamento"?[C.amar,C.amarT]:null;
   const larg=(ws,cols)=>{cols.forEach((c,i)=>ws.getColumn(i+1).width=c.w);ws.pageSetup={orientation:"landscape",paperSize:9,fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.4,right:.4,top:.5,bottom:.5,header:.2,footer:.2}}};
 
   // Resumo
   const rs=wb.addWorksheet("Resumo",{views:[{showGridLines:false}]}); larg(rs,[{w:34},{w:16},{w:18},{w:18},{w:22}]); cab(rs,"Histórico de instabilidades",5);
-  const info=[["Período",perTxt],["Gerado em",stamp()],["Gerado por",me().nome],["Guardado na plataforma","3 meses"],...(escopo!=="plat"?[["Limite de instabilidade (Painel 1)",`abaixo de ${S.incLimite}% da base`]]:[])];
+  const info=[["Período",perTxt],["Gerado em",stamp()],["Gerado por",me().nome],["Guardado na plataforma","3 meses"],...(escopo!=="plat"?[["Situações (queda em relação à base)","Normal até 5% · Atenção até 15% · Possível instabilidade até 30% · Instabilidade acima de 30%"],["Entram no histórico",NIVEIS_HIST.map(k=>NIVEIS_INC.find(n=>n.k===k).nome).join(" e ")+" · BL: situação informada manualmente"]]:[])];
   info.forEach(([a,b],i)=>{const r=rs.getRow(4+i);r.getCell(1).value=a;r.getCell(1).font={bold:true,color:{argb:C.muted}};r.getCell(2).value=b;rs.mergeCells(4+i,2,4+i,5)});
   let ln=4+info.length+1;
   if(escopo!=="plat"){
-    rs.getCell(ln,1).value="Operadoras (Painel de incidentes 1)";rs.getCell(ln,1).font={bold:true,size:12};ln++;
-    const oc=[{h:"Operadora",k:"op"},{h:"Tipo",k:"tipo"},{h:"Turnos com instabilidade",k:"n"},{h:"Menor % da base",k:"min",fmt:"0.0%"},{h:"Última instabilidade",k:"ult",fmt:"dd/mm/yyyy"}];
-    const linhas=OPERADORAS().map(o=>{const rr=ops.filter(r=>r.operadora===o);return rr.length?[o,/ BL$/.test(o)?"BL":"M2M",rr.length,Math.min(...rr.map(r=>pct(r)))/100,xData(msDia(rr[0].dia))]:null}).filter(Boolean);
+    rs.getCell(ln,1).value="Operadoras ("+NOME_P1+")";rs.getCell(ln,1).font={bold:true,size:12};ln++;
+    const oc=[{h:"Operadora",k:"op"},{h:"Tipo",k:"tipo"},{h:"Turnos no histórico",k:"n"},{h:"Maior queda",k:"max",fmt:"0.0%"},{h:"Última ocorrência",k:"ult",fmt:"dd/mm/yyyy"}];
+    const linhas=OPERADORAS().map(o=>{const rr=ops.filter(r=>r.operadora===o);if(!rr.length)return null;const qs=rr.map(queda).filter(v=>v!=null);return [o,isBL(o)?"BL":"M2M",rr.length,qs.length?Math.max(...qs)/100:"manual",xData(msDia(rr[0].dia))]}).filter(Boolean);
     ln=tabela(rs,ln,oc,linhas)+1;
   }
   if(escopo!=="op"){
@@ -1380,9 +1551,9 @@ async function exportarHistorico(escopo, per={}){
   rs.getCell(ln,1).value="Documento interno E.J. Desk.";rs.getCell(ln,1).font={italic:true,size:9,color:{argb:C.muted}};
 
   if(escopo!=="plat"){
-    const cols=[{h:"Data",k:"dia",w:12,fmt:"dd/mm/yyyy"},{h:"Turno",k:"turno",w:10},{h:"Operadora",k:"op",w:16},{h:"Tipo",k:"tipo",w:8},{h:"Linhas online",k:"l",w:14,fmt:"#,##0"},{h:"Base",k:"b",w:12,fmt:"#,##0"},{h:"% da base",k:"pct",w:11,fmt:"0.0%"},{h:"Limite",k:"lim",w:9,fmt:"0%"},{h:"Situação",k:"sit",w:15},{h:"Observação",k:"obs",w:34,wrap:true},{h:"Registrado por",k:"por",w:18},{h:"Registrado em",k:"em",w:17}];
-    const ws=wb.addWorksheet("Operadoras",{views:[{state:"frozen",ySplit:3,showGridLines:false}]}); larg(ws,cols); cab(ws,"Painel de incidentes 1 · Instabilidades das operadoras",cols.length);
-    const fim=tabela(ws,3,cols,ops.map(r=>[xData(msDia(r.dia)),TURNOS[r.turno].nome,r.operadora,/ BL$/.test(r.operadora)?"BL":"M2M",r.linhas,S.incBase[r.operadora],pct(r)/100,S.incLimite/100,"Instabilidade",r.obs||"",r.por,r.em]),corSit);
+    const cols=[{h:"Data",k:"dia",w:12,fmt:"dd/mm/yyyy"},{h:"Turno",k:"turno",w:10},{h:"Operadora",k:"op",w:16},{h:"Tipo",k:"tipo",w:8},{h:"Linhas online",k:"l",w:14,fmt:"#,##0"},{h:"Base do dia",k:"b",w:12,fmt:"#,##0"},{h:"% da base",k:"pct",w:11,fmt:"0.0%"},{h:"Queda",k:"q",w:9,fmt:"0.0%"},{h:"Situação",k:"sit",w:22},{h:"Forma",k:"forma",w:12},{h:"Observação",k:"obs",w:34,wrap:true},{h:"Registrado por",k:"por",w:18},{h:"Registrado em",k:"em",w:17}];
+    const ws=wb.addWorksheet("Operadoras",{views:[{state:"frozen",ySplit:3,showGridLines:false}]}); larg(ws,cols); cab(ws,NOME_P1+" · Instabilidades das operadoras",cols.length);
+    const fim=tabela(ws,3,cols,ops.map(r=>{const man=!!r.nivel;return [xData(msDia(r.dia)),TURNOS[r.turno].nome,r.operadora,isBL(r.operadora)?"BL":"M2M",man?"—":r.linhas,man?"—":baseDe(r),man?"—":pct(r)/100,man?"—":queda(r)/100,nivelDe(r).nome,man?"Manual":"Automática",(r.obs||"")+(r.corr&&r.corr.length?(r.obs?" · ":"")+"Corrigido: "+r.corr.map(c=>c.de+" → "+c.para+" ("+c.por+")").join("; "):""),r.por,r.em]}),corSit);
     if(ops.length) ws.autoFilter={from:{row:3,column:1},to:{row:fim-1,column:cols.length}};
   }
   if(escopo!=="op"){
@@ -1445,10 +1616,10 @@ function vRetorno(){
     const corpo = t.rascunho ? t.rascunho.corpo : textoRetorno(t);
     right = `<form id="fRet" class="stack">
       <div class="row" style="justify-content:space-between"><div class="row"><span class="mono">${t.id}</span>${pill(t.status)}</div><button type="button" class="btn sm" data-open="${t.id}">Abrir chamado</button></div>
-      <div class="mail"><dl class="mh"><dt>De</dt><dd class="mono">${esc(S.noreply)}</dd><dt>Para</dt><dd>${esc(c.email)} <span class="muted small">· do cadastro de ${esc(c.nome)}</span></dd><dt>Assunto</dt><dd><input class="in" id="retAss" value="${esc(t.rascunho?t.rascunho.assunto:"Chamado "+t.id+" — retorno do suporte")}" style="padding:5px 8px"></dd></dl>
+      <div class="mail"><dl class="mh"><dt>De</dt><dd class="mono">${esc(S.noreply)}</dd><dt>Responder para</dt><dd class="mono">${esc(S.replyTo)} <span class="muted small" style="font-family:var(--sans)">· respostas caem no hub ${ad("email_retorno","criação com a TI")}</span></dd><dt>Para</dt><dd>${esc(c.email)} <span class="muted small">· do cadastro de ${esc(c.nome)}</span></dd><dt>Assunto</dt><dd><input class="in" id="retAss" value="${esc(t.rascunho?t.rascunho.assunto:"Chamado "+t.id+" — retorno do suporte")}" style="padding:5px 8px"></dd></dl>
       <div style="padding:12px 14px"><label class="small muted" for="retCorpo">Mensagem</label><textarea class="in" id="retCorpo" style="min-height:240px;margin-top:6px">${esc(corpo)}</textarea></div></div>
-      <div class="timer"><div class="small">Depois do envio, o chamado fica <b>Aguardando retorno</b> por 24 horas úteis. Se o cliente não responder nesse prazo, ele é encerrado automaticamente.</div></div>
-      <div class="row" style="justify-content:flex-end">${t.rascunho?`<span class="small muted" style="margin-right:auto">Texto preparado por ${esc(t.rascunho.por)} em ${esc(t.rascunho.em)}</span>`:""}${podeChamado("retorno",t)?`<button class="btn primary">Enviar retorno e aguardar 24h</button>`:""}</div>
+      <div class="timer"><div class="small">Depois do envio, o chamado fica <b>Aguardando retorno</b> por 1 dia útil. Se o cliente não responder nesse prazo, ele é encerrado automaticamente.</div></div>
+      <div class="row" style="justify-content:flex-end">${t.rascunho?`<span class="small muted" style="margin-right:auto">Texto preparado por ${esc(t.rascunho.por)} em ${esc(t.rascunho.em)}</span>`:""}${podeChamado("retorno",t)?`<button class="btn primary">Enviar retorno e aguardar 1 dia útil</button>`:""}</div>
     </form>`;
   }
   return `<div class="page">
@@ -1463,7 +1634,7 @@ function vRetorno(){
     <div class="tbl-wrap"><table><thead><tr><th>Protocolo</th><th>Cliente</th><th>Encerra em</th><th>Faltam</th></tr></thead><tbody>
     ${espera.map(x=>`<tr class="click" data-open="${x.id}"><td class="mono">${x.id}</td><td>${esc(cli(x.cliente).nome)}</td><td class="mono">${fmtDataHora(x.encerraEm)}</td><td class="mono">${falta(x.encerraEm)}</td></tr>`).join("")}
     </tbody></table></div></section>`:""}
-  <div class="info">O envio usa o endereço no-reply do E.J. Desk. O cliente não responde pelo e-mail; se ele entrar em contato pelos canais de atendimento em até 24 horas úteis, a equipe registra a resposta no chamado. Sem resposta, o chamado é encerrado automaticamente. Depois de encerrado, Ouro/Diamante ainda podem reabrir.</div>
+  <div class="info">O envio usa o endereço no-reply do E.J. Desk. O cliente não responde pelo e-mail; se ele entrar em contato pelos canais de atendimento em até 1 dia útil, a equipe registra a resposta no chamado. Sem resposta, o chamado é encerrado automaticamente. Depois de encerrado, Ouro/Diamante ainda podem reabrir.</div>
   </div>`;
 }
 
@@ -1483,7 +1654,7 @@ function vUsuarios(){
   return `<div class="page">
   <div class="head"><div class="t"><h1>Usuários</h1><p class="muted">Disponível apenas para o nível Diamante.</p></div><button class="btn primary" data-act="convidar">+ Convidar usuário</button></div>
   <section class="card"><div class="tbl-wrap"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Nível de acesso</th><th>Setor</th><th>Status</th><th></th></tr></thead><tbody>
-  ${S.users.map(u=>`<tr><td>${esc(u.nome)}</td><td>${esc(u.email)}</td><td>${lvl(u.nivel)}</td><td>${esc(SETORES[u.setor]?.nome||"—")}</td><td>${u.ativo?`<span class="pill s-Resolvido">Ativo</span>`:`<span class="pill s-Encerrado">Convite enviado</span>`}</td><td><button class="btn sm" data-act="editUser" data-uid="${u.id}">Editar</button></td></tr>`).join("")}
+  ${S.users.map(u=>`<tr><td>${esc(u.nome)}</td><td>${esc(u.email)}</td><td>${lvl(u.nivel)}</td><td>${esc(SETORES[u.setor]?.nome||"—")}</td><td>${u.desativado?`<span class="pill s-Excluido" title="Desativado por ${esc(u.desativado.por)} em ${esc(u.desativado.em)}">Desativado</span>`:u.ativo?`<span class="pill s-Resolvido">Ativo</span>`:`<span class="pill s-Encerrado">Convite enviado</span>`}</td><td><button class="btn sm" data-act="editUser" data-uid="${u.id}">Editar</button></td></tr>`).join("")}
   </tbody></table></div></section>
   <p class="hint">Níveis atribuídos aqui são ilustrativos. A distribuição real entre Bronze, Prata, Ouro e Diamante fica a critério do coordenador. ${S.users.length} de 10 colaboradores da equipe cadastrados neste protótipo.</p>
   <div class="info">O <b>Setor</b> define as áreas do menu e o <b>Nível de acesso</b> define o que a pessoa pode fazer dentro delas. Diamante acessa todos os setores; os demais níveis veem só o próprio setor, além de Conta.</div>
@@ -1521,8 +1692,8 @@ function vConfig(){
       </div>
       
     </section>
-    <section class="card pad stack" style="grid-column:1/-1"><div class="row" style="justify-content:space-between"><h2>Prazo por categoria</h2>${ad("expediente","horário de expediente")}</div>
-      <p class="small muted">Tempo até o chamado ser marcado como Atrasado, contado em horas úteis a partir da abertura. Decidido em 28/09: 24 horas úteis. O valor pode ser ajustado por categoria. Expediente usado no protótipo: segunda a sexta, 08h às 18h, sem feriados.</p>
+    <section class="card pad stack" style="grid-column:1/-1"><div class="row" style="justify-content:space-between"><h2>Prazo por categoria</h2><span class="small muted">seg–sex, 08h–18h</span></div>
+      <p class="small muted">Tempo até o chamado ser marcado como Atrasado, contado em horas úteis a partir da abertura. Decidido em 29/09: 1 dia útil (10 horas de expediente). O valor pode ser ajustado por categoria, em horas de expediente. Expediente usado no protótipo: segunda a sexta, 08h às 18h, sem feriados.</p>
       <div class="tbl-wrap"><table><thead><tr><th>Categoria</th><th>Prazo (horas úteis)</th></tr></thead><tbody>${CATEGORIAS.map((c,i)=>`<tr><td>${esc(c)}</td><td><input class="in mono" id="sla${i}" data-sla="${esc(c)}" type="number" min="1" placeholder="a definir" value="${esc((S.sla||{})[c]||PRAZO_ATRASO_PADRAO)}" style="max-width:140px;padding:5px 8px"></td></tr>`).join("")}</tbody></table></div>
     </section>
   </div></div>`;
@@ -1535,7 +1706,7 @@ function vPerfil(){
   <div class="grid2">
     <section class="card pad stack"><div class="row" style="gap:16px;align-items:center">${avatarHTML(u,72,u.foto?"":"background:var(--primary);color:var(--primary-ink);font-size:22px")}<div><h2>${esc(u.nome)}</h2><p class="small muted">${esc(u.cargo)}</p>
         <div class="foto-acoes"><label class="btn sm" for="fotoIn" tabindex="0">${u.foto?"Trocar foto":"Enviar foto"}</label><input type="file" id="fotoIn" accept="image/jpeg,image/png,image/webp" hidden>${u.foto?`<button class="btn sm" data-act="fotoRemover">Remover foto</button>`:""}</div>
-        <p class="small muted" style="margin-top:4px">JPG, PNG ou WEBP até 5 MB. ${ad("foto_regras","regras a decidir")}</p></div></div>
+        <p class="small muted" style="margin-top:4px">JPG, PNG ou WEBP até 5 MB.</p></div></div>
       <dl class="kv"><dt>E-mail</dt><dd>${esc(u.email)}</dd><dt>Nível de acesso</dt><dd>${lvl(S.level)} ${S.level!==u.nivel?`<span class="small muted">(simulado)</span>`:""}</dd><dt>Setor</dt><dd>${esc(SETORES[S.setor].nome)} ${S.setor!==u.setor?`<span class="small muted">(simulado)</span>`:""}</dd><dt>Senha</dt><dd><button class="btn sm" data-act="senha">Alterar senha</button></dd></dl>
     </section>
     ${u.setor!=="suporte"?`<section class="card pad stack"><h2>Evolução</h2><p class="small muted">A gamificação conta chamados resolvidos do Suporte. Participação do ${esc(SETORES[u.setor].nome)} ${ad("fin_gamificacao")}</p></section>`:`<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Evolução</h2><span class="small muted">Reinicia a cada ano</span></div>
@@ -1549,7 +1720,7 @@ function vPerfil(){
 function vDecisoes(){
   const groups = [...new Set(DECISOES.map(d=>d.g))];
   const nd = DECISOES.filter(d=>d.st==="d").length;
-  const stl = {d:["st-d","A decidir"], ok:["st-ok","Definido"], f:["st-f","Futuro"], i:["st-f","Ideia a avaliar"]};
+  const stl = {d:["st-d","A decidir"], ok:["st-ok","Definido"], f:["st-f","Futuro"], i:["st-f","Ideia a avaliar"], r:["st-f","Recusado"]};
   return `<div class="page">
   <div class="head"><div class="t"><h1>Pontos em aberto</h1><p class="muted">${nd} itens aguardando decisão. Tudo marcado como <span class="ad" style="cursor:default">a decidir</span> no protótipo aponta para cá.</p></div></div>
   ${groups.map(g=>`<section class="stack"><h2>${esc(g)}</h2>
@@ -1570,7 +1741,7 @@ function render(){
   const sideScroll=document.querySelector(".side")?.scrollTop||0;
   rotinaEncerramento();
   const root = $("#root");
-  if(!S.logged){root.innerHTML = vLogin(); return}
+  if(!S.logged){ if(window.ejdTelaLogin) ejdTelaLogin(); else root.innerHTML = vLogin(); return}
   // Guarda única de rota: menu, clique e URL passam por aqui.
   fecharPop();
   // Guarda única: páginas por pode(); chamado pelo setor responsável dele, via podeChamado().
@@ -1580,7 +1751,7 @@ function render(){
     <aside class="side" aria-label="Menu">
       <div class="brand"><div class="mark">EJ</div><div><b>E.J. Desk</b><small>Meta Telecom</small></div></div>
       <div class="sim"><span class="label" style="color:var(--side-muted)">Ver protótipo como</span>
-        <select class="in" id="simUser" aria-label="Usuário simulado" style="background:#1B2638;border-color:#243047;color:#fff;padding:5px 8px;font-size:12.5px">${S.users.map(u=>`<option value="${u.id}" ${u.id===S.me?"selected":""}>${esc(u.nome)} · ${esc(SETORES[u.setor]?.nome||"")}</option>`).join("")}</select>
+        <select class="in" id="simUser" aria-label="Usuário simulado" style="background:#1B2638;border-color:#243047;color:#fff;padding:5px 8px;font-size:12.5px">${S.users.filter(u=>!u.desativado||u.id===S.me).map(u=>`<option value="${u.id}" ${u.id===S.me?"selected":""}>${esc(u.nome)} · ${esc(SETORES[u.setor]?.nome||"")}</option>`).join("")}</select>
         ${Object.keys(SETORES).length<2?"":`<div class="seg" role="group" aria-label="Setor simulado">${Object.entries(SETORES).map(([k,v])=>`<button data-setor="${k}" class="${k===S.setor?"on":""}">${v.nome}</button>`).join("")}</div>`}
         <div class="seg" role="group" aria-label="Nível simulado">${Object.keys(LV).map(l=>`<button data-lv="${l}" class="${l===S.level?"on":""}">${l}</button>`).join("")}</div></div>
       <nav class="nav">${menuHTML(cur)}</nav>
@@ -1605,6 +1776,9 @@ function wire(){
   const idia=$("#incDia"); if(idia) idia.addEventListener("change",()=>{S.incDia=idia.value;render()});
   const ac=$("#abCaso");
   if(ac) ac.addEventListener("change",()=>{const req=/\b(M2M|BL)$/.test(ac.value);$("#abLinhaReq").hidden=!req;$("#abLinha").required=req});
+  const abDupUpd = () => { const box=$("#abDup"); if(!box) return; const d=duplicadosDe({cliente:$("#abCli").value, protAt:$("#abProt").value});
+    box.innerHTML = d.length ? `<div class="note"><div><b>Possível chamado repetido.</b> Já existe${d.length>1?"m":""} ${d.length} chamado${d.length>1?"s":""} em aberto: ${d.slice(0,4).map(x=>`<button type="button" class="linkbtn" data-open="${x.t.id}">${x.t.id}</button> (${esc(x.motivo)}, ${esc(x.t.status)})`).join(" · ")}${d.length>4?" …":""}. Você pode abrir mesmo assim; depois, Ouro/Diamante podem juntar os chamados.</div></div>` : ""; };
+  if($("#abCli")){ $("#abCli").addEventListener("change",abDupUpd); $("#abProt").addEventListener("input",abDupUpd); }
   const cliSel = $("#abCli");
   if(cliSel) cliSel.addEventListener("change",()=>{const c=S.clientes.find(x=>x.id===cliSel.value);$("#abCliInfo").innerHTML=c?`Retorno irá para <b>${esc(c.email)}</b> · ${esc(c.doc)}${c.tel?" · "+esc(c.tel):""}`:"Os dados de contato vêm do cadastro do cliente."});
   const bq=$("#busca");
@@ -1622,6 +1796,15 @@ function wire(){
 /* ============ Eventos ============ */
 document.addEventListener("click", e=>{
   if(!e.target.closest(".pop,[data-pop]")) fecharPop();
+  const zv=e.target.closest(".anx-view"); if(zv){zv.remove();return}
+  const za=e.target.closest("[data-anx]"); if(za){const t=tk(S.sel), a=(t?.arqs||[]).find(x=>x.id===za.dataset.anx); if(a){const v=document.createElement("div");v.className="anx-view";v.setAttribute("role","dialog");v.setAttribute("aria-label",a.nome);
+      const corpo=a.tipo==="img"?`<img src="${a.url}" alt="${esc(a.nome)}">`:a.tipo==="video"?`<video src="${a.url}" controls autoplay></video>`:a.tipo==="pdf"?`<div class="anx-pdf"><p class="small">Carregando PDF…</p></div>`:a.tipo==="xls"?`<div class="anx-pdf anx-xls"><p class="small">Carregando planilha…</p></div>`:`<pre>Carregando…</pre>`;
+      v.innerHTML=`<span class="anx-x">${esc(a.nome)} · clique fora ou Esc para fechar</span>${corpo}`;document.body.appendChild(v);
+      if(a.tipo==="txt") blobDe(a).then(b=>b.text()).then(x=>{const pr=v.querySelector("pre");if(pr)pr.textContent=x});
+      if(a.tipo==="pdf") mostrarPDF(a, v.querySelector(".anx-pdf"));
+      if(a.tipo==="xls") mostrarPlanilha(a, v.querySelector(".anx-xls"));
+      v.querySelectorAll("pre,video,.anx-pdf").forEach(x=>x.addEventListener("click",ev=>ev.stopPropagation()))}return}
+  const zd=e.target.closest("[data-anxdl]"); if(zd){const t=tk(S.sel), a=(t?.arqs||[]).find(x=>x.id===zd.dataset.anxdl); if(a) blobDe(a).then(b=>salvarArquivo(a.nome,b)).catch(()=>toast("Arquivo indisponível")); return}
   const el = e.target.closest("[data-side],[data-gfil],[data-fold],[data-turno],[data-incop],[data-pop],[data-rapido],[data-lcard],[data-limpar],[data-tab],[data-go],[data-lv],[data-setor],[data-kpi],[data-week],[data-open],[data-ret],[data-act],[data-clear],[data-dec],[data-menu]");
   if(!el) return;
   if(el.dataset.incop){const o=el.dataset.incop;S.incOp=o;S.incFiltro=(S.incFiltro||[]).length===1&&S.incFiltro[0]===o?[]:[o];render();return}
@@ -1649,6 +1832,7 @@ document.addEventListener("click", e=>{
   if(el.dataset.ret){S.retSel=el.dataset.ret;render();return}
   if(el.dataset.act) act(el.dataset.act, el);
 });
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelector(".anx-view")?.remove()});
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ad[data-dec]")){e.preventDefault();e.target.click()}if(e.key==="Escape"){if(document.querySelector(".pop")){fecharPop();return}document.querySelector(".scrim")?.remove()}});
 window.addEventListener("resize",fecharPop);
 
@@ -1672,7 +1856,7 @@ function mudarResp(t, novo){
 }
 function textoRetorno(t){
   const c=cli(t.cliente), eq=t.setor==="financeiro"?"Financeiro":"Suporte";
-  return `Olá, ${c.nome}.\n\nSeu chamado ${t.id} (${t.titulo}) foi tratado pela nossa equipe.\n\n${t.solucao?("Solução aplicada:\n"+t.solucao):"Situação atual:\n[descreva a tratativa e o próximo passo]"}\n\nEste e-mail é automático e não recebe respostas. Se ainda precisar de ajuda, entre em contato pelos canais de atendimento da Meta Telecom em até 24 horas úteis, informando o protocolo ${t.id}. Depois desse prazo, o chamado será encerrado.\n\nAtenciosamente,\nEquipe de ${eq} — E.J. Desk`;
+  return `Olá, ${c.nome}.\n\nSeu chamado ${t.id} (${t.titulo}) foi tratado pela nossa equipe.\n\n${t.solucao?("Solução aplicada:\n"+t.solucao):"Situação atual:\n[descreva a tratativa e o próximo passo]"}\n\nEste e-mail é automático e não recebe respostas. Se ainda precisar de ajuda, entre em contato pelos canais de atendimento da Meta Telecom em até 1 dia útil, informando o protocolo ${t.id}. Depois desse prazo, o chamado será encerrado.\n\nAtenciosamente,\nEquipe de ${eq} — E.J. Desk`;
 }
 async function copiarTexto(txt, fallbackEl){
   try{ await navigator.clipboard.writeText(txt); toast("Retorno copiado"); }
@@ -1743,7 +1927,7 @@ async function gerarPDF(t){
 
 /* Ações de chamado: toda execução confere podeChamado() no momento da ação, não só no menu. */
 const ACAO_CHAMADO = {abrir:"ver", pdf:"ver", assumir:"tratar", resolver:"tratar", atribuir:"tratar", setResp:"tratar", setStatus:"tratar", alterarStatus:"tratar",
-  atipico:"tratar", reabrir:"tratar", clienteRespondeu:"tratar", retornoPrep:"retorno", excluir:"excluir"};
+  atipico:"tratar", reabrir:"tratar", encerrarDireto:"tratar", unificarChamado:"tratar", clienteRespondeu:"tratar", retornoPrep:"retorno", excluir:"excluir"};
 const ACAO_RECURSO = {unificar:"cliente.unificar", convidar:"usuarios", editUser:"usuarios", salvarMail:"config"};
 function act(a, el){
   fecharPop();
@@ -1754,14 +1938,35 @@ function act(a, el){
   }
   // Reconfere a permissão na confirmação (o estado pode ter mudado com o modal aberto)
   const ok = ()=> podeChamado(ACAO_CHAMADO[a],t) && !t.excluido;
-  if(a==="sair"){S.logged=false;S.wanted=null;render();return}
+  if(a==="sair"){S.wanted=null;ejdSair();return}
   if(a==="abrir"){go("detalhe",{sel:t.id,tab:"info"});return}
   if(a==="pdf"){gerarPDF(t);return}
-  if(a==="setStatus"){const v=el.dataset.val;if(!STATUS_MANUAL.includes(v)){toast("Esse status só é definido pelo envio do retorno");return}if(mudarStatus(t,v)){render();toast(`${t.id}: status ${v}`)}return}
+  if(a==="setStatus"){const v=el.dataset.val, tr=transicao(t,v);if(!tr.ok){toast(tr.motivo==="atual"?"Esse já é o status atual":tr.motivo);return}
+    if(tr.act) return act(tr.act, el);
+    if(mudarStatus(t,v)){render();toast(`${t.id}: status ${v}`)}return}
   if(a==="setResp"){const v=el.dataset.val;if(v!=="—"&&!elegiveis(t).some(u=>u.nome===v)){toast("Esse usuário não pode atender chamados deste setor");return}if(mudarResp(t,v)){render();toast(`${t.id}: responsável ${v==="—"?"Fila geral":v}`)}return}
   if(a==="alterarStatus"){
-    modal(`<h2>Alterar status — ${t.id}</h2><div class="field"><label for="mSt">Novo status</label><select class="in" id="mSt">${STATUS_MANUAL.map(s=>`<option ${s===t.status?"selected":""}>${s}</option>`).join("")}</select></div><p class="hint">"Aguardando retorno" só é definido pelo envio do retorno ao cliente.</p>`,
-      w=>{if(!ok())return;const v=w.querySelector("#mSt").value;if(mudarStatus(t,v)){render();toast(`${t.id}: status ${v}`)}},"Alterar");return}
+    const ops=STATUS_MANUAL.filter(s=>transicao(t,s).ok);
+    if(!ops.length){toast("Nenhuma mudança manual disponível para este status");return}
+    modal(`<h2>Alterar status — ${t.id}</h2><div class="field"><label for="mSt">Novo status</label><select class="in" id="mSt">${ops.map(s=>`<option>${s}</option>`).join("")}</select></div><p class="hint">O status segue a sequência do fluxo: Novo → Em análise → Resolvido → retorno ao cliente → Encerrado. Resolver pede a solução aplicada; encerrar direto é só para Diamante, com motivo.</p>`,
+      w=>{if(!ok())return;const v=w.querySelector("#mSt").value, tr=transicao(t,v);if(!tr.ok)return;if(tr.act){setTimeout(()=>act(tr.act,el),0);return}if(mudarStatus(t,v)){render();toast(`${t.id}: status ${v}`)}},"Continuar");return}
+  if(a==="unificarChamado"){const o=tk(el.dataset.outro); if(!o||!podeChamado("tratar",o)||o.excluido||o.status==="Encerrado"||o.vinculadoA){toast("Não é possível juntar esse chamado");return}
+    modal(`<h2>Juntar ${o.id} a ${t.id}</h2><p class="small">O chamado <b>${o.id}</b> (${esc(el.dataset.motivo)}) será unificado a <b>${t.id}</b>, que continua como o principal.</p>
+      <ul class="small" style="margin:0;padding-left:18px"><li>Comentários, anexos e histórico do ${o.id} passam para o ${t.id}.</li><li>O ${o.id} vai para Encerrado, com a marcação "Unificado → ${t.id}" e um link para o principal.</li><li>Nada é apagado: o ${o.id} continua na busca e no histórico.</li></ul>`,
+      w=>{if(!ok())return; const quem=me().nome, q=stamp();
+        t.coments.push(...o.coments.map(m=>Object.assign({},m,{txt:`[do ${o.id}] `+m.txt})));
+        t.anexos.push(...o.anexos); t.arqs=(t.arqs||[]).concat(o.arqs||[]);
+        o.hist.forEach(h=>t.hist.push([h[0],`[${o.id}] `+h[1]]));
+        (t.unificados=t.unificados||[]).push(o.id);
+        registrar(t,`Chamado ${o.id} unificado a este por ${quem} (${el.dataset.motivo})`);
+        const ant=o.status; if(ant==="Aguardando retorno"){o.encerraEm=null;const pz=(o.pausas||[]).find(x=>!x.fim);if(pz)pz.fim=agora()}
+        o.status="Encerrado"; o.vinculadoA=t.id; o.encerradoAuto=false;
+        registrar(o,`Status alterado de "${ant}" para "Encerrado" · unificado ao ${t.id} por ${quem}`);
+        render(); toast(`${o.id} unificado a ${t.id}`)},"Juntar");return}
+  if(a==="encerrarDireto"){if(S.level!=="Diamante"){toast("Só o Diamante encerra um chamado direto");return}
+    modal(`<h2>Encerrar ${t.id} sem retorno</h2><p class="small">O chamado vai para <b>Encerrado</b> sem enviar retorno ao cliente. Use em casos como chamado aberto por engano ou duplicado.</p><div class="field"><label for="mEnc">Motivo <i>*</i></label><textarea class="in" id="mEnc" placeholder="Ex.: chamado duplicado do EJD-001240"></textarea></div><span class="errtxt" id="mErr"></span>`,
+      w=>{if(!ok())return;const m=w.querySelector("#mEnc").value.trim();if(!m){w.querySelector("#mErr").textContent="Informe o motivo para encerrar.";return false}
+        mudarStatus(t,"Encerrado"," · encerrado direto pelo Diamante, motivo: "+m);render();toast("Chamado encerrado")},"Encerrar");return}
   if(a==="assumir"){mudarResp(t,me().nome);mudarStatus(t,"Em análise"," · análise iniciada");render();toast("Chamado assumido");return}
   if(a==="atipico"){
     const marcar=!t.flags.atipico;
@@ -1779,22 +1984,41 @@ function act(a, el){
   if(a==="platResolver"){if(!pode("plataformas.registrar")){toast("Você não tem permissão para esta ação");return}
     const x=S.incPlat.find(i=>i.id===el.dataset.pid); if(x){x.fim=stamp();x.fimMs=agora();x.normPor=me().nome;render();toast("Plataforma marcada como normalizada")}return}
   if(a==="baseExemplo"){if(!pode("incidentes.registrar"))return;
-    const base={"Algar":50000,"Arqia":18000,"Claro":9000,"Emnify":6000,"Links Field":4000,"Vivo":13000,"Claro BL":2500,"Vivo BL":3000};
-    Object.assign(S.incBase,base);
-    const hoje=diaISO(agora()), ontem=diaISO(agora()-86400000), fator={"Algar":[.97,.96,.95,.82,.80],"Claro":[.96,.95,.94,.96,.95],"Vivo":[.97,.96,.95,.94,.92],"Arqia":[.98,.97,.97,.96,.95],"Links Field":[.95,.94,.93,.91,.93]};
+    const base={"Algar":50000,"Arqia":18000,"Claro":9000,"Emnify":6000,"Links Field":4000,"Vivo":13000};
+    Object.assign(S.incBase,base); if(!S.incBaseEm){S.incBaseEm=stamp();S.incBasePor="Exemplo"}
+    const tem=(o,d,t)=>S.incidentes.some(r=>r.operadora===o&&r.dia===d&&r.turno===t);
+    const add=(o,d,t,extra)=>{if(!tem(o,d,t))S.incidentes.push(Object.assign({id:ejdUid(),dia:d,turno:t,em:d.split("-").reverse().join("/")+" "+TURNOS[t].faixa.slice(0,5),operadora:o,obs:"",por:"Exemplo",exemplo:true},extra))};
+    // 8 dias de registros "normais" (variação pequena) para a Análise do mês
+    const osc={"Algar":[.97,.95,.96,.94],"Claro":[.97,.96,.93,.95],"Vivo":[.96,.95,.97,.93],"Arqia":[.99,.98,.97,.98],"Links Field":[.94,.92,.95,.9]};
+    for(let k=9;k>=2;k--){const d=diaISO(agora()-k*86400000);["manha","tarde","noite"].forEach((t,ti)=>Object.entries(osc).forEach(([o,fs])=>add(o,d,t,{linhas:Math.round(base[o]*fs[(k+ti)%4]),base:base[o]})))}
+    const hoje=diaISO(agora()), ontem=diaISO(agora()-86400000), fator={"Algar":[.97,.96,.95,.82,.64],"Claro":[.96,.95,.94,.96,.95],"Vivo":[.97,.96,.95,.9,.88],"Arqia":[.98,.97,.97,.96,.95],"Links Field":[.95,.94,.93,.91,.93]};
     const slots=[[ontem,"manha"],[ontem,"tarde"],[ontem,"noite"],[hoje,"manha"],[hoje,"tarde"]];
-    Object.entries(fator).forEach(([o,fs])=>fs.forEach((f,i)=>{const[d,t]=slots[i];if(!S.incidentes.some(r=>r.operadora===o&&r.dia===d&&r.turno===t))S.incidentes.push({dia:d,turno:t,em:d.split("-").reverse().join("/")+" "+TURNOS[t].faixa.slice(0,5),operadora:o,linhas:Math.round(base[o]*f),obs:"",por:"Exemplo",exemplo:true})}));
+    Object.entries(fator).forEach(([o,fs])=>fs.forEach((f,i)=>{const[d,t]=slots[i];add(o,d,t,{linhas:Math.round(base[o]*f),base:base[o]})}));
+    [["Claro BL",["normal","normal","atencao","possivel","atencao"]],["Vivo BL",["normal","normal","normal","normal","normal"]]].forEach(([o,ns])=>ns.forEach((nv,i)=>{const[d,t]=slots[i];add(o,d,t,{linhas:null,nivel:nv})}));
     const velho=diaISO(somaMeses(agora(),-RET_MESES)+3*86400000);   // perto de completar 3 meses: mostra o aviso
-    [["Algar",.84],["Vivo",.86]].forEach(([o,f])=>{if(!S.incidentes.some(r=>r.operadora===o&&r.dia===velho&&r.turno==="tarde"))S.incidentes.push({dia:velho,turno:"tarde",em:velho.split("-").reverse().join("/")+" 12:30",operadora:o,linhas:Math.round(base[o]*f),obs:"Exemplo perto de completar 3 meses",por:"Exemplo",exemplo:true,antigo:true})});
+    [["Algar",.84],["Vivo",.78]].forEach(([o,f])=>add(o,velho,"tarde",{linhas:Math.round(base[o]*f),base:base[o],obs:"Exemplo perto de completar 3 meses",antigo:true}));
     render();toast("Base e registros de exemplo preenchidos (só no protótipo)");return}
+  if(a==="incCorrigir"){const r=S.incidentes.find(x=>x.id===el.dataset.rid); if(!r) return;
+    const hoje=diaISO(agora()), mesmoDia=r.dia===hoje;
+    if(!pode("incidentes.registrar") || !(S.level==="Diamante" || (LV[S.level]>=LV.Ouro && mesmoDia))){toast(mesmoDia?"Correção no mesmo dia: Ouro ou Diamante":"Depois do dia do registro, só o Diamante corrige");return}
+    const pedeMotivo=!mesmoDia;
+    modal(`<h2>Corrigir registro · ${esc(r.operadora)}</h2><p class="small">${esc(r.dia.split("-").reverse().join("/"))} · ${TURNOS[r.turno].nome} · registrado por ${esc(r.por)}. O valor anterior fica guardado no histórico do registro.</p>
+      ${r.nivel?`<div class="field"><label for="cNv">Situação</label><select class="in" id="cNv">${NIVEIS_INC.map(n=>`<option value="${n.k}" ${n.k===r.nivel?"selected":""}>${esc(n.nome)}</option>`).join("")}</select></div>`
+        :`<div class="field"><label for="cLn">Linhas online</label><input class="in mono" id="cLn" type="number" min="0" value="${r.linhas}"></div><p class="hint">A base usada continua a do dia do registro (${baseDe(r)?baseDe(r).toLocaleString("pt-BR"):"sem base"}).</p>`}
+      ${pedeMotivo?`<div class="field"><label for="cMot">Motivo <i>*</i></label><textarea class="in" id="cMot" placeholder="Por que o registro está sendo corrigido depois do dia"></textarea></div>`:""}<span class="errtxt" id="mErr"></span>`,
+      w=>{const mot=pedeMotivo?w.querySelector("#cMot").value.trim():"";if(pedeMotivo&&!mot){w.querySelector("#mErr").textContent="Informe o motivo da correção.";return false}
+        let de,para;
+        if(r.nivel){const v=w.querySelector("#cNv").value;if(v===r.nivel)return;de=NIVEIS_INC.find(n=>n.k===r.nivel).nome;para=NIVEIS_INC.find(n=>n.k===v).nome;r.nivel=v}
+        else{const v=parseInt(w.querySelector("#cLn").value,10);if(!(v>=0)){w.querySelector("#mErr").textContent="Use só números inteiros.";return false}if(v===r.linhas)return;de=r.linhas.toLocaleString("pt-BR");para=v.toLocaleString("pt-BR");r.linhas=v}
+        (r.corr=r.corr||[]).push({em:stamp(),por:me().nome,de,para,motivo:mot});render();toast("Registro corrigido")},"Salvar correção");return}
   if(a==="avancar24"){const alvo=t&&t.encerraEm?t.encerraEm:agora()+86400000;S.offset=(S.offset||0)+(alvo-agora())+60000;const n=rotinaEncerramento();render();toast(n?`Relógio adiantado até o prazo: ${n} chamado(s) encerrado(s) pela rotina`:"Relógio adiantado");return}
   if(a==="atribuir"){
     modal(`<h2>Atribuir responsável — ${t.id}</h2><div class="field"><label for="mResp">Responsável</label><select class="in" id="mResp"><option value="—" ${t.resp==="—"?"selected":""}>Fila geral (sem responsável)</option>${elegiveis(t).map(u=>`<option value="${esc(u.nome)}" ${u.nome===t.resp?"selected":""}>${esc(u.nome)} · ${u.nivel}</option>`).join("")}</select></div><p class="hint">Aparecem só as pessoas com acesso ao setor ${esc(SETORES[t.setor].nome)}. Cada chamado tem um responsável.</p>`,
       w=>{if(!ok())return;const v=w.querySelector("#mResp").value;if(mudarResp(t,v)){render();toast("Responsável: "+(v==="—"?"Fila geral":v))}},"Atribuir");return}
-  if(a==="resolver"){
+  if(a==="resolver"){ if(t.status!=="Em análise"){toast("Só chamados Em análise podem ser marcados como resolvidos");return}
     modal(`<h2>Marcar como resolvido</h2><p class="small">Tem certeza de que deseja marcar o chamado <b>${t.id}</b> como resolvido?</p>
-      <div class="field"><label for="mSol">Solução aplicada ${ad("resolver_solucao","obrigatória?")}</label><textarea class="in" id="mSol" placeholder="Opcional nesta versão">${esc(t.solucao||"")}</textarea></div>`,
-      w=>{if(!ok())return;const s=w.querySelector("#mSol").value.trim();if(s)t.solucao=s;mudarStatus(t,"Resolvido");render();toast("Chamado resolvido. Próximo passo: retorno ao cliente")},"Confirmar");return}
+      <div class="field"><label for="mSol">Solução aplicada <i>*</i></label><textarea class="in" id="mSol" placeholder="O que foi feito para resolver. Vai para o retorno ao cliente e fica como referência para a equipe.">${esc(t.solucao||"")}</textarea></div><span class="errtxt" id="mErr"></span>`,
+      w=>{if(!ok())return;const s=w.querySelector("#mSol").value.trim();if(!s){w.querySelector("#mErr").textContent="Descreva a solução aplicada para marcar como resolvido.";w.querySelector("#mSol").classList.add("err");return false}t.solucao=s;mudarStatus(t,"Resolvido");render();toast("Chamado resolvido. Próximo passo: retorno ao cliente")},"Confirmar");return}
   if(a==="reabrir"){
     modal(`<h2>Reabrir ${t.id}</h2><div class="field"><label for="mMot">Motivo da reabertura</label><textarea class="in" id="mMot" placeholder="Ex.: cliente voltou a ter o problema"></textarea></div>
       <div class="info">O chamado volta para <b>Novo</b>, na fila geral, e pode ser atribuído de novo.</div><span class="errtxt" id="mErr"></span>`,
@@ -1821,24 +2045,31 @@ function act(a, el){
   if(a==="editUser"){
     const u=S.users.find(x=>x.id===el.dataset.uid);
     modal(`<h2>Editar ${esc(u.nome)}</h2><div class="field"><label for="eNiv">Nível de acesso</label><select class="in" id="eNiv">${Object.keys(LV).map(l=>`<option ${l===u.nivel?"selected":""}>${l}</option>`).join("")}</select></div>
-      <div class="field"><label for="eSet">Setor</label><select class="in" id="eSet">${Object.entries(SETORES).map(([k,v])=>`<option value="${k}" ${k===u.setor?"selected":""}>${v.nome}</option>`).join("")}</select></div><p class="hint">Setor e nível são independentes.</p>`,
-      w=>{u.nivel=w.querySelector("#eNiv").value;u.setor=w.querySelector("#eSet").value;if(u.id===S.me){S.level=u.nivel;S.setor=u.setor}render();toast(u.nome+": "+SETORES[u.setor].nome+" · "+u.nivel)},"Salvar");return}
+      <div class="field"><label for="eSet">Setor</label><select class="in" id="eSet">${Object.entries(SETORES).map(([k,v])=>`<option value="${k}" ${k===u.setor?"selected":""}>${v.nome}</option>`).join("")}</select></div><p class="hint">Setor e nível são independentes.</p>
+      <div class="field"><span class="label">Situação do usuário</span>${u.id===S.me?`<p class="small muted">Você não pode desativar o próprio usuário.</p>`:`<label class="row small" style="gap:8px;cursor:pointer"><input type="checkbox" id="eDes" ${u.desativado?"checked":""}> Desativar usuário</label>
+        <p class="hint">Desativado não entra mais na plataforma e deixa de aparecer para ser responsável ou em "Quem abriu o ticket". O histórico e os chamados dele continuam. ${(()=>{const n=S.tickets.filter(t=>!t.excluido&&t.resp===u.nome&&!["Encerrado"].includes(t.status)).length;return n?`<b>${n} chamado${n>1?"s":""} em aberto</b> com ${esc(u.nome)} como responsável — continuam com ele até alguém reatribuir.`:""})()}</p>${u.desativado?`<p class="small muted">Desativado por ${esc(u.desativado.por)} em ${esc(u.desativado.em)}.</p>`:""}`}</div>`,
+      w=>{u.nivel=w.querySelector("#eNiv").value;u.setor=w.querySelector("#eSet").value;if(u.id===S.me){S.level=u.nivel;S.setor=u.setor}
+        const des=w.querySelector("#eDes"); let msg=u.nome+": "+SETORES[u.setor].nome+" · "+u.nivel;
+        if(des){ if(des.checked&&!u.desativado){u.desativado={por:me().nome,em:stamp()};msg=u.nome+" desativado"} else if(!des.checked&&u.desativado){delete u.desativado;msg=u.nome+" reativado"} }
+        render();toast(msg)},"Salvar");return}
   if(a==="convidar"){
-    modal(`<h2>Convidar usuário</h2><div class="field"><label for="mNome">Nome</label><input class="in" id="mNome"></div><div class="field"><label for="mMail">E-mail corporativo</label><input class="in" id="mMail" type="email" placeholder="nome@exemplo.com.br"></div>
+    modal(`<h2>Convidar usuário</h2><div class="field"><label for="mNome">Nome</label><input class="in" id="mNome"></div><div class="field"><label for="mMail">E-mail corporativo</label><input class="in" id="mMail" type="email" placeholder="nome@metatelecom.com.br"></div>
       <div class="field"><label for="mNiv">Nível de acesso</label><select class="in" id="mNiv">${Object.keys(LV).map(l=>`<option>${l}</option>`).join("")}</select></div><div class="field"><label for="mSet">Setor</label><select class="in" id="mSet">${Object.entries(SETORES).map(([k,v])=>`<option value="${k}">${v.nome}</option>`).join("")}</select></div><p class="hint">O acesso é por login e senha próprios do E.J. Desk.</p><span class="errtxt" id="mErr"></span>`,
       w=>{const n=w.querySelector("#mNome").value.trim(),m=w.querySelector("#mMail").value.trim();if(!n||!m.includes("@")){w.querySelector("#mErr").textContent="Preencha nome e um e-mail válido.";return false}
         if(S.users.length>=10){w.querySelector("#mErr").textContent="A equipe tem 10 colaboradores; todos já estão cadastrados.";return false}
-        const st=w.querySelector("#mSet").value;S.users.push({id:"u"+(S.users.length+1),nome:n,email:m,setor:st,nivel:w.querySelector("#mNiv").value,ativo:false,cargo:SETORES[st].nome,acum:0});render();toast("Convite registrado para "+m)},"Convidar");return}
+        const st=w.querySelector("#mSet").value;S.users.push({id:"u"+Date.now().toString(36),nome:n,email:m,setor:st,nivel:w.querySelector("#mNiv").value,ativo:false,cargo:SETORES[st].nome,acum:0});render();toast("Convite registrado para "+m)},"Convidar");return}
   if(a==="novoCli"){
     modal(`<h2>Novo cliente</h2><div class="field"><label for="cNome">Nome / razão social</label><input class="in" id="cNome"></div><div class="field"><label for="cDoc">CNPJ ou CPF</label><input class="in mono" id="cDoc"></div>
       <div class="field"><label for="cMail">E-mail</label><input class="in" id="cMail" type="email"></div><div class="field"><label for="cTel">Telefone (opcional)</label><input class="in mono" id="cTel"></div><span class="errtxt" id="mErr"></span>`,
       w=>{const v=k=>w.querySelector(k).value.trim();if(!v("#cNome")||!v("#cDoc")||!v("#cMail").includes("@")){w.querySelector("#mErr").textContent="Nome, CNPJ/CPF e e-mail são obrigatórios.";return false}
         const dn=v("#cDoc").replace(/\D/g,""),dup=S.clientes.find(c=>c.doc.split(" · ").some(d=>d.replace(/\D/g,"")===dn));
         if(dup){w.querySelector("#mErr").innerHTML=`Esse CNPJ/CPF já está cadastrado para <b>${esc(dup.nome)}</b> (${esc(dup.email)}). Use o cadastro existente.`;return false}
-        S.clientes.push({id:"c"+(S.clientes.length+1),nome:v("#cNome"),doc:v("#cDoc"),email:v("#cMail"),tel:v("#cTel")});render();toast("Cliente cadastrado")},"Salvar");return}
+        S.clientes.push({id:ejdUid(),nome:v("#cNome"),doc:v("#cDoc"),email:v("#cMail"),tel:v("#cTel")});render();toast("Cliente cadastrado")},"Salvar");return}
   if(a==="histExport"){const d=el.dataset;exportarHistorico(d.esc,d.de?{de:+d.de,ate:+d.ate,rot:d.rot}:{});return}
   if(a==="fotoRemover"){const u=me();delete u.foto;salvarFotos();render();toast("Foto removida");return}
-  if(a==="senha"){toast("Na implementação real, abre a troca de senha do login próprio");return}
+  if(a==="senha"){modal(`<h2>Alterar senha</h2><div class="field"><label for="nsP1">Nova senha</label><input class="in" id="nsP1" type="password" autocomplete="new-password"></div><div class="field"><label for="nsP2">Repita a senha</label><input class="in" id="nsP2" type="password" autocomplete="new-password"></div><span class="errtxt" id="mErr"></span>`,
+    w=>{const a1=w.querySelector("#nsP1").value,a2=w.querySelector("#nsP2").value;if(a1.length<8){w.querySelector("#mErr").textContent="Mínimo de 8 caracteres.";return false}if(a1!==a2){w.querySelector("#mErr").textContent="As senhas não são iguais.";return false}
+      EJD_SB.auth.updateUser({password:a1}).then(({error})=>toast(error?"Não foi possível alterar: "+error.message:"Senha alterada"));},"Salvar");return}
   if(a==="unificar"){
     const o=S.clientes.map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join("");
     modal(`<h2>Unificar clientes</h2><p class="small muted">Junta cadastros de um mesmo cliente com mais de um CNPJ. Os CNPJs e os chamados passam para o cadastro principal.</p>
@@ -1868,12 +2099,14 @@ document.addEventListener("submit", e=>{
     if(!ok){$("#abErr").textContent="Preencha os campos destacados para abrir o chamado.";f.querySelector(".err").focus();return}
     const casoOp=/\b(M2M|BL)$/.test($("#abCaso").value), linha=$("#abLinha").value.trim();
     if(casoOp && !linha){$("#abLinha").classList.add("err");$("#abErr").textContent="Informe o MSISDN ou ICCID da linha: o caso é de uma operadora M2M/BL.";$("#abLinha").focus();return}
+    if(linha){ const nums=linha.split(/[\s,;]+/).filter(Boolean), ruins=nums.filter(n=>!/^\d+$/.test(n)||!([12,13,19,20].includes(n.length)));   // item 47
+      if(ruins.length){$("#abLinha").classList.add("err");$("#abErr").textContent=`Número inválido: ${ruins.join(", ")}. Use só números: MSISDN com 12 ou 13 dígitos (55 + DDD + número) ou ICCID com 19 ou 20 dígitos. Vários números: separe por vírgula.`;$("#abLinha").focus();return} }
     const files=[...($("#abAnx").files||[])], okExt=/\.(png|jpe?g|gif|webp|bmp|heic|pdf|xlsx?|csv|txt)$/i;
     const bad=files.find(x=>!okExt.test(x.name)||x.size>10*1024*1024);
     if(bad){$("#abErr").textContent=`O arquivo ${bad.name} não pode ser anexado. Use imagens, PDF, Excel ou TXT de até 10 MB.`;return}
-    const id="EJD-00"+(S.seq++), bo=$("#abBo").value.trim(), quem=$("#abQuem").value;
-    S.tickets.unshift(T({criadoEmMs:agora(), id, titulo:bo.split(/[.\n]/)[0].slice(0,70), cat:"Sem categoria", resp:"—", status:"Novo", aberto:today()+" "+now(), criadoPor:quem, cliente:$("#abCli").value, caso:$("#abCaso").value,
-      bo, protAt:$("#abProt").value, cep:$("#abCep").value, equip:$("#abEq").value, comandos:$("#abCmd").value, feito:$("#abFeito").value, linha, quemAbriu:quem, anexos:files.map(x=>x.name), hist:[[stamp(),"Chamado aberto por "+quem],...files.map(x=>[stamp(),"Arquivo anexado: "+x.name])]}));
+    const id="NOVO-"+Date.now().toString(36), bo=$("#abBo").value.trim(), quem=$("#abQuem").value, catA=$("#abCat").value, prioA=$("#abPrio").value;
+    S.tickets.unshift(T({criadoEmMs:agora(), id, titulo:bo.split(/[.\n]/)[0].slice(0,70), cat:catA, prioridade:prioA, resp:"—", status:"Novo", aberto:today()+" "+now(), criadoPor:quem, cliente:$("#abCli").value, caso:$("#abCaso").value,
+      bo, protAt:$("#abProt").value, cep:$("#abCep").value, equip:$("#abEq").value, comandos:$("#abCmd").value, feito:$("#abFeito").value, linha, quemAbriu:quem, anexos:files.map(x=>x.name), arqs:guardarArquivos(files,quem), hist:[[stamp(),"Chamado aberto por "+quem+" · categoria "+catA+" · prioridade "+prioA],...files.map(x=>[stamp(),"Arquivo anexado: "+x.name])]}));
     if(pode("chamados")){go("detalhe",{sel:id});toast("Chamado "+id+" aberto")}
     else{go("meus");toast("Chamado "+id+" aberto. Acompanhe em Meus chamados.")}
     return;
@@ -1883,33 +2116,36 @@ document.addEventListener("submit", e=>{
     if(!v&&!files.length){$("#comErr").textContent="Escreva um comentário ou anexe um arquivo.";return}
     const bad=files.find(x=>!okExt.test(x.name)||x.size>10*1024*1024);
     if(bad){$("#comErr").textContent=`O arquivo ${bad.name} não pode ser anexado. Use imagens, PDF, Excel ou TXT de até 10 MB.`;return}
-    t.coments.push({a:me().nome,t:stamp(),txt:v||"(anexo)",anexos:files.map(x=>x.name)});t.anexos.push(...files.map(x=>x.name));
+    t.coments.push({a:me().nome,t:stamp(),txt:v||"(anexo)",anexos:files.map(x=>x.name)});t.anexos.push(...files.map(x=>x.name));t.arqs=(t.arqs||[]).concat(guardarArquivos(files,me().nome));
     registrar(t,"Comentário adicionado por "+me().nome);files.forEach(x=>registrar(t,"Arquivo anexado por "+me().nome+": "+x.name));render();return}
   if(f.id==="fInc"){if(!pode("incidentes.registrar")){toast("Você não tem permissão para registrar");return}
     const dia=$("#incDia").value, turno=S.incTurno||turnoAtual();
     if(!dia){$("#incErr").textContent="Escolha o dia do registro.";return}
     if(dia>diaISO(agora())){$("#incErr").textContent="Não é possível registrar um dia que ainda não chegou.";return}
     const novos=[...document.querySelectorAll("[data-incl]")].filter(x=>x.value!=="");
-    if(!novos.length){$("#incErr").textContent="Informe as linhas online de pelo menos uma operadora.";return}
+    const manuais=[...document.querySelectorAll("[data-incn]")].filter(x=>x.value!=="");
+    if(!novos.length&&!manuais.length){$("#incErr").textContent="Informe as linhas online (ou a situação, nas BL) de pelo menos uma operadora.";return}
     const bad=novos.find(x=>!(parseInt(x.value,10)>=0));
     if(bad){$("#incErr").textContent="Use só números inteiros para as linhas online.";bad.focus();return}
-    let n=0; novos.forEach(x=>{const op=x.dataset.incl;
-      if(S.incidentes.some(r=>r.operadora===op&&r.dia===dia&&r.turno===turno)) return;   // um registro por operadora em cada turno
-      S.incidentes.push({dia,turno,em:stamp(),operadora:op,linhas:parseInt(x.value,10),obs:"",por:me().nome}); n++;});
-    S.incDia=dia; render(); const inst=S.incidentes.filter(r=>r.dia===dia&&r.turno===turno&&instavel(r)).map(r=>r.operadora);
-    toast(`${n} registro${n===1?"":"s"} salvo${n===1?"":"s"} · ${TURNOS[turno].nome} de ${dia.split("-").reverse().join("/")}${inst.length?" · instabilidade: "+inst.join(", "):""}`);return}
+    let n=0; const ja=op=>S.incidentes.some(r=>r.operadora===op&&r.dia===dia&&r.turno===turno);   // um registro por operadora em cada turno
+    novos.forEach(x=>{const op=x.dataset.incl; if(ja(op)) return;
+      S.incidentes.push({id:ejdUid(),dia,turno,em:stamp(),operadora:op,linhas:parseInt(x.value,10),base:S.incBase[op]||null,obs:"",por:me().nome}); n++;});   // base do momento (item 59)
+    manuais.forEach(x=>{const op=x.dataset.incn; if(ja(op)) return;
+      S.incidentes.push({id:ejdUid(),dia,turno,em:stamp(),operadora:op,linhas:null,nivel:x.value,obs:"",por:me().nome}); n++;});
+    S.incDia=dia; render(); const inst=S.incidentes.filter(r=>r.dia===dia&&r.turno===turno&&nivelDe(r)&&nivelDe(r).k!=="normal").map(r=>r.operadora+" ("+nivelDe(r).nome+")");
+    toast(`${n} registro${n===1?"":"s"} salvo${n===1?"":"s"} · ${TURNOS[turno].nome} de ${dia.split("-").reverse().join("/")}${inst.length?" · alerta: "+inst.join(", "):""}`);return}
   if(f.id==="fPlat"){if(!pode("plataformas.registrar")){toast("Você não tem permissão para registrar");return}
     const d=$("#plD").value.trim(), ini=$("#plI").value, pl=$("#plP").value;
     if(!d||!ini){$("#plErr").textContent="Informe o início e o que está acontecendo.";return}
     S.incPlat.push({id:"p"+Date.now(), plat:pl, status:$("#plS").value, inicio:fmtDataHora(new Date(ini).getTime()), inicioMs:new Date(ini).getTime(), desc:d, por:me().nome});render();toast("Incidente registrado em "+PLATAFORMAS.find(x=>x.id===pl).nome);return}
-  if(f.id==="fBase"){if(!pode("incidentes.registrar")){toast("Você não tem permissão para alterar a base");return}
+  if(f.id==="fBase"){if(!pode("incidentes.base")){toast("Só o Diamante atualiza a base");return}
     document.querySelectorAll("[data-incb]").forEach(x=>{const v=parseInt(x.value,10);if(v>0)S.incBase[x.dataset.incb]=v;else delete S.incBase[x.dataset.incb]});
-    const l=parseInt($("#incLim").value,10);if(l>0&&l<=100)S.incLimite=l;render();toast("Base de linhas salva");return}
+    S.incBaseEm=stamp(); S.incBasePor=me().nome; render();toast("Base de linhas salva. Os registros já feitos continuam com a base do dia deles.");return}
   if(f.id==="fCaso"){if(!pode("config"))return;const v=$("#cfgCaso").value.trim();if(!v)return;if(CASOS.includes(v)){toast("Essa opção já existe");return}CASOS.push(v);render();toast("Opção adicionada");return}
   if(f.id==="fCat"){if(!pode("config"))return;const v=$("#cfgCat").value.trim();if(!v)return;if(CATEGORIAS.includes(v)){toast("Essa categoria já existe");return}CATEGORIAS.push(v);render();toast("Categoria adicionada");return}
   if(f.id==="fRet"){const t=tk(S.retSel), c=cli(t?.cliente);if(!podeChamado("retorno",t)||t.excluido){toast("Você não tem permissão para enviar o retorno");return}
-    modal(`<h2>Enviar retorno de ${t.id}?</h2><p class="small">O e-mail vai para <b>${esc(c.email)}</b> a partir de <span class="mono">${esc(S.noreply)}</span>. Depois do envio o chamado fica <b>Aguardando retorno</b> e é encerrado automaticamente em 24 horas úteis se o cliente não responder.</p>`,
-      ()=>{const env=agora();const antSt=t.status;t.status="Aguardando retorno";t.pausas=(t.pausas||[]).concat([{ini:env}]);t.encerraEm=somarHorasUteis(env,HORAS_RETORNO);t.encerradoAuto=false;t.retornos.push({em:fmtDataHora(env),para:c.email,assunto:$("#retAss").value,corpo:$("#retCorpo").value});registrar(t,"Retorno enviado para "+c.email+" por "+me().nome+" · Aguardando retorno (encerra em "+fmtDataHora(t.encerraEm)+")");t.rascunho=null;S.retSel=null;go("detalhe",{sel:t.id});toast("Retorno registrado. "+t.id+" aguardando o cliente por 24h (no protótipo nenhum e-mail sai)")},"Enviar e aguardar 24h");
+    modal(`<h2>Enviar retorno de ${t.id}?</h2><p class="small">O e-mail vai para <b>${esc(c.email)}</b> a partir de <span class="mono">${esc(S.noreply)}</span>. Depois do envio o chamado fica <b>Aguardando retorno</b> e é encerrado automaticamente em 1 dia útil se o cliente não responder.</p>`,
+      ()=>{const env=agora();const antSt=t.status;t.status="Aguardando retorno";t.pausas=(t.pausas||[]).concat([{ini:env}]);t.encerraEm=somarHorasUteis(env,HORAS_RETORNO);t.encerradoAuto=false;t.retornos.push({em:fmtDataHora(env),para:c.email,assunto:$("#retAss").value,corpo:$("#retCorpo").value});registrar(t,"Retorno enviado para "+c.email+" por "+me().nome+" · Aguardando retorno (encerra em "+fmtDataHora(t.encerraEm)+")");t.rascunho=null;S.retSel=null;go("detalhe",{sel:t.id});toast("Retorno registrado. "+t.id+" aguardando o cliente por 1 dia útil (no protótipo nenhum e-mail sai)")},"Enviar e aguardar 1 dia útil");
   }
 });
 
@@ -1923,10 +2159,19 @@ setInterval(()=>{ if(S.logged && rotinaEncerramento()) render(); }, 30000);
 try{Object.assign(S.navOpen, JSON.parse(localStorage.getItem("ejd-nav")||"{}"))}catch(e){}
 try{S.sideHidden=localStorage.getItem("ejd-side")==="1"}catch(e){}
 { const f=somaMeses(agora(),-RET_MESES)+2*86400000;   // exemplo perto de completar 3 meses (Painel 2)
-  S.incPlat.push({id:"p3", plat:"metatex", status:"instavel", inicio:fmtDataHora(f-5400000), inicioMs:f-5400000, fim:fmtDataHora(f), fimMs:f, desc:"Lentidão no acesso à intranet", por:"Marina Alves", exemplo:true}); }
+  S.incPlat.push({id:"p3", plat:"metatex", status:"instavel", inicio:fmtDataHora(f-5400000), inicioMs:f-5400000, fim:fmtDataHora(f), fimMs:f, desc:"Lentidão no acesso à intranet", por:"Julia Nunes", exemplo:true}); }
 try{const fs=JSON.parse(localStorage.getItem("ejd-fotos")||"{}");S.users.forEach(u=>{if(fs[u.id])u.foto=fs[u.id]})}catch(e){}
-(function boot(){const h=lerHash(); if(h) S.wanted=h; render();})();
+(function boot(){const h=lerHash(); if(h) S.wanted=h;})();   // o login real é feito por dados.js
 </script>
+<script>
+/* Produção: as rotinas de prazo rodam no servidor (pg_cron). A tela só mostra. */
+rotinaEncerramento = function(){ return 0; };
+rotinaAtraso = function(){};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="dados.js"></script>
+<script>if(!window.EJD_BLOQUEADO) ejdBoot();</script>
 
 
 </html>
