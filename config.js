@@ -6,6 +6,5 @@
    NUNCA coloque aqui a chave "service_role". */
 window.EJD_CONFIG = {
   supabaseUrl: "https://erukkcqmsuksgnbevoty.supabase.co/rest/v1/",
-  supabaseAnonKey: "sb_publishable_5jj8bLGm7GUu4voN1w-rUg_WoEI1u-w
-"
+  supabaseAnonKey: "sb_publishable_5jj8bLGm7GUu4voN1w-rUg_WoEI1u-w"
 };
