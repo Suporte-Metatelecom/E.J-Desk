@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <style>html,body{margin:0;padding:0}
-  [hidden]{display:none!important}
 /* Produção: esconde o que só existe no protótipo */
 .sim,[data-act="baseExemplo"],[data-act="avancar24"],.ad,[data-go="decisoes"]{display:none!important}</style>
 <title>E.J. Desk</title>
@@ -103,6 +102,7 @@ p{margin:0}
 .nav .fcar{margin-left:auto;font-size:10px;color:var(--side-muted);transition:transform .15s}
 .nav button.fold:not(.open) .fcar{transform:rotate(-90deg)}
 .nav .foldbox{display:flex;flex-direction:column;gap:2px;margin-bottom:4px}
+.nav .subcat{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--side-muted);padding:8px 10px 2px 30px;font-weight:600}
 .nav .subgrp{display:flex;align-items:center;gap:10px;padding:8px 10px 2px;color:var(--side-ink);font-size:13.5px}
 .nav button.child{padding-left:30px;font-size:13px}
 .nav button.child svg{width:15px;height:15px;opacity:.85}
@@ -241,6 +241,9 @@ td .flags{display:inline-flex;gap:4px;margin-left:6px}
 .weeks button:last-child{border-right:0}
 .weeks button.on{background:var(--primary);color:var(--primary-ink)}
 .weeks button:focus-visible{outline:2px solid var(--primary)}
+@media (max-width:820px){.rcvazio{display:none}}
+.rcseg{align-self:flex-start}.rcseg button{font-family:var(--sans);padding:8px 18px;font-size:13px}
+.rcmais{display:inline-block;font-family:var(--sans);font-size:11.5px;padding:1px 7px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted);margin-left:4px}
 
 /* detail */
 .detail{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
@@ -272,7 +275,7 @@ td .flags{display:inline-flex;gap:4px;margin-left:6px}
 .mail .mh dd{margin:0;overflow-wrap:anywhere}
 
 /* login */
-.login{min-height:100%;display:grid;place-items:center;padding-block:32px;padding-inline:16px;background:
+.login{min-height:100vh;min-height:100dvh;box-sizing:border-box;display:grid;place-items:center;padding-block:32px;padding-inline:16px;background:
   radial-gradient(circle at 20% 0%, var(--primary-soft), transparent 45%), var(--bg)}
 .login .card{width:100%;max-width:400px;padding:28px}
 
@@ -383,7 +386,30 @@ table.increg td{vertical-align:middle}
 .sb-txt{writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
 .sb-txt::after{content:"Ocultar menu"}
 .app.collapsed .sb-txt::after{content:"Mostrar menu"}
-.app.collapsed .sidebar-bar{left:0}
+.app.collapsed .sidebar-bar{left:52px}
+.rail{display:none}
+.app.collapsed .rail{position:fixed;top:0;bottom:0;left:0;width:52px;z-index:27;background:var(--side);display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 0;overflow-y:auto;scrollbar-width:none}
+.app.collapsed .rail::-webkit-scrollbar{display:none}
+.rail .mark{margin-bottom:8px;flex:none}
+.rail button{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:38px;height:38px;display:grid;place-items:center;border-radius:8px;color:var(--side-ink)}
+.rail button:hover{background:var(--side-active);color:#fff}
+.rail button.on{background:var(--side-active);color:#fff;box-shadow:inset 2px 0 0 var(--primary)}
+.rail button:focus-visible{outline:2px solid var(--primary)}
+.rail svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7}
+.rail .rsep{flex:none;width:24px;height:1px;background:#243047;margin:4px 0}
+/* 01/10: efeito "dock" — o ícone sob o mouse cresce e os vizinhos acompanham; o nome sai em uma etiqueta */
+.app.collapsed .rail{gap:8px}
+.rail button{transform:scale(var(--s,1));transform-origin:center;transition:transform .16s cubic-bezier(.2,.8,.2,1),background .15s,color .15s,box-shadow .15s;will-change:transform}
+.rail button svg{transition:transform .2s}
+.rail button:hover svg{transform:rotate(-6deg)}
+.rail.in button,.rail.in .mark{animation:railIn .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 28ms)}
+@keyframes railIn{from{opacity:0;transform:translateX(-18px) scale(.6)}to{opacity:1;transform:none}}
+.rail-tip{position:fixed;left:56px;z-index:60;pointer-events:none;background:var(--side-active);color:#fff;font-size:12.5px;font-weight:500;white-space:nowrap;
+  padding:7px 12px 7px 10px;border-radius:0 8px 8px 0;box-shadow:inset 3px 0 0 var(--primary),0 8px 24px rgba(0,0,0,.35);
+  opacity:0;transform:translate(-10px,-50%);transition:opacity .15s,transform .2s cubic-bezier(.2,.8,.2,1)}
+.rail-tip.on{opacity:1;transform:translate(0,-50%)}
+@media (prefers-reduced-motion:reduce){.rail button{transform:none!important}.rail.in button,.rail.in .mark{animation:none}}
+.app.collapsed .main{padding-left:108px}
 .app.collapsed .sidebar-bar svg{transform:rotate(180deg)}
 .main{padding-left:56px}
 .app{transition:grid-template-columns .2s}
@@ -394,6 +420,8 @@ table.increg td{vertical-align:middle}
 @media (max-width:820px){
   .app,.app.collapsed{grid-template-columns:1fr}
   .sidebar-bar{display:none}
+  .app.collapsed .rail{display:none}
+  .app.collapsed .main{padding-left:16px}
   .app.collapsed .side{visibility:visible;padding-inline:14px}
   .main{padding-left:16px}
   .side{position:fixed;inset:0 auto 0 0;width:260px;z-index:30;transform:translateX(-100%);transition:transform .2s;padding-top:calc(20px + env(safe-area-inset-top,0px))}
@@ -452,7 +480,7 @@ function horasUteisEntre(a, b){           // minutos úteis entre dois instantes
 
 const S = {
   logged:false, q:"", sla:null, route:"abertura", navOpen:{}, lf:{}, tab:"info", level:"Diamante", setor:"suporte", me:"u1", wanted:null, week:"37", filter:null, sel:null, retSel:null,
-  noreply:"suporte-noreply@metatelecom.com.br", replyTo:"suporte@metatelecom.com.br",   // 29/09: envio só de saída + "Responder para" o hub (a criar com a TI)
+  noreply:"suporte.noreply@metatelecom.com.br", replyTo:"suporte@metatelecom.com.br",   // 29/09: envio só de saída + "Responder para" o hub (a criar com a TI)
   users:[
     {id:"u1", nome:"Júnior", email:"ely.junior@metatelecom.com.br", setor:"suporte", nivel:"Diamante", ativo:true, cargo:"Coordenador", acum:19},
     {id:"u2", nome:"Daniel Mello", email:"daniel.mello@metatelecom.com.br", setor:"suporte", nivel:"Ouro", ativo:true, cargo:"Suporte", acum:15},
@@ -556,6 +584,12 @@ S.incidentes = [
   {id:"r2", dia:"2026-09-28", turno:"tarde", em:"28/09/2026 13:05", operadora:"Vivo", linhas:11920, obs:"Oscilação na região Sul", por:"Daniel Mello", exemplo:true},
   {id:"r3", dia:"2026-09-28", turno:"manha", em:"28/09/2026 09:10", operadora:"Claro", linhas:8640, obs:"", por:"Daniel Mello", exemplo:true}
 ];
+/* Registro de chamados (01/10): substitui a planilha de controle da equipe. Vários chips (ICCID/MSISDN) por registro. */
+S.regCham = [
+  {id:"RC-000002", em:"30/09/2026 15:12", usuario:"Daniel Mello", cliente:"Omega Frotas", doc:"23.456.789/0001-55", operadora:"Algar", chips:["89553202100000000017","5516990000002"], rede:"4G", equip:"RK 101", sms:"Sim", regiao:"Parnamirim RN", comandos:"SERVER,1,rastreio.exemplo.com.br,5023,0#", exemplo:true},
+  {id:"RC-000001", em:"29/09/2026 10:40", usuario:"Júnior", cliente:"Empresa XYZ Rastreamento", doc:"12.345.678/0001-90", operadora:"Vivo", chips:["5511987650001","5511987650002","5511987650003"], rede:"2G", equip:"GT06", sms:"Não", regiao:"", comandos:"", exemplo:true}
+];
+S.regSeq = 3; S.rcQ = ""; S.rcOp = ""; S.rcEdit = null;
 S.incPlat = [
   {id:"p1", plat:"nsend", status:"instavel", inicio:"29/09/2026 08:15", desc:"Atraso na entrega de mensagens", por:"Júnior", exemplo:true},
   {id:"p2", plat:"wati", status:"fora", inicio:"28/09/2026 14:02", fim:"28/09/2026 15:40", desc:"Login indisponível", por:"Daniel Mello", exemplo:true}
@@ -579,6 +613,17 @@ const KPIS = [
 
 /* ===== Pontos em aberto (fonte: Especificação Inicial MVP, seções 9 e 12) ===== */
 const DECISOES = [
+  {id:"rc_def", g:"Registro de chamados (01/10)", t:"Nova aba \"Registro de chamados\" em Incidentes, com o ícone da Abertura de chamado. Substitui a planilha de controle; os dados antigos não são importados (começa do zero)", st:"ok", o:[]},
+  {id:"rc_campos", g:"Registro de chamados (01/10)", t:"Campos: Usuário, Cliente, CNPJ ou CPF, Operadora, ICCID ou MSISDN, Rede (4G ou 2G), Equipamento, Recebe SMS (Sim ou Não), Região e Comandos. Obrigatórios: Usuário, Cliente, CNPJ ou CPF, Operadora e Equipamento. As colunas Tráfego zerado, Plataforma e Última conexão da planilha não entram", st:"ok", o:[]},
+  {id:"rc_chips", g:"Registro de chamados (01/10)", t:"Vários chips (ICCID/MSISDN) em um mesmo registro", st:"ok", o:[]},
+  {id:"inc_ordem", g:"Registro de chamados (01/10)", t:"Incidentes com duas subcategorias: Operadoras (Registro de incidentes, Painel de incidentes e Registro de base) e, por último, Clientes (Registro de chamados e Relação de chamados)", st:"ok", o:[]},
+  {id:"rc_relacao", g:"Registro de chamados (01/10)", t:"A lista dos registros sai da aba Registro de chamados e vira a aba \"Relação de chamados\" em Incidentes, logo abaixo de Registro de chamados. Registro de chamados fica só com o formulário", st:"ok", o:[]},
+  {id:"rc_perm", g:"Registro de chamados (01/10)", t:"Bronze só cria · Prata e Ouro criam e editam · Diamante também exclui", st:"ok", o:[]},
+  {id:"rc_ver", g:"Registro de chamados (01/10)", t:"Quem vê os registros?", st:"d", nota:"O protótipo mostra a lista toda para todos do Suporte, inclusive Bronze.", o:[["Todos veem tudo","Qualquer um consulta o histórico de um chip ou cliente. É como a planilha funciona hoje."],["Bronze vê só os próprios","Igual aos chamados: o Bronze vê só o que ele criou."]]},
+  {id:"rc_cliente", g:"Registro de chamados (01/10)", t:"Cliente: digitação livre ou só clientes cadastrados?", st:"d", nota:"O protótipo aceita qualquer nome. Se o cliente estiver cadastrado, sugere o nome e preenche o CNPJ/CPF.", o:[["Livre, com sugestão","Mais rápido, mas o mesmo cliente pode aparecer escrito de formas diferentes."],["Só cadastrados","Dados padronizados e ligados ao cadastro. Exige cadastrar o cliente antes."]]},
+  {id:"rc_excluir", g:"Registro de chamados (01/10)", t:"Exclusão: definitiva ou com lixeira?", st:"d", nota:"O protótipo apaga de vez, com confirmação.", o:[["Definitiva","Mais simples."],["Lixeira","O registro some da lista, mas o Diamante consegue ver e restaurar, como nos chamados excluídos."]]},
+  {id:"rc_vinculo", g:"Registro de chamados (01/10)", t:"Ligar o registro a um chamado (EJD-…)?", st:"d", nota:"Hoje os dois são independentes.", o:[["Não ligar","O registro é só o controle técnico."],["Campo opcional \"Chamado\"","Escolher o chamado relacionado. A página do chamado mostra os registros dele."]]},
+
   {id:"lgpd", g:"Já definido", t:"Retenção dos dados do cliente: por enquanto, os dados são mantidos sem prazo de exclusão (28/09). Revisar com o jurídico antes de produção.", st:"ok", o:[]},
   {id:"sla_valores", g:"Já definido", t:"Prazo para \"Atrasado\": 1 dia útil a partir da abertura, igual para todas as categorias; ajustável por categoria (29/09)", st:"ok", o:[]},
   {id:"fin_oculto", g:"Já definido", t:"Setor Financeiro oculto por enquanto; será usado em projetos futuros. Usuárias Nathália e Mariana removidas do protótipo (29/09)", st:"ok", o:[]},
@@ -605,9 +650,14 @@ const DECISOES = [
   {id:"responsavel_nivel", g:"Já definido", t:"Responsável pelo chamado: só Ouro ou acima, com acesso ao setor do chamado (28/09)", st:"ok", o:[]},
   {id:"busca_linha", g:"Já definido", t:"Busca por linha no texto do chamado: MSISDN/ICCID, B.O, equipamentos e protocolo do atendimento (28/09)", st:"ok", o:[]},
   {id:"janela_uteis", g:"Já definido", t:"Encerramento automático do retorno: 1 dia útil sem resposta do cliente (29/09)", st:"ok", o:[]},
+  {id:"usuarios_foto", g:"Já definido", t:"Usuários: a lista mostra a foto de perfil de cada pessoa (ou as iniciais, quando não há foto) (01/10)", st:"ok", o:[]},
+  {id:"abertura_opc", g:"Já definido", t:"Abertura de chamado: CEP da localização da linha, Quais equipamentos usa? e Comandos passam a ser opcionais (01/10)", st:"ok", o:[]},
+  {id:"menu_icones", g:"Já definido", t:"Menu oculto mostra uma faixa com os ícones das abas, para navegar sem abrir o menu; o nome aparece ao passar o mouse (01/10)", st:"ok", o:[]},
+  {id:"prio_desc", g:"Já definido", t:"Prioridade com exemplo na hora de escolher: Baixa — impacto pequeno ou pontual · Normal — instabilidade com impacto moderado · Alta — impacto significativo na operação · Urgente — operação parada ou grande quantidade de linhas afetadas (01/10)", st:"ok", o:[]},
+  {id:"retorno_tela", g:"Já definido", t:"Aguardando retorno: o prazo continua 1 dia útil; a tela mostra quando o chamado encerra (ex.: \"amanhã às 10:23\"), e não mais as horas de expediente restantes (01/10, opção A)", st:"ok", o:[]},
   {id:"expediente", g:"Já definido", t:"\"24 horas úteis\" = 1 dia útil: um retorno enviado na segunda às 10h encerra na terça às 10h; o prazo de Atrasado também é de 1 dia útil (29/09)", st:"ok", o:[]},
   {id:"expediente_horario", g:"Já definido", t:"Expediente: segunda a sexta, 08h às 18h; feriados não entram na conta (30/09)", st:"ok", o:[]},
-  {id:"email_retorno", g:"Horas úteis (28/09)", t:"E-mail do retorno: endereço só de envio + \"Responder para\" suporte@ (escolhido em 29/09); falta criar com a TI", st:"d", nota:"Criar o alias só de envio (ex.: suporte-noreply@metatelecom.com.br) e configurar SPF/DKIM. O protótipo já mostra o \"Responder para\" no e-mail.", o:[]},
+  {id:"email_retorno", g:"Horas úteis (28/09)", t:"E-mail do retorno: sai de suporte.noreply@metatelecom.com.br (só envio) com \"Responder para\" suporte@ (definido em 30/09); falta a TI criar a caixa e liberar o SMTP", st:"d", nota:"A mesma caixa serve de SMTP próprio no Supabase, o que também libera os modelos de e-mail de convite e de troca de senha.", o:[]},
   {id:"atraso_espera", g:"Já definido", t:"O prazo de \"Atrasado\" pausa enquanto o chamado está Aguardando retorno (28/09)", st:"ok", o:[]},
   {id:"fin_estrutura", g:"Futuro — Setor Financeiro", t:"Campos, status e fluxo dos chamados do Financeiro (Cancelamento, Contestação, Boletos/Fatura/NF, Reativação)", st:"f", nota:"O menu e as permissões já existem. As telas mostram linhas ilustrativas até isso ser definido.", o:[]},
   {id:"fin_origem", g:"Futuro — Setor Financeiro", t:"Quem abre chamado do Financeiro? Um chamado do Suporte com \"O caso é sobre: Financeiro\" vai para o Financeiro?", st:"f", o:[]},
@@ -680,6 +730,10 @@ const RECURSOS = {
   "abertura":{area:"suporte", min:"Bronze"},
   "painel":{area:"suporte", min:"Prata"},
   "incidentes":{area:"suporte", min:"Bronze"},        // 29/09 (item 46): todos do Suporte veem
+  "inc-chamados":{area:"suporte", min:"Bronze"},
+  "inc-relacao":{area:"suporte", min:"Bronze"},       // 01/10: Relação de chamados (lista dos registros) — quem vê: a decidir      // 01/10: Registro de chamados — todos do Suporte criam
+  "regcham.editar":{area:"suporte", min:"Prata"},     // 01/10: Prata e Ouro criam e editam (Diamante herda)
+  "regcham.excluir":{area:"suporte", min:"Diamante"}, // 01/10: só o Diamante exclui
   "inc-registro":{area:"suporte", min:"Bronze"},
   "inc-base":{area:"suporte", min:"Bronze"},
   ...(PLATAFORMAS_ATIVO?{"inc-plataformas":{area:"suporte", min:"Prata"}}:{}),
@@ -738,6 +792,11 @@ const tk = id => S.tickets.find(t=>t.id===id);
 const agora = () => Date.now() + (S.offset||0);          // relógio do protótipo (pode ser adiantado)
 const now = () => {const d=new Date(agora());return d.toTimeString().slice(0,5)};
 const fmtDataHora = ms => {const d=new Date(ms);return d.toLocaleDateString("pt-BR")+" "+d.toTimeString().slice(0,5)};
+/* 01/10 (opção A): o prazo do retorno continua 1 dia útil; a tela mostra QUANDO encerra, não as horas de expediente restantes. */
+const quandoEnc = ms => { const d=new Date(ms), h=new Date(agora()), dia=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime();
+  const dd=Math.round((dia(d)-dia(h))/864e5), hh=d.toTimeString().slice(0,5);
+  if(dd<=0) return "hoje às "+hh; if(dd===1) return "amanhã às "+hh;
+  return ["dom","seg","ter","qua","qui","sex","sáb"][d.getDay()]+", "+d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+" às "+hh; };
 const falta = ms => {const m=Math.max(0,Math.round(horasUteisEntre(agora(),ms)*60));return Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"min úteis"};
 /* Rotina de encerramento automático: mesma regra do job do backend.
    Encerra chamados em "Aguardando retorno" cujo prazo venceu sem resposta do cliente. */
@@ -835,10 +894,14 @@ const NAV = [
   {fold:"f-clientes", t:"Cadastro de cliente", e:"🖥️"},
   {r:"clientes", t:"Clientes", i:"bld"},
   {fold:"f-incidentes", t:"Incidentes", e:"☢️"},
-  {r:"inc-base", t:"Registro de base", i:"base"},
+  {sub:"Operadoras"},                                                  // subcategorias definidas em 01/10
   {r:"inc-registro", t:"Registro de incidentes", i:"registro"},
   {r:"incidentes", t:NOME_P1, i:"pulso"},
+  {r:"inc-base", t:"Registro de base", i:"base"},
   ...(PLATAFORMAS_ATIVO?[{r:"inc-plataformas", t:"Painel de incidentes 2", i:"alert", novo:true}]:[]),
+  {sub:"Clientes"},
+  {r:"inc-chamados", t:"Registro de chamados", i:"abrir"},
+  {r:"inc-relacao", t:"Relação de chamados", i:"relacao"},
   {fold:null},
   {g:"Financeiro", area:"financeiro"},
   {r:"fin-cancelamento", t:"Cancelamento", i:"xcirc"},
@@ -856,7 +919,7 @@ const NAV = [
 /* Monta o menu a partir de NAV + pode(). Grupos (g) e pastas que abrem e fecham (fold) só aparecem se tiverem algum item permitido.
    A pasta da página atual fica sempre aberta. */
 function menuHTML(cur){
-  const out=[]; let grp=null, itens=[], fold=null, fItens=[];
+  const out=[]; let grp=null, itens=[], fold=null, fItens=[], sub=null;   // sub: subcategoria dentro da pasta (só aparece se tiver item permitido)
   const fechaFold=()=>{ if(fold && fItens.length){ const aberto = S.navOpen[fold.fold]!==false || fItens.some(x=>x.on);
       itens.push(`<button class="fold${aberto?" open":""}" data-fold="${fold.fold}" aria-expanded="${aberto}"><span class="femo" aria-hidden="true">${fold.e}</span><span>${fold.t}</span><span class="fcar" aria-hidden="true">▾</span></button>`,
         `<div class="foldbox"${aberto?"":" hidden"}>${fItens.map(x=>x.html).join("")}</div>`); }
@@ -864,13 +927,52 @@ function menuHTML(cur){
   const flush=()=>{ fechaFold(); if(grp && itens.length) out.push(`<div class="grp">${grp.g}</div>`, ...itens); itens=[]; };
   NAV.forEach(n=>{
     if(n.g){flush();grp=n;return}
-    if(n.fold!==undefined){fechaFold(); if(n.fold) fold=n; return}
+    if(n.fold!==undefined){fechaFold(); sub=null; if(n.fold) fold=n; return}
+    if(n.sub){sub=n.sub; return}
     if(!pode(n.r)) return;
     const html=`<button data-go="${n.r}" class="${cur===n.r?"on":""}${fold?" child":""}" ${n.off?"disabled":""}>${IC[n.i]||""}<span>${n.t}</span>${n.tag?`<span class="tag">${n.tag}</span>`:""}${n.novo&&!fold?`<span class="tag">novo</span>`:""}</button>`;
+    if(fold && sub){ fItens.push({html:`<div class="subcat">${esc(sub)}</div>`, on:false}); sub=null; }
     if(fold) fItens.push({html, on:cur===n.r}); else itens.push(html);
   });
   flush(); return out.join("");
 }
+
+/* 01/10: menu oculto mostra uma faixa só com os ícones das abas (mesmas permissões do menu). */
+function railHTML(cur){
+  const out=[]; let sep=false;
+  NAV.forEach(n=>{
+    if(n.g!==undefined || n.fold!==undefined || n.sub){ sep=true; return }
+    if(!n.r || n.off || !pode(n.r)) return;
+    if(sep && out.length) out.push('<span class="rsep" aria-hidden="true"></span>'); sep=false;
+    out.push(`<button data-go="${n.r}" class="${cur===n.r?"on":""}" style="--i:${out.length}" data-nome="${esc(n.t)}" aria-label="${esc(n.t)}"${cur===n.r?' aria-current="page"':""}>${IC[n.i]||""}</button>`);
+  });
+  return `<nav class="rail" aria-label="Menu compacto"><div class="mark" aria-hidden="true">EJ</div>${out.join("")}</nav>`;
+}
+
+(function railDock(){
+  let tip=null, alvo=null;
+  const calmo=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const dica=()=>tip||(tip=Object.assign(document.createElement("div"),{className:"rail-tip"}),tip.setAttribute("aria-hidden","true"),document.body.appendChild(tip),tip);
+  function zera(rail){ rail?.querySelectorAll("button").forEach(b=>b.style.removeProperty("--s")); if(tip) tip.classList.remove("on"); alvo=null; }
+  document.addEventListener("mousemove", e=>{
+    const rail=e.target.closest?.(".app.collapsed .rail");
+    if(!rail){ if(alvo) zera(document.querySelector(".rail")); return; }
+    const y=e.clientY;
+    if(!calmo()) rail.querySelectorAll("button").forEach(b=>{ const r=b.getBoundingClientRect(), d=Math.abs(y-(r.top+r.height/2)), k=Math.max(0,1-d/110);
+      b.style.setProperty("--s",(1+0.3*k*k).toFixed(3)); });
+    const b=e.target.closest("button[data-nome]");
+    if(b!==alvo){ alvo=b; const t=dica();
+      if(b){ const r=b.getBoundingClientRect(); t.textContent=b.dataset.nome; t.style.top=(r.top+r.height/2)+"px"; t.classList.remove("on"); void t.offsetWidth; t.classList.add("on"); }
+      else t.classList.remove("on"); }
+    else if(b && tip){ const r=b.getBoundingClientRect(); tip.style.top=(r.top+r.height/2)+"px"; }
+  }, {passive:true});
+  document.addEventListener("mouseleave", ()=>zera(document.querySelector(".rail")));
+  document.addEventListener("focusin", e=>{ const b=e.target.closest?.(".app.collapsed .rail button[data-nome]"); const t=dica();
+    if(b){ const r=b.getBoundingClientRect(); t.textContent=b.dataset.nome; t.style.top=(r.top+r.height/2)+"px"; t.classList.add("on"); } else if(!alvo) t.classList.remove("on"); });
+  document.addEventListener("scroll", e=>{ if(e.target.classList?.contains("rail") && tip) tip.classList.remove("on"), alvo=null; }, true);
+  document.addEventListener("click", e=>{ if(e.target.closest(".rail") && tip) tip.classList.remove("on"); });
+  window.railEntrada=()=>{ const r=document.querySelector(".rail"); if(!r||calmo()) return; r.classList.remove("in"); void r.offsetWidth; r.classList.add("in"); setTimeout(()=>r.classList.remove("in"),900); };
+})();
 
 /* ============ Telas ============ */
 function vLogin(){
@@ -886,7 +988,7 @@ function vLogin(){
 function vAbertura(){
   const opts = S.clientes.map(c=>`<option value="${c.id}">${esc(c.nome)} · ${esc(c.doc)}</option>`).join("");
   return `<div class="page">
-  <div class="head"><div class="t"><h1>Abertura de chamado</h1><p class="muted">Primeira tela do fluxo. Todos os campos são obrigatórios.</p></div></div>
+  <div class="head"><div class="t"><h1>Abertura de chamado</h1><p class="muted">Primeira tela do fluxo. Campos com <span style="color:var(--atrasado)">*</span> são obrigatórios.</p></div></div>
   ${S.level==="Bronze"?`<div class="note"><div>Você está vendo como <b>Bronze</b>: abre chamados, mas não vê a fila. Os chamados que você abrir aparecem em <b>Meus chamados</b>, só para consulta.</div></div>`:""}
   <form class="card pad stack" id="fAbrir" novalidate>
     <div class="grid2">
@@ -896,10 +998,10 @@ function vAbertura(){
       </div>
       <div class="field" style="grid-column:1/-1"><label for="abBo">Descreva o B.O <i>*</i></label><textarea class="in" id="abBo" required placeholder="O que está acontecendo, desde quando, qual o impacto para o cliente"></textarea></div>
       <div class="field"><label for="abProt">Protocolo do atendimento <i>*</i></label><input class="in mono" id="abProt" required placeholder="Ex.: VIVO-20260923-00000"></div>
-      <div class="field"><label for="abCep">CEP da localização da linha <i>*</i></label><input class="in mono" id="abCep" required inputmode="numeric" maxlength="9" placeholder="00000-000"></div>
-      <div class="field"><label for="abEq">Quais equipamentos usa? <i>*</i></label><input class="in" id="abEq" required placeholder="Modelo do equipamento e do SIM"></div>
+      <div class="field"><label for="abCep">CEP da localização da linha <span class="small muted">(opcional)</span></label><input class="in mono" id="abCep" inputmode="numeric" maxlength="9" placeholder="00000-000"></div>
+      <div class="field"><label for="abEq">Quais equipamentos usa? <span class="small muted">(opcional)</span></label><input class="in" id="abEq" placeholder="Modelo do equipamento e do SIM"></div>
       <div class="field"><label for="abFeito">O que já foi feito? <i>*</i></label><input class="in" id="abFeito" required placeholder="Testes e tentativas feitos antes de abrir"></div>
-      <div class="field" style="grid-column:1/-1"><label for="abCmd">Comandos (quando aplicável) <i>*</i></label><textarea class="in mono" id="abCmd" required placeholder="Ex.: AT+CSQ&#10;AT+CGDCONT?&#10;ou “Não se aplica”" style="min-height:120px"></textarea></div>
+      <div class="field" style="grid-column:1/-1"><label for="abCmd">Comandos (quando aplicável) <span class="small muted">(opcional)</span></label><textarea class="in mono" id="abCmd" placeholder="Ex.: AT+CSQ&#10;AT+CGDCONT?&#10;ou “Não se aplica”" style="min-height:120px"></textarea></div>
       <div class="field" style="grid-column:1/-1"><label for="abAnx">Anexos (opcional)</label><input class="in" type="file" id="abAnx" multiple accept="image/*,.pdf,.xls,.xlsx,.csv,.txt"><span class="hint">Imagens, PDF, Excel e TXT · até 10 MB por arquivo.</span></div>
       <div class="field"><label for="abQuem">Quem abriu o ticket? <i>*</i></label>
         <select class="in" id="abQuem" required><option value="">Selecione</option>${S.users.filter(u=>!u.desativado).map(u=>`<option ${u.id===S.me?"selected":""}>${esc(u.nome)}</option>`).join("")}</select></div>
@@ -908,7 +1010,7 @@ function vAbertura(){
       <div class="field"><label for="abCat">Categoria <i>*</i></label>
         <select class="in" id="abCat" required><option value="">Selecione</option>${CATEGORIAS.map(c=>`<option>${esc(c)}</option>`).join("")}</select></div>
       <div class="field"><label for="abPrio">Prioridade <i>*</i></label>
-        <select class="in" id="abPrio" required><option value="">Selecione</option>${PRIORIDADES.map(p=>`<option>${p}</option>`).join("")}</select></div>
+        <select class="in" id="abPrio" required><option value="">Selecione</option>${PRIORIDADES.map(p=>prioOpt(p)).join("")}</select></div>
       <div class="field" style="grid-column:1/-1"><label for="abLinha">MSISDN ou ICCID <i id="abLinhaReq" hidden>*</i></label><input class="in mono" id="abLinha" inputmode="numeric" placeholder="Ex.: 5511987654321 ou 89550000000000000000, 5511912345678">
         <span class="hint" id="abLinhaHint">Obrigatório quando o caso é de uma operadora M2M ou BL. Só números: MSISDN com 12 ou 13 dígitos ou ICCID com 19 ou 20. Vários números: separe por vírgula.</span></div>
     </div>
@@ -964,6 +1066,9 @@ function transicao(t, novo){                 // -> {ok, act?, motivo?}
   return {ok:false, motivo:"Fora da sequência do fluxo"};
 }
 const PRIORIDADES = ["Baixa","Normal","Alta","Urgente"];
+/* 01/10: exemplo de cada prioridade, mostrado na hora de escolher */
+const PRIO_DESC = {Baixa:"impacto pequeno ou pontual", Normal:"instabilidade com impacto moderado", Alta:"impacto significativo na operação", Urgente:"operação parada ou grande quantidade de linhas afetadas"};
+const prioOpt = (p, sel) => `<option value="${p}" ${p===sel?"selected":""} title="${p}: ${PRIO_DESC[p]}.">${p} — ${PRIO_DESC[p]}</option>`;
 /* Anexos: no protótipo o arquivo fica só na memória do navegador (some ao recarregar). Na versão real vai para o armazenamento do servidor. */
 const tipoArq = n => /\.(png|jpe?g|gif|webp|bmp|heic)$/i.test(n)?"img":/\.(mp4|mov|webm|m4v)$/i.test(n)?"video":/\.pdf$/i.test(n)?"pdf":/\.(txt|csv)$/i.test(n)?"txt":/\.xlsx?$/i.test(n)?"xls":"outro";
 const tamArq = b => b>=1048576?(b/1048576).toFixed(1).replace(".",",")+" MB":Math.max(1,Math.round(b/1024))+" KB";
@@ -1055,19 +1160,19 @@ function aplicarFiltros(list, f){
 function vLista(opts){
   const rota=S.route, f=lf(rota);
   // Filtro vindo dos cards do Painel
-  if(S.filter){ if(S.filter.status) f.status=S.filter.status; if(S.filter.flag==="atrasado") f.atrasados=true; if(S.filter.flag==="atipico") f.q=""; }
+  if(S.filter){ f.status=S.filter.status||""; f.atrasados=S.filter.flag==="atrasado"; if(S.filter.flag==="atipico") f.q=""; }
   const base=chamadosVisiveis(opts);
   let list=aplicarFiltros(base,f);
   if(S.filter?.flag==="atipico") list=list.filter(t=>t.flags.atipico);
   const multiSetor = !opts.setorFixo && setoresVisiveis().length>1;
   const ativos=list.filter(t=>!t.excluido);
   const cards=[
-    {k:"Total", n:ativos.length, c:"var(--muted)", set:{status:""}},
-    {k:"Novos", n:ativos.filter(t=>t.status==="Novo").length, c:"var(--novo)", set:{status:"Novo"}},
-    {k:"Em análise", n:ativos.filter(t=>t.status==="Em análise").length, c:"var(--analise)", set:{status:"Em análise"}},
-    {k:"Aguardando retorno", n:ativos.filter(t=>t.status==="Aguardando retorno").length, c:"var(--aguard)", set:{status:"Aguardando retorno"}},
-    {k:"Atrasados", n:ativos.filter(t=>t.flags.atrasado).length, c:"var(--atrasado)", set:{atrasados:true}},
-    {k:"Resolvidos", n:ativos.filter(t=>t.status==="Resolvido").length, c:"var(--resolvido)", set:{status:"Resolvido"}}
+    {k:"Total", n:ativos.length, c:"var(--muted)", set:{status:"",atrasados:false}},
+    {k:"Novos", n:ativos.filter(t=>t.status==="Novo").length, c:"var(--novo)", set:{status:"Novo",atrasados:false}},
+    {k:"Em análise", n:ativos.filter(t=>t.status==="Em análise").length, c:"var(--analise)", set:{status:"Em análise",atrasados:false}},
+    {k:"Aguardando retorno", n:ativos.filter(t=>t.status==="Aguardando retorno").length, c:"var(--aguard)", set:{status:"Aguardando retorno",atrasados:false}},
+    {k:"Atrasados", n:ativos.filter(t=>t.flags.atrasado).length, c:"var(--atrasado)", set:{status:"",atrasados:true}},
+    {k:"Resolvidos", n:ativos.filter(t=>t.status==="Resolvido").length, c:"var(--resolvido)", set:{status:"Resolvido",atrasados:false}}
   ];
   const cats=[...new Set(base.map(t=>t.cat).filter(Boolean))].sort();
   const resps=[...new Set(base.map(respNome))].sort();
@@ -1111,7 +1216,7 @@ function linha(t, multiSetor){
     <td>${esc(t.cat)}</td>
     <td>${prioBadge(t.prioridade)}</td>
     <td>${trat && t.status!=="Encerrado"?`<button class="inl" data-pop="resp" data-id="${t.id}" aria-haspopup="menu">${esc(respNome(t))}<span class="car">▾</span></button>`:esc(respNome(t))}</td>
-    <td><span class="stcell">${trat?`<button class="inl" data-pop="status" data-id="${t.id}" aria-haspopup="menu">${st}<span class="car">▾</span></button>`:st}<span class="flags">${flags(t)}</span></span>${t.status==="Aguardando retorno"&&t.encerraEm?`<div class="small muted mono">encerra em ${falta(t.encerraEm)}</div>`:""}</td>
+    <td><span class="stcell">${trat?`<button class="inl" data-pop="status" data-id="${t.id}" aria-haspopup="menu">${st}<span class="car">▾</span></button>`:st}<span class="flags">${flags(t)}</span></span>${t.status==="Aguardando retorno"&&t.encerraEm?`<div class="small muted">encerra ${quandoEnc(t.encerraEm)}</div>`:""}</td>
     ${multiSetor?`<td>${esc(SETORES[t.setor]?.nome||"—")}</td>`:""}
     <td class="mono">${esc((t.aberto||"").slice(0,5))}</td>
     <td class="acoes"><button class="kebab" data-pop="acoes" data-id="${t.id}" aria-haspopup="menu" aria-label="Ações do chamado ${t.id}">⋮</button></td>
@@ -1165,7 +1270,7 @@ function avisoTimer(t){
   return `<div class="timer" role="status"><div class="stack" style="gap:4px;flex:1;min-width:220px">
     <b>Aguardando retorno do cliente</b>
     <span class="small">Se o cliente não responder, o chamado será <b>encerrado automaticamente</b> em ${fmtDataHora(t.encerraEm)}. Se ele responder, registre a resposta aqui e o chamado volta para Em análise.</span></div>
-    <div class="stack" style="gap:2px;align-items:flex-end"><span class="clock">${falta(t.encerraEm)}</span><span class="small muted">para o encerramento</span>
+    <div class="stack" style="gap:2px;align-items:flex-end"><span class="small muted">Encerra</span><span class="clock">${quandoEnc(t.encerraEm)}</span><span class="small muted">1 dia útil após o envio</span>
     <button class="btn sm" data-act="avancar24" title="Só existe no protótipo">Protótipo: avançar até o prazo</button></div></div>`;
 }
 
@@ -1205,7 +1310,7 @@ function vDetalhe(){
       <section class="card pad stack"><h2>Informações do chamado</h2>
         <div class="facts">
           <div><span class="label">Status</span><span>${t.excluido?`<span class="pill s-Excluido">Excluído</span>`:pill(t.status)}</span></div>
-          <div><span class="label">Prioridade</span><span>${ouro?`<select class="in" id="detPrio" style="padding:5px 8px;max-width:180px">${PRIORIDADES.map(p=>`<option ${p===(t.prioridade||"Normal")?"selected":""}>${p}</option>`).join("")}</select>`:prioBadge(t.prioridade)}</span></div>
+          <div><span class="label">Prioridade</span><span>${ouro?`<select class="in" id="detPrio" style="padding:5px 8px;max-width:100%">${PRIORIDADES.map(p=>prioOpt(p,t.prioridade||"Normal")).join("")}</select>`:prioBadge(t.prioridade)}</span></div>
           <div><span class="label">${t.setor==="financeiro"?"Subcategoria":"Categoria"}</span><span>${ouro?`<select class="in" id="detCat" style="padding:5px 8px;max-width:220px">${catOpts.map(x=>`<option ${x===t.cat?"selected":""}>${x}</option>`).join("")}</select>`:esc(t.cat)}</span></div>
           <div><span class="label">Classificação</span><span>${t.flags.atipico?`<span class="flag f-ati">Atípico</span>`:"Nenhuma"}${t.flags.atrasado?` <span class="flag f-atr">Atrasado</span>`:""}</span></div>
           <div><span class="label">Responsável</span><span>${esc(respNome(t))}</span></div>
@@ -1286,6 +1391,168 @@ function vNegado(){
     <div><button class="btn primary" data-go="${primeiraRota()}">Ir para a minha página inicial</button></div>
   </section></div>`;
 }
+
+/* ============ Registro de chamados (01/10) ============
+   Substitui a planilha da equipe. Obrigatórios: Usuário (quem está registrando, automático), Cliente, CNPJ ou CPF, Operadora e Equipamento.
+   Permissões: Bronze só cria · Prata e Ouro criam e editam · Diamante também exclui. */
+const RC_REDES = ["4G","2G"];
+const soDig = v => (v||"").replace(/\D/g,"");
+const fmtDoc = v => { const d=soDig(v); if(d.length===11) return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/,"$1.$2.$3-$4"); if(d.length===14) return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,"$1.$2.$3/$4-$5"); return (v||"").trim(); };
+const rcChips = v => [...new Set((v||"").split(/[\s,;]+/).map(x=>x.trim()).filter(Boolean))];
+const rcChipRuim = n => !/^\d+$/.test(n) || ![12,13,19,20].includes(n.length);     // mesma regra da Abertura (item 47)
+const rcTipo = n => n.length>=19 ? "ICCID" : "MSISDN";
+const rcDe = id => S.regCham.find(r=>r.id===id);
+function rcFiltrados(){
+  const q=(S.rcQ||"").trim().toLowerCase(), qd=soDig(q);
+  return S.regCham.filter(r=>(!S.rcOp||r.operadora===S.rcOp) && (!q ||
+    [r.cliente,r.doc,r.equip,r.regiao,r.usuario,r.id,r.comandos].some(x=>(x||"").toLowerCase().includes(q)) ||
+    (qd.length>=4 && (soDig(r.doc).includes(qd) || r.chips.some(c=>c.includes(qd))))));
+}
+function rcForm(r){
+  const ed=!!r, v=r||{}, eqs=[...new Set(S.regCham.map(x=>x.equip).filter(Boolean))].sort(), regs=[...new Set(S.regCham.map(x=>x.regiao).filter(Boolean))].sort();
+  const opt=(lista,val)=>lista.map(o=>`<option ${o===val?"selected":""}>${esc(o)}</option>`).join("");
+  const radios=(nome,lista,val)=>`<div class="weeks rcseg" role="radiogroup" aria-label="${nome}">${lista.map(o=>`<button type="button" role="radio" aria-checked="${o===val}" class="${o===val?"on":""}" data-rcseg="${nome}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div><input type="hidden" id="rc${nome}" value="${esc(val||"")}">`;
+  return `<form class="card pad stack" id="fRC" novalidate>
+    <div class="row" style="justify-content:space-between"><h2>${ed?`Editar registro <span class="mono">${esc(r.id)}</span>`:"Novo registro"}</h2><span class="small muted"><span style="color:var(--atrasado)">*</span> obrigatório</span></div>
+    <p class="small muted" style="margin-top:-6px">Informações para abertura de chamado de instabilidade. Elas ajudam a equipe a identificar a causa da instabilidade, realizar as verificações necessárias e dar um retorno mais rápido ao cliente.</p>
+    <div class="grid2">
+      <div class="field"><label for="rcUsr">Usuário <i>*</i></label><input class="in" id="rcUsr" value="${esc(ed?v.usuario:me().nome)}" disabled><span class="hint">${ed?`Quem criou o registro, em ${esc(v.em)}.`:"Quem está registrando. Preenchido automaticamente."}</span></div>
+      <div class="field"><label for="rcOp">Operadora <i>*</i></label><select class="in" id="rcOp" required><option value="">Selecione</option>${opt(OPERADORAS(),v.operadora)}</select><span class="hint">Identificar qual operadora está apresentando a instabilidade.</span></div>
+      <div class="field" style="grid-column:1/-1"><label for="rcCli">Cliente <i>*</i></label><input class="in" id="rcCli" required list="rcCliL" autocomplete="off" value="${esc(v.cliente||"")}" placeholder="Identificar quem está reportando o problema para facilitar o acompanhamento e retorno." title="Identificar quem está reportando o problema para facilitar o acompanhamento e retorno."><datalist id="rcCliL">${S.clientes.map(c=>`<option value="${esc(c.nome)}">${esc(c.doc)}</option>`).join("")}</datalist>
+        <span class="hint" id="rcCliHint">Se o cliente já estiver cadastrado, o CNPJ ou CPF é preenchido sozinho.</span></div>
+      <div class="field"><label for="rcDoc">CNPJ ou CPF <i>*</i></label><input class="in mono" id="rcDoc" required inputmode="numeric" maxlength="18" value="${esc(v.doc||"")}" placeholder="00.000.000/0000-00 ou 000.000.000-00"></div><div class="rcvazio" aria-hidden="true"></div>
+      <div class="field" style="grid-column:1/-1"><label for="rcChips">ICCID ou MSISDN</label><textarea class="in mono" id="rcChips" placeholder="Identificar a linha afetada e permitir verificações junto à operadora e acompanhamento da conexão.&#10;Um por linha, ou separados por vírgula." style="min-height:96px">${esc((v.chips||[]).join("\n"))}</textarea>
+        <span class="hint" id="rcChipsHint">Só números: MSISDN com 12 ou 13 dígitos (55 + DDD + número) ou ICCID com 19 ou 20. Pode colar vários de uma vez, direto da planilha.</span></div>
+      <div class="field"><label>Rede</label>${radios("Rede",RC_REDES,v.rede)}<span class="hint">Informar a tecnologia utilizada, como 2G ou 4G, para verificar possíveis problemas de cobertura ou compatibilidade.</span></div>
+      <div class="field"><label>Recebe SMS</label>${radios("Sms",["Sim","Não"],v.sms)}<span class="hint">Verificar se a linha está conectada à rede e recebendo SMS normalmente.</span></div>
+      <div class="field" style="grid-column:1/-1"><label for="rcEq">Equipamento <i>*</i></label><input class="in" id="rcEq" required list="rcEqL" autocomplete="off" value="${esc(v.equip||"")}" placeholder="Informar o modelo do equipamento para verificar a tecnologia utilizada e possíveis configurações ou comandos necessários." title="Informar o modelo do equipamento para verificar a tecnologia utilizada e possíveis configurações ou comandos necessários."><datalist id="rcEqL">${eqs.map(o=>`<option value="${esc(o)}">`).join("")}</datalist></div>
+      <div class="field" style="grid-column:1/-1"><label for="rcReg">Região</label><input class="in" id="rcReg" list="rcRegL" autocomplete="off" value="${esc(v.regiao||"")}" placeholder="Informar onde a instabilidade está ocorrendo para verificar possíveis problemas de cobertura ou incidentes na região." title="Informar onde a instabilidade está ocorrendo para verificar possíveis problemas de cobertura ou incidentes na região."><datalist id="rcRegL">${regs.map(o=>`<option value="${esc(o)}">`).join("")}</datalist></div>
+      <div class="field" style="grid-column:1/-1"><label for="rcCmd">Comandos</label><textarea class="in mono" id="rcCmd" placeholder="Informar os comandos utilizados no equipamento para auxiliar na análise e identificar possíveis problemas de configuração." style="min-height:90px">${esc(v.comandos||"")}</textarea></div>
+    </div>
+    <div class="row" style="justify-content:space-between"><span id="rcErr" class="errtxt"></span>
+      <span class="row">${ed?`<button type="button" class="btn" data-act="rcCancelar">Cancelar</button>`:`<button type="button" class="btn" data-act="rcLimpar">Limpar</button>`}<button class="btn primary">${ed?"Salvar alterações":"Salvar registro"}</button></span></div>
+  </form>`;
+}
+function vRegCham(){
+  const edit=S.rcEdit&&rcDe(S.rcEdit);
+  return `<div class="page">
+  <div class="head"><div class="t"><span class="label">Incidentes</span><h1>${edit?"Editar registro":"Registro de chamados"}</h1><p class="muted">Dados técnicos de cada atendimento: cliente, operadora, chips, rede, equipamento e comandos. Substitui a planilha de controle da equipe.</p></div>
+    <button class="btn" data-go="inc-relacao">Ver Relação de chamados</button></div>
+  ${rcForm(edit)}
+  </div>`;
+}
+/* Relação de chamados (01/10): a lista dos registros saiu da aba Registro de chamados e ganhou aba própria em Incidentes. */
+function vRelCham(){
+  const lista=rcFiltrados(), podeEd=pode("regcham.editar"), podeEx=pode("regcham.excluir");
+  const ops=[...new Set(S.regCham.map(r=>r.operadora))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  const quem = podeEx ? "Você cria, edita e exclui registros." : podeEd ? "Você cria e edita registros. Só o Diamante exclui." : "Você cria registros. Editar: Prata ou acima · excluir: Diamante.";
+  return `<div class="page">
+  <div class="head"><div class="t"><span class="label">Incidentes</span><h1>Relação de chamados</h1><p class="muted">Todos os registros feitos em Registro de chamados. Busque por cliente, CNPJ/CPF, chip ou equipamento.</p></div>
+    <span class="row" style="gap:8px;flex-wrap:nowrap"><button class="btn" data-act="rcExcel" title="Baixa os registros da lista abaixo (com os filtros aplicados)">Exportar Excel</button><button class="btn primary" data-act="rcNovo">Novo registro</button></span></div>
+  <section class="card">
+    <div class="pad stack" style="padding-bottom:8px">
+      <div class="row" style="justify-content:space-between"><h2>Registros</h2><span class="small muted">${quem}</span></div>
+      <div class="frow"><input class="in" id="rcBusca" type="search" value="${esc(S.rcQ||"")}" placeholder="Buscar por cliente, CNPJ/CPF, ICCID, MSISDN, equipamento…" aria-label="Buscar registros" style="flex:1 1 260px;min-width:0">
+        <label class="fsel"><span>Operadora</span><select class="in" id="rcFOp"><option value="">Todas</option>${ops.map(o=>`<option ${o===S.rcOp?"selected":""}>${esc(o)}</option>`).join("")}</select></label></div>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Registro</th><th>Cliente</th><th>Operadora</th><th>Chips</th><th>Equipamento</th><th>Rede · SMS</th><th>Região</th></tr></thead><tbody>
+    ${lista.map(r=>`<tr class="click" data-rcver="${esc(r.id)}"><td style="white-space:nowrap"><span class="mono">${esc(r.id)}</span><div class="small muted"><span class="mono">${esc(r.em.slice(0,16))}</span><br>${esc(r.usuario)}</div></td>
+      <td>${esc(r.cliente)}<div class="small muted mono" style="white-space:nowrap">${esc(r.doc)}</div></td>
+      <td><span class="row" style="gap:6px;flex-wrap:nowrap">${opMarca(r.operadora,18)}${esc(r.operadora)}</span></td>
+      <td class="mono small" style="white-space:nowrap">${r.chips.length?`${esc(r.chips[0])}${r.chips.length>1?`<span class="rcmais" title="${r.chips.length} chips no registro">+${r.chips.length-1}</span>`:""}`:'<span class="muted">—</span>'}</td>
+      <td>${esc(r.equip)}</td><td style="white-space:nowrap">${esc(r.rede||"—")} · <span class="small muted">SMS</span> ${esc(r.sms||"—")}</td><td>${esc(r.regiao||"—")}</td>
+      </tr>`).join("")
+      || `<tr><td colspan="7"><div class="empty">${S.regCham.length?"Nenhum registro encontrado com esses filtros.":"Nenhum registro ainda. Crie o primeiro em Incidentes › Registro de chamados."}</div></td></tr>`}
+    </tbody></table></div>
+    <p class="hint pad" style="padding-top:8px">${lista.length} de ${S.regCham.length} registro${S.regCham.length===1?"":"s"}. Clique numa linha para ver todos os dados, copiar os comandos${pode("regcham.editar")?", editar":""}${pode("regcham.excluir")?" ou excluir":""}.</p>
+  </section></div>`;
+}
+function rcVer(id){
+  const r=rcDe(id); if(!r) return;
+  const w=document.createElement("div"); w.className="scrim";
+  const lin=(k,v,mono)=>`<div><span class="label">${k}</span><div class="${mono?"mono ":""}small" style="margin-top:2px;white-space:pre-wrap;word-break:break-word">${v}</div></div>`;
+  w.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="Registro ${esc(r.id)}" style="max-width:640px;max-height:90vh;overflow:auto">
+    <div class="row" style="justify-content:space-between"><h2>Registro <span class="mono">${esc(r.id)}</span></h2><span class="row" style="gap:6px">${opMarca(r.operadora,20)}<b>${esc(r.operadora)}</b></span></div>
+    <div class="grid2" style="gap:12px">
+      ${lin("Cliente",esc(r.cliente))}${lin("CNPJ ou CPF",esc(r.doc),1)}
+      ${lin("Usuário",esc(r.usuario)+` · <span class="mono">${esc(r.em)}</span>`)}${lin("Equipamento",esc(r.equip))}
+      ${lin("Rede",esc(r.rede||"—"))}${lin("Recebe SMS",esc(r.sms||"—"))}
+      ${lin("Região",esc(r.regiao||"—"))}${r.editadoPor?lin("Última edição",esc(r.editadoPor)+` · <span class="mono">${esc(r.editadoEm)}</span>`):"<div></div>"}
+    </div>
+    <div><div class="row" style="justify-content:space-between"><span class="label">Chips (${r.chips.length})</span>${r.chips.length?`<button class="btn sm" data-rccopy="chips">Copiar</button>`:""}</div>
+      ${r.chips.length?`<div class="mono small" style="margin-top:4px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px">${r.chips.map(c=>`<span class="muted">${rcTipo(c)}</span><span>${esc(c)}</span>`).join("")}</div>`:'<div class="small muted">Nenhum chip informado.</div>'}</div>
+    <div><div class="row" style="justify-content:space-between"><span class="label">Comandos</span>${r.comandos?`<button class="btn sm" data-rccopy="cmd">Copiar</button>`:""}</div>
+      ${r.comandos?`<pre class="mono small" style="margin:4px 0 0;padding:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;white-space:pre-wrap;word-break:break-all">${esc(r.comandos)}</pre>`:'<div class="small muted">Nenhum comando informado.</div>'}</div>
+    <div class="row" style="justify-content:flex-end">${pode("regcham.excluir")?`<button class="btn danger" data-rcex="${esc(r.id)}" style="margin-right:auto">Excluir</button>`:""}<button class="btn" data-x>Fechar</button>${pode("regcham.editar")?`<button class="btn primary" data-rced="${esc(r.id)}">Editar</button>`:""}</div></div>`;
+  document.body.appendChild(w);
+  w.addEventListener("click",e=>{
+    const cp=e.target.closest("[data-rccopy]"); if(cp){const txt=cp.dataset.rccopy==="cmd"?r.comandos:r.chips.join("\n"); navigator.clipboard?.writeText(txt).then(()=>toast("Copiado"),()=>toast("Não foi possível copiar")); return}
+    if(e.target===w||e.target.closest("[data-x]")||e.target.closest("[data-rced]")||e.target.closest("[data-rcex]")) w.remove();
+  });
+  w.querySelector("[data-x]").focus();
+}
+async function rcExcel(){
+  const lista=rcFiltrados(); if(!lista.length){toast("Não há registros na lista para exportar");return}
+  try{ toast("Gerando Excel…"); await carregarExcelJS(); }catch(e){ toast("Não foi possível carregar o gerador de Excel. Verifique a conexão."); return; }
+  const wb=new ExcelJS.Workbook(); wb.creator="E.J. Desk"; wb.created=new Date();
+  const ws=wb.addWorksheet("Registro de chamados",{views:[{state:"frozen",ySplit:1}]});
+  ws.columns=[{header:"Registro",key:"id",width:12},{header:"Data",key:"em",width:17},{header:"Usuário",key:"usuario",width:18},{header:"Cliente",key:"cliente",width:34},{header:"CNPJ ou CPF",key:"doc",width:20},
+    {header:"Operadora",key:"operadora",width:13},{header:"ICCID",key:"iccid",width:24},{header:"MSISDN",key:"msisdn",width:17},{header:"Rede",key:"rede",width:7},{header:"Equipamento",key:"equip",width:18},
+    {header:"Recebe SMS",key:"sms",width:11},{header:"Região",key:"regiao",width:20},{header:"Comandos",key:"comandos",width:40}];
+  // uma linha por chip, como na planilha antiga; registro sem chip vira uma linha só
+  lista.forEach(r=>{ const base={id:r.id,em:r.em,usuario:r.usuario,cliente:r.cliente,doc:r.doc,operadora:r.operadora,rede:r.rede||"",equip:r.equip,sms:r.sms||"",regiao:r.regiao||"",comandos:r.comandos||""};
+    (r.chips.length?r.chips:[""]).forEach(c=>ws.addRow({...base, iccid:c&&rcTipo(c)==="ICCID"?c:"", msisdn:c&&rcTipo(c)==="MSISDN"?c:""})); });
+  ws.getRow(1).font={bold:true,color:{argb:"FFFFFFFF"}}; ws.getRow(1).fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF1E4FD6"}}; ws.getRow(1).height=22;
+  ws.getColumn("iccid").numFmt="@"; ws.getColumn("msisdn").numFmt="@"; ws.getColumn("comandos").alignment={wrapText:true,vertical:"top"};
+  ws.autoFilter={from:{row:1,column:1},to:{row:1,column:13}};
+  const buf=await wb.xlsx.writeBuffer(), a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  a.download=`registro-de-chamados-${new Date(agora()).toISOString().slice(0,10)}.xlsx`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+function rcSalvar(){
+  const f=$("#fRC"); if(!f) return;
+  const editando=S.rcEdit&&rcDe(S.rcEdit);
+  if(editando ? !pode("regcham.editar") : !pode("inc-chamados")){toast("Você não tem permissão para esta ação");return}
+  f.querySelectorAll(".err").forEach(x=>x.classList.remove("err")); $("#rcErr").textContent="";
+  const req=["#rcOp","#rcCli","#rcDoc","#rcEq"].map(s=>$(s)), vazio=req.filter(i=>!i.value.trim());
+  if(vazio.length){vazio.forEach(i=>i.classList.add("err"));$("#rcErr").textContent="Preencha os campos obrigatórios: Operadora, Cliente, CNPJ ou CPF e Equipamento.";vazio[0].focus();return}
+  const d=soDig($("#rcDoc").value);
+  if(![11,14].includes(d.length)){$("#rcDoc").classList.add("err");$("#rcErr").textContent="CNPJ ou CPF inválido: use 14 dígitos (CNPJ) ou 11 (CPF).";$("#rcDoc").focus();return}
+  const chips=rcChips($("#rcChips").value), ruins=chips.filter(rcChipRuim);
+  if(ruins.length){$("#rcChips").classList.add("err");$("#rcErr").textContent=`Número inválido: ${ruins.slice(0,5).join(", ")}${ruins.length>5?"…":""}. Use só números: MSISDN com 12 ou 13 dígitos ou ICCID com 19 ou 20.`;$("#rcChips").focus();return}
+  const dados={cliente:$("#rcCli").value.trim(), doc:fmtDoc(d), operadora:$("#rcOp").value, chips, rede:$("#rcRede").value, equip:$("#rcEq").value.trim(), sms:$("#rcSms").value, regiao:$("#rcReg").value.trim(), comandos:$("#rcCmd").value.trim()};
+  if(editando){ Object.assign(editando, dados, {editadoPor:me().nome, editadoEm:stamp()}); S.rcEdit=null; go("inc-relacao"); toast(`Registro ${editando.id} atualizado`); return; }
+  const r={id:"NOVO-RC-"+ejdUid(), em:stamp(), usuario:me().nome, ...dados};
+  S.regCham.unshift(r); render(); toast(`Registro ${r.id} salvo${chips.length?` · ${chips.length} chip${chips.length>1?"s":""}`:""} · veja em Relação de chamados`);
+}
+function rcWire(){
+  if(S.route!=="inc-chamados" && S.route!=="inc-relacao") return;
+  const b=$("#rcBusca"); if(b) b.addEventListener("input",()=>{S.rcQ=b.value;const fr=$("#fRC"),keep=rcRascunho();render();rcRestaura(keep);const n=$("#rcBusca");n.focus();n.setSelectionRange(n.value.length,n.value.length)});
+  const fo=$("#rcFOp"); if(fo) fo.addEventListener("change",()=>{S.rcOp=fo.value;const keep=rcRascunho();render();rcRestaura(keep)});
+  const cl=$("#rcCli"), dc=$("#rcDoc");
+  if(cl) cl.addEventListener("change",()=>{const c=S.clientes.find(x=>x.nome.toLowerCase()===cl.value.trim().toLowerCase()); if(c&&!dc.value.trim()){dc.value=c.doc;$("#rcCliHint").innerHTML=`Cliente cadastrado · CNPJ/CPF preenchido com <span class="mono">${esc(c.doc)}</span>.`}});
+  if(dc){ dc.addEventListener("blur",()=>{dc.value=fmtDoc(dc.value); const c=S.clientes.find(x=>soDig(x.doc)===soDig(dc.value)); if(c&&!cl.value.trim()) cl.value=c.nome;}); }
+  const ch=$("#rcChips"), hint=$("#rcChipsHint"), base=hint&&hint.textContent;
+  if(ch) ch.addEventListener("input",()=>{const l=rcChips(ch.value), r=l.filter(rcChipRuim); hint.textContent = l.length ? `${l.length} chip${l.length>1?"s":""}${r.length?` · ${r.length} com formato inválido`:""} · ${l.filter(x=>rcTipo(x)==="ICCID").length} ICCID, ${l.filter(x=>rcTipo(x)==="MSISDN").length} MSISDN` : base; hint.style.color=r.length?"var(--atrasado)":""});
+}
+/* Mantém o que já foi digitado no formulário quando a lista é filtrada (a tela é redesenhada). */
+const RC_CAMPOS=["rcOp","rcCli","rcDoc","rcChips","rcRede","rcSms","rcEq","rcReg","rcCmd"];
+const rcRascunho = () => Object.fromEntries(RC_CAMPOS.map(k=>[k,document.getElementById(k)?.value??""]));
+function rcRestaura(v){ RC_CAMPOS.forEach(k=>{const el=document.getElementById(k); if(el&&v[k]!==undefined) el.value=v[k];});
+  ["Rede","Sms"].forEach(n=>document.querySelectorAll(`[data-rcseg="${n}"]`).forEach(b=>{const on=b.dataset.v===v["rc"+n];b.classList.toggle("on",on);b.setAttribute("aria-checked",on)})); }
+document.addEventListener("click", e=>{
+  const sg=e.target.closest("[data-rcseg]"); if(sg){const n=sg.dataset.rcseg, inp=document.getElementById("rc"+n), novo=inp.value===sg.dataset.v?"":sg.dataset.v; inp.value=novo;   // clicar de novo desmarca
+    document.querySelectorAll(`[data-rcseg="${n}"]`).forEach(b=>{const on=b.dataset.v===novo;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)}); return}
+  const ed=e.target.closest("[data-rced]"); if(ed){e.stopPropagation(); if(!pode("regcham.editar")){toast("Só Prata ou acima editam registros");return} S.rcEdit=ed.dataset.rced; go("inc-chamados"); $("#rcCli")?.focus(); return}
+  const ex=e.target.closest("[data-rcex]"); if(ex){e.stopPropagation(); if(!pode("regcham.excluir")){toast("Só o Diamante exclui registros");return} const r=rcDe(ex.dataset.rcex); if(!r) return;
+    modal(`<h2>Excluir o registro ${esc(r.id)}?</h2><p class="small">${esc(r.cliente)} · ${esc(r.operadora)} · ${r.chips.length} chip${r.chips.length===1?"":"s"}. Esta ação não pode ser desfeita.</p>`,()=>{S.regCham=S.regCham.filter(x=>x.id!==r.id); if(S.rcEdit===r.id) S.rcEdit=null; render(); toast("Registro "+r.id+" excluído")},"Excluir"); return}
+  const vr=e.target.closest("[data-rcver]"); if(vr && !e.target.closest("button")){rcVer(vr.dataset.rcver); return}
+  const ac=e.target.closest("[data-act]"); if(!ac) return;
+  if(ac.dataset.act==="rcCancelar"){S.rcEdit=null; go("inc-relacao"); return}
+  if(ac.dataset.act==="rcNovo"){S.rcEdit=null; go("inc-chamados"); return}
+  if(ac.dataset.act==="rcLimpar"){S.rcEdit=null; render(); return}
+  if(ac.dataset.act==="rcExcel"){rcExcel(); return}
+});
+document.addEventListener("submit", e=>{ if(e.target.id==="fRC"){ e.preventDefault(); rcSalvar(); } });
 
 /* ============ Painel de incidentes (protótipo da tela, 28/09) ============
    Substitui a planilha manual: chamados abertos por operadora + registro manual de linhas M2M online. */
@@ -1632,8 +1899,8 @@ function vRetorno(){
     <section class="card pad">${right}</section>
   </div>
   ${espera.length?`<section class="card"><div class="label pad" style="padding-bottom:8px">Aguardando resposta do cliente · ${espera.length}</div>
-    <div class="tbl-wrap"><table><thead><tr><th>Protocolo</th><th>Cliente</th><th>Encerra em</th><th>Faltam</th></tr></thead><tbody>
-    ${espera.map(x=>`<tr class="click" data-open="${x.id}"><td class="mono">${x.id}</td><td>${esc(cli(x.cliente).nome)}</td><td class="mono">${fmtDataHora(x.encerraEm)}</td><td class="mono">${falta(x.encerraEm)}</td></tr>`).join("")}
+    <div class="tbl-wrap"><table><thead><tr><th>Protocolo</th><th>Cliente</th><th>Encerra em</th><th>Quando</th></tr></thead><tbody>
+    ${espera.map(x=>`<tr class="click" data-open="${x.id}"><td class="mono">${x.id}</td><td>${esc(cli(x.cliente).nome)}</td><td class="mono">${fmtDataHora(x.encerraEm)}</td><td>${quandoEnc(x.encerraEm)}</td></tr>`).join("")}
     </tbody></table></div></section>`:""}
   <div class="info">O envio usa o endereço no-reply do E.J. Desk. O cliente não responde pelo e-mail; se ele entrar em contato pelos canais de atendimento em até 1 dia útil, a equipe registra a resposta no chamado. Sem resposta, o chamado é encerrado automaticamente. Depois de encerrado, Ouro/Diamante ainda podem reabrir.</div>
   </div>`;
@@ -1655,7 +1922,7 @@ function vUsuarios(){
   return `<div class="page">
   <div class="head"><div class="t"><h1>Usuários</h1><p class="muted">Disponível apenas para o nível Diamante.</p></div><button class="btn primary" data-act="convidar">+ Convidar usuário</button></div>
   <section class="card"><div class="tbl-wrap"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Nível de acesso</th><th>Setor</th><th>Status</th><th></th></tr></thead><tbody>
-  ${S.users.map(u=>`<tr><td>${esc(u.nome)}</td><td>${esc(u.email)}</td><td>${lvl(u.nivel)}</td><td>${esc(SETORES[u.setor]?.nome||"—")}</td><td>${u.desativado?`<span class="pill s-Excluido" title="Desativado por ${esc(u.desativado.por)} em ${esc(u.desativado.em)}">Desativado</span>`:u.ativo?`<span class="pill s-Resolvido">Ativo</span>`:`<span class="pill s-Encerrado">Convite enviado</span>`}</td><td><button class="btn sm" data-act="editUser" data-uid="${u.id}">Editar</button></td></tr>`).join("")}
+  ${S.users.map(u=>`<tr><td><span class="row" style="gap:10px;flex-wrap:nowrap">${avatarHTML(u,32,u.desativado?"filter:grayscale(1);opacity:.55":"")}<span>${esc(u.nome)}${u.id===S.me?' <span class="small muted">(você)</span>':""}</span></span></td><td>${esc(u.email)}</td><td>${lvl(u.nivel)}</td><td>${esc(SETORES[u.setor]?.nome||"—")}</td><td>${u.desativado?`<span class="pill s-Excluido" title="Desativado por ${esc(u.desativado.por)} em ${esc(u.desativado.em)}">Desativado</span>`:u.ativo?`<span class="pill s-Resolvido">Ativo</span>`:`<span class="pill s-Encerrado">Convite enviado</span>`}</td><td><button class="btn sm" data-act="editUser" data-uid="${u.id}">Editar</button></td></tr>`).join("")}
   </tbody></table></div></section>
   <p class="hint">Níveis atribuídos aqui são ilustrativos. A distribuição real entre Bronze, Prata, Ouro e Diamante fica a critério do coordenador. ${S.users.length} de 10 colaboradores da equipe cadastrados neste protótipo.</p>
   <div class="info">O <b>Setor</b> define as áreas do menu e o <b>Nível de acesso</b> define o que a pessoa pode fazer dentro delas. Diamante acessa todos os setores; os demais níveis veem só o próprio setor, além de Conta.</div>
@@ -1735,7 +2002,7 @@ function vDecisoes(){
 }
 
 /* ============ Render ============ */
-const VIEWS = {abertura:vAbertura, painel:vPainel, chamados:vChamados, detalhe:vDetalhe, retorno:vRetorno, clientes:vClientes, meus:vMeus, incidentes:()=>vIncidentes("painel"), "inc-registro":()=>vIncidentes("registro"), "inc-base":()=>vIncidentes("base"), "inc-plataformas":vIncPlat, usuarios:vUsuarios, config:vConfig, perfil:vPerfil, decisoes:vDecisoes,
+const VIEWS = {abertura:vAbertura, painel:vPainel, chamados:vChamados, detalhe:vDetalhe, retorno:vRetorno, clientes:vClientes, meus:vMeus, incidentes:()=>vIncidentes("painel"), "inc-registro":()=>vIncidentes("registro"), "inc-base":()=>vIncidentes("base"), "inc-chamados":vRegCham, "inc-relacao":vRelCham, "inc-plataformas":vIncPlat, usuarios:vUsuarios, config:vConfig, perfil:vPerfil, decisoes:vDecisoes,
   "fin-cancelamento":()=>vFin("cancelamento"), "fin-contestacao":()=>vFin("contestacao"), "fin-boletos":()=>vFin("boletos"), "fin-reativacao":()=>vFin("reativacao")};
 
 function render(){
@@ -1748,7 +2015,7 @@ function render(){
   // Guarda única: páginas por pode(); chamado pelo setor responsável dele, via podeChamado().
   const negado = S.route==="detalhe" ? !podeChamado("ver", tk(S.sel)) : (!VIEWS[S.route] || !pode(S.route));
   const cur = S.route==="detalhe" && !negado ? voltarPara(tk(S.sel)) : S.route;
-  root.innerHTML = `<div class="app${S.sideHidden?" collapsed":""}"><button class="sidebar-bar" data-side="toggle" aria-label="${S.sideHidden?"Mostrar menu":"Ocultar menu"}" title="${S.sideHidden?"Mostrar menu":"Ocultar menu"}" aria-expanded="${!S.sideHidden}"><span class="sb-grip" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg><span class="sb-txt"></span></span></button>
+  root.innerHTML = `<div class="app${S.sideHidden?" collapsed":""}"><button class="sidebar-bar" data-side="toggle" aria-label="${S.sideHidden?"Mostrar menu":"Ocultar menu"}" title="${S.sideHidden?"Mostrar menu":"Ocultar menu"}" aria-expanded="${!S.sideHidden}"><span class="sb-grip" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg><span class="sb-txt"></span></span></button>${railHTML(cur)}
     <aside class="side" aria-label="Menu">
       <div class="brand"><div class="mark">EJ</div><div><b>E.J. Desk</b><small>Meta Telecom</small></div></div>
       <div class="sim"><span class="label" style="color:var(--side-muted)">Ver protótipo como</span>
@@ -1763,7 +2030,7 @@ function render(){
       <main class="main">${negado?vNegado():VIEWS[S.route]()}</main>
     </div></div>`;
   const sd=document.querySelector(".side"); if(sd) sd.scrollTop=sideScroll;
-  wire();
+  wire(); rcWire();
 }
 
 function wire(){
@@ -1810,14 +2077,14 @@ document.addEventListener("click", e=>{
   if(!el) return;
   if(el.dataset.incop){const o=el.dataset.incop;S.incOp=o;S.incFiltro=(S.incFiltro||[]).length===1&&S.incFiltro[0]===o?[]:[o];render();return}
   if(el.dataset.gfil){const o=el.dataset.gfil;if(o==="*")S.incFiltro=[];else{const f=new Set(S.incFiltro||[]);f.has(o)?f.delete(o):f.add(o);S.incFiltro=[...f]}render();return}
-  if(el.dataset.side){S.sideHidden=!S.sideHidden;try{localStorage.setItem("ejd-side",S.sideHidden?"1":"0")}catch(e){}const ap=document.querySelector(".app");if(ap)ap.classList.toggle("collapsed",S.sideHidden);
+  if(el.dataset.side){S.sideHidden=!S.sideHidden;try{localStorage.setItem("ejd-side",S.sideHidden?"1":"0")}catch(e){}const ap=document.querySelector(".app");if(ap)ap.classList.toggle("collapsed",S.sideHidden);if(S.sideHidden&&window.railEntrada)railEntrada();
     const lab=S.sideHidden?"Mostrar menu":"Ocultar menu";el.setAttribute("aria-label",lab);el.title=lab;el.setAttribute("aria-expanded",!S.sideHidden);return}
   if(el.dataset.fold){const k=el.dataset.fold, abrir=el.getAttribute("aria-expanded")!=="true";S.navOpen[k]=abrir;try{localStorage.setItem("ejd-nav",JSON.stringify(S.navOpen))}catch(e){}
     el.setAttribute("aria-expanded",abrir);el.classList.toggle("open",abrir);const box=el.nextElementSibling;if(box&&box.classList.contains("foldbox"))box.hidden=!abrir;return}
   if(el.dataset.turno){S.incTurno=el.dataset.turno;render();return}
   if(el.dataset.pop){ if(document.querySelector(".pop")&&S._popFor===el){fecharPop();S._popFor=null;return} S._popFor=el; abrirPop(el); return }
   if(el.dataset.rapido){const f=lf(S.route);f.rapido=el.dataset.rapido;S.filter=null;render();return}
-  if(el.dataset.lcard){const f=lf(S.route), set=[{status:""},{status:"Novo"},{status:"Em análise"},{status:"Aguardando retorno"},{atrasados:true},{status:"Resolvido"}][+el.dataset.lcard];Object.assign(f,set);S.filter=null;render();return}
+  if(el.dataset.lcard){const f=lf(S.route), set=[{status:"",atrasados:false},{status:"Novo",atrasados:false},{status:"Em análise",atrasados:false},{status:"Aguardando retorno",atrasados:false},{status:"",atrasados:true},{status:"Resolvido",atrasados:false}][+el.dataset.lcard];   /* 01/10: um card desmarca o outro (inclusive "Apenas atrasados") */Object.assign(f,set);S.filter=null;render();return}
   if(el.dataset.limpar!==undefined){S.lf[S.route]={...LF_VAZIO};S.filter=null;render();return}
   if(el.dataset.tab){S.tab=el.dataset.tab;render();return}
   if(el.dataset.menu!==undefined){$(".app").classList.toggle("open");return}
