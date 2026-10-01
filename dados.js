@@ -18,6 +18,11 @@ if(!C.supabaseUrl || !C.supabaseAnonKey || /COLE_AQUI/.test(C.supabaseUrl+C.supa
   document.getElementById("root").innerHTML = `<div class="login"><div class="card stack" style="max-width:520px"><h2>Configuração pendente</h2><p class="small">Preencha <b>supabaseUrl</b> e <b>supabaseAnonKey</b> no arquivo <span class="mono">config.js</span>. No Supabase, use o botão <b>Connect</b> no topo do projeto, ou Project Settings › API Keys (chave publishable ou anon) e Project Settings › Data API (Project URL). Veja o Passo 6 do guia.</p></div></div>`;
   window.EJD_BLOQUEADO = true; return;
 }
+/* Link do convite / "esqueci a senha": guarda o endereço ANTES de criar o cliente (ele limpa o #… da URL).
+   Atenção: o link traz "token_type=bearer" e "type=invite"; por isso o tipo é lido como parâmetro, não por busca de texto. */
+const LINK0 = new URLSearchParams(location.hash.replace(/^#/,"")), BUSCA0 = new URLSearchParams(location.search);
+const TIPO0 = LINK0.get("type") || BUSCA0.get("type") || "";
+const ERRO0 = LINK0.get("error_code") || LINK0.get("error") || BUSCA0.get("error_code") || "";
 const sb = window.supabase.createClient(C.supabaseUrl, C.supabaseAnonKey, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
 window.EJD_SB = sb;
 
@@ -90,8 +95,15 @@ document.addEventListener("submit", async e=>{
 /* ------------------------------------------------------------ carregar */
 async function q(p){ const {data,error}=await p; if(error) throw error; return data; }
 
+/* Registro de chamados: banco <-> tela */
+const rcDoBanco = r => ({ id:r.id, em:fmt(r.criado_em), usuario:r.usuario||"", cliente:r.cliente, doc:r.doc, operadora:r.operadora, chips:r.chips||[],
+  rede:r.rede||"", equip:r.equipamento, sms:r.recebe_sms||"", regiao:r.regiao||"", comandos:r.comandos||"",
+  ...(r.editado_em ? {editadoPor:r.editado_por||"", editadoEm:fmt(r.editado_em)} : {}) });
+const rcParaBanco = r => ({ cliente:r.cliente, doc:r.doc, operadora:r.operadora, chips:r.chips||[], rede:r.rede||null, equipamento:r.equip,
+  recebe_sms:r.sms||null, regiao:r.regiao||"", comandos:r.comandos||"" });
+
 async function carregar(){
-  const [perfis, cfg, clientes, chamados, hist, coms, anx, base, regs] = await Promise.all([
+  const [perfis, cfg, clientes, chamados, hist, coms, anx, base, regs, rcs] = await Promise.all([
     q(sb.from("perfis").select("*").order("criado_em")),
     q(sb.from("config").select("*")),
     q(sb.from("clientes").select("*").order("nome")),
@@ -100,7 +112,8 @@ async function carregar(){
     q(sb.from("comentarios").select("*").order("id")).catch(()=>[]),     // Bronze não lê comentários
     q(sb.from("anexos").select("*").order("em")),
     q(sb.from("inc_base").select("*")),
-    q(sb.from("inc_registros").select("*").order("dia"))
+    q(sb.from("inc_registros").select("*").order("dia")),
+    q(sb.from("registro_chamados").select("*").order("criado_em",{ascending:false})).catch(e=>{ console.warn("registro_chamados:", e); return []; })   // antes do 003: lista vazia
   ]);
   for(const k in nomePorId) delete nomePorId[k];
   for(const k in idPorNome) delete idPorNome[k];
@@ -148,6 +161,7 @@ async function carregar(){
   S.incidentes = regs.map(r=>({ id:r.id, dia:r.dia, turno:r.turno, em:fmt(r.em), operadora:r.operadora, linhas:r.linhas, base:r.base,
     nivel:r.nivel||undefined, obs:r.obs||"", por:r.por||"", corr:r.correcoes||[] }));
   S.incPlat = [];
+  S.regCham = rcs.map(rcDoBanco);
   calcularPainel();
   BASE = foto();
   carregado = true;
@@ -173,7 +187,7 @@ function calcularPainel(){
 
 function foto(){
   return clone({ users:S.users, casos:CASOS, categorias:CATEGORIAS, sla:S.sla||{}, email:{noreply:S.noreply, replyTo:S.replyTo},
-    clientes:S.clientes, tickets:S.tickets, incBase:S.incBase, incidentes:S.incidentes });
+    clientes:S.clientes, tickets:S.tickets, incBase:S.incBase, incidentes:S.incidentes, regCham:S.regCham||[] });
 }
 
 /* --------------------------------------------------------------- salvar */
@@ -307,6 +321,17 @@ async function sincronizar(){
       else if(r.linhas!==a.linhas || (r.nivel||null)!==(a.nivel||null) || !igual(r.corr,a.corr))
         await q(sb.from("inc_registros").update({linhas:r.linhas??null, nivel:r.nivel||null, correcoes:r.corr||[]}).eq("id",r.id));
     }
+    // registro de chamados (Incidentes)
+    const brc = Object.fromEntries((BASE.regCham||[]).map(r=>[r.id,r]));
+    for(const r of S.regCham||[]){
+      const a=brc[r.id];
+      if(!a){ const n=await q(sb.from("registro_chamados").insert(rcParaBanco(r)).select().single());
+        const e=rcDoBanco(n), rS=agoraS.regCham.find(x=>x.id===r.id); if(S.rcEdit===r.id) S.rcEdit=e.id; Object.assign(r,e); if(rS) Object.assign(rS,e); }
+      else if(!igual(rcParaBanco(r), rcParaBanco(a))){ const n=await q(sb.from("registro_chamados").update(rcParaBanco(r)).eq("id",r.id).select().single());
+        const e=rcDoBanco(n), rS=agoraS.regCham.find(x=>x.id===r.id); Object.assign(r,e); if(rS) Object.assign(rS,e); }
+    }
+    const idsRC = new Set((S.regCham||[]).map(r=>r.id));
+    for(const r of BASE.regCham||[]) if(!idsRC.has(r.id)) await q(sb.from("registro_chamados").delete().eq("id",r.id).select().single());
     BASE = agoraS; calcularPainel();
     mudouNoServidor = JSON.stringify(agoraS)!==antesEco;          // o servidor devolveu algo novo (número, prazo, status)
   }catch(e){
@@ -365,10 +390,11 @@ setInterval(async ()=>{
 
 /* Início: convite ou "esqueci a senha" chegam com um link que traz type=invite|recovery */
 window.ejdBoot = async ()=>{
-  const h=location.hash, tipo=(h.match(/type=([a-z]+)/)||[])[1];
+  const tipo=TIPO0, h=location.hash;
   const {data:{session}} = await sb.auth.getSession();
-  if(session && (tipo==="invite"||tipo==="recovery"||tipo==="signup")){ telaLogin("", "senha"); return; }
-  if(/access_token|error_description/.test(h)) history.replaceState(null,"",location.pathname);
+  if(/access_token|error/.test(h) || BUSCA0.has("code") || BUSCA0.has("error")) history.replaceState(null,"",location.pathname);
+  if(session && (tipo==="invite"||tipo==="recovery"||tipo==="signup"||tipo==="magiclink")){ S.wanted=null; telaLogin("", "senha"); return; }
+  if(ERRO0){ S.wanted=null; telaLogin(/expired|otp/.test(ERRO0) ? "O link expirou ou já foi usado. Peça um novo convite ao Diamante ou use \"Esqueci a senha\"." : "Não foi possível abrir o link: "+(LINK0.get("error_description")||ERRO0)); return; }
   if(session) await entrar(); else telaLogin();
 };
 sb.auth.onAuthStateChange(ev=>{ if(ev==="PASSWORD_RECOVERY") telaLogin("", "senha"); });
