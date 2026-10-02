@@ -49,6 +49,8 @@ function telaLogin(msg, modo){
       <div class="field"><label for="lgEmail">E-mail corporativo</label><input class="in" id="lgEmail" type="email"></div>
       <span class="errtxt" id="lgErr">${msg?esc(msg):""}</span><button class="btn primary" style="justify-content:center">Enviar link</button>
       <button type="button" class="linkbtn small" data-ejd="voltar" style="align-self:flex-start">Voltar para o login</button>`,
+    link: `<p class="small">${TIPO0==="recovery"?"Você pediu para criar uma nova senha.":"Você foi convidado para o E.J. Desk."} Clique no botão para continuar.</p>
+      <span class="errtxt" id="lgErr">${msg?esc(msg):""}</span><button type="button" class="btn primary" data-ejd="verificar" style="justify-content:center">${TIPO0==="recovery"?"Continuar e criar nova senha":"Continuar e criar minha senha"}</button>`,
     senha: `<p class="small">Crie a sua senha de acesso ao E.J. Desk (mínimo de 8 caracteres).</p>
       <div class="field"><label for="lgPass">Nova senha</label><input class="in" id="lgPass" type="password" autocomplete="new-password"></div>
       <div class="field"><label for="lgPass2">Repita a senha</label><input class="in" id="lgPass2" type="password" autocomplete="new-password"></div>
@@ -64,6 +66,7 @@ window.ejdTelaLogin = telaLogin;
 document.addEventListener("click", e=>{
   const b=e.target.closest("[data-ejd]"); if(!b) return;
   if(b.dataset.ejd==="esqueci") telaLogin("", "esqueci");
+  if(b.dataset.ejd==="verificar"){ verificarLink(b); return; }
   if(b.dataset.ejd==="voltar") telaLogin("", "entrar");
 }, true);
 
@@ -413,9 +416,21 @@ setInterval(async ()=>{
   try{ await carregar(); renderSemSalvar(); }catch(e){ console.warn(e); }
 }, 60000);
 
+/* 02/10: link do e-mail com token_hash. A confirmação só acontece quando a pessoa clica no botão,
+   assim o antivírus do e-mail (que abre os links sozinho) não "gasta" o link antes da pessoa. */
+const TOKEN0 = LINK0.get("token_hash") || BUSCA0.get("token_hash") || "";
+async function verificarLink(btn){
+  btn.disabled=true; btn.textContent="Verificando…";
+  const tipo = ["invite","recovery","signup","magiclink","email"].includes(TIPO0) ? TIPO0 : "invite";
+  const {error} = await sb.auth.verifyOtp({token_hash: TOKEN0, type: tipo});
+  history.replaceState(null,"",location.pathname);
+  if(error){ telaLogin(/expired|invalid/i.test(error.message) ? "O link expirou ou já foi usado. Use \"Esqueci a senha\" para receber um novo, ou peça um novo convite ao Diamante." : "Não foi possível abrir o link: "+error.message); return; }
+  telaLogin("", "senha");
+}
 /* Início: convite ou "esqueci a senha" chegam com um link que traz type=invite|recovery */
 window.ejdBoot = async ()=>{
   const tipo=TIPO0, h=location.hash;
+  if(TOKEN0){ S.wanted=null; await sb.auth.signOut({scope:"local"}).catch(()=>{}); telaLogin("", "link"); return; }   // 02/10: link novo (token_hash)
   const {data:{session}} = await sb.auth.getSession();
   if(/access_token|error/.test(h) || BUSCA0.has("code") || BUSCA0.has("error")) history.replaceState(null,"",location.pathname);
   if(session && (tipo==="invite"||tipo==="recovery"||tipo==="signup"||tipo==="magiclink")){ S.wanted=null; telaLogin("", "senha"); return; }
