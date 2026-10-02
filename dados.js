@@ -142,10 +142,13 @@ async function carregar(){
     const {data} = await sb.storage.from("anexos").createSignedUrls(caminhos, 60*60*8);
     (data||[]).forEach(d=>{ if(d.signedUrl) assinadas[d.path]=d.signedUrl; });
   }
+  // 02/10: chamados de cliente excluído guardam o cadastro em cliente_ref (nome, CNPJ/CPF, e-mail)
+  S.cliExcl = {}; chamados.forEach(c=>{ if(!c.cliente_id && c.cliente_ref && c.cliente_ref.id) S.cliExcl[c.cliente_ref.id] = c.cliente_ref; });
+  S.exclusoesCli = [];
   S.tickets = chamados.map(c=>T({
     id:c.id, titulo:c.titulo, cat:c.categoria, prioridade:c.prioridade, status:c.status, setor:c.setor,
     resp: c.responsavel_id ? (nomePorId[c.responsavel_id]||"—") : "—",
-    criadoPor: nomePorId[c.criado_por]||"", quemAbriu:c.quem_abriu||"", cliente:c.cliente_id, caso:c.caso||"",
+    criadoPor: nomePorId[c.criado_por]||"", quemAbriu:c.quem_abriu||"", cliente:c.cliente_id||(c.cliente_ref&&c.cliente_ref.id)||null, caso:c.caso||"",
     bo:c.bo||"", protAt:c.protocolo||"", cep:c.cep||"", equip:c.equipamentos||"", comandos:c.comandos||"", feito:c.feito||"", linha:c.linha||"",
     flags:{atrasado:!!c.atrasado, atipico:!!c.atipico}, solucao:c.solucao||null, obs:c.obs||"",
     pausas:c.pausas||[], encerraEm:ms(c.encerra_em), encerradoAuto:!!c.encerrado_auto, rascunho:c.rascunho||null,
@@ -203,7 +206,8 @@ function linhaChamado(t, antes){
   const row={};
   for(const [k,col] of Object.entries(CAMPOS)){
     if(antes && igual(t[k], antes[k])) continue;
-    let v=t[k]; if(k==="unificados") v=v||[]; if(k==="vinculadoA") v=v||null; if(k==="solucao"&&v==="") v=null;
+    let v=t[k]; if(k==="cliente" && v && !S.clientes.some(c=>c.id===v)) continue;   // cliente excluído: o chamado fica sem cliente_id (o servidor guarda em cliente_ref)
+    if(k==="unificados") v=v||[]; if(k==="vinculadoA") v=v||null; if(k==="solucao"&&v==="") v=null;
     row[col]=v===undefined?null:v;
   }
   if(!antes || t.resp!==antes.resp) row.responsavel_id = t.resp && t.resp!=="—" ? (idPorNome[t.resp]||null) : null;
@@ -321,8 +325,12 @@ async function sincronizar(){
     const bt = Object.fromEntries(BASE.tickets.map(t=>[t.id,t]));
     const snapT = Object.fromEntries(agoraS.tickets.map(t=>[t.id,t]));
     for(const t of S.tickets){ const a=bt[t.id]; if(!a || JSON.stringify(clone(t))!==JSON.stringify(a)) await salvarChamado(t, a, snapT[t.id]); }
+    // 02/10: excluir cliente (Diamante) pelo servidor — guarda o cadastro nos chamados e exclui os ativos junto
+    const feitos = new Set();
+    for(const x of (S.exclusoesCli||[]).splice(0)){
+      await q(sb.rpc("excluir_cliente", {cid:x.id, motivo:x.motivo||"", com_chamados:!!x.comChamados})); feitos.add(x.id); }
     const idsC = new Set(S.clientes.map(c=>c.id));
-    for(const c of BASE.clientes) if(!idsC.has(c.id)) await q(sb.from("clientes").delete().eq("id",c.id));
+    for(const c of BASE.clientes) if(!idsC.has(c.id) && !feitos.has(c.id)) await q(sb.from("clientes").delete().eq("id",c.id));
     // incidentes
     for(const [op,v] of Object.entries(S.incBase)) if(BASE.incBase[op]!==v) await q(sb.from("inc_base").upsert({operadora:op, linhas:v, atualizado_em:new Date().toISOString(), atualizado_por:me().nome}));
     for(const op of Object.keys(BASE.incBase)) if(!(op in S.incBase)) await q(sb.from("inc_base").delete().eq("operadora",op));

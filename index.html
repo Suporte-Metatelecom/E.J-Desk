@@ -696,7 +696,7 @@ const DECISOES = [
   {id:"busca_linha", g:"Já definido", t:"Busca por linha no texto do chamado: MSISDN/ICCID, B.O, equipamentos e protocolo do atendimento (28/09)", st:"ok", o:[]},
   {id:"janela_uteis", g:"Já definido", t:"Encerramento automático do retorno: 1 dia útil sem resposta do cliente (29/09)", st:"ok", o:[]},
   {id:"cli_excluir_quem", g:"Clientes (01/10)", t:"Excluir cliente: só o nível Diamante (01/10). Unificar clientes continua a partir de Prata", st:"ok", o:[]},
-  {id:"cli_excluir", g:"Clientes (01/10)", t:"Excluir cliente que tem chamados: o que acontece?", st:"d", nota:"Hoje a exclusão é bloqueada quando o cliente tem chamados, e a tela sugere Unificar clientes.", o:[["Bloquear (como está)","Protege o histórico dos chamados."],["Permitir","Os chamados guardariam o nome e o CNPJ/CPF do cliente no próprio chamado; exige mudança no banco."]]},
+  {id:"cli_excluir", g:"Clientes (02/10)", t:"Excluir cliente com chamados: permitido para o Diamante (02/10). Os chamados ativos são excluídos junto, com motivo e confirmação, e podem ser restaurados; chamados já excluídos não impedem mais a exclusão. Cada chamado guarda o nome, o CNPJ/CPF e o e-mail do cliente", st:"ok", o:[]},
   {id:"setor_comercial", g:"Setor Comercial (01/10)", t:"Novo setor Comercial. Cores dos setores: Suporte roxo #800080, Comercial azul #00BFFF. O Diamante convida usuários para o Comercial e muda o setor de qualquer pessoa em Usuários › Editar", st:"ok", o:[]},
   {id:"comercial_telas", g:"Setor Comercial (01/10)", t:"O Comercial abre chamados para o Suporte (Abertura de chamado), acompanha em Chamados abertos cadastra clientes e, a partir de Prata, unifica clientes (Cadastro de cliente › Clientes). Não vê a fila, a Relação de Chamados nem Incidentes; não edita nem exclui clientes", st:"ok", o:[]},
   {id:"comercial_nsend", g:"Setor Comercial (01/10)", t:"Na abertura feita pelo Comercial, o campo Protocolo do atendimento vira Link do NSend (obrigatório, começando com https://). Na página do chamado o link aparece clicável", st:"ok", o:[]},
@@ -852,7 +852,8 @@ const me = () => S.users.find(u=>u.id===S.me) || S.users[0];
 const iniciais = n => n.split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
 function salvarFotos(){try{const fs={};S.users.forEach(u=>{if(u.foto)fs[u.id]=u.foto});localStorage.setItem("ejd-fotos",JSON.stringify(fs))}catch(e){}}
 const avatarHTML = (u, sz=32, st="") => u && u.foto ? `<div class="avatar foto" style="width:${sz}px;height:${sz}px;${st}"><img src="${u.foto}" alt="Foto de ${esc(u.nome)}"></div>` : `<div class="avatar" style="width:${sz}px;height:${sz}px;${st}">${u?iniciais(u.nome):"?"}</div>`;
-const cli = id => S.clientes.find(c=>c.id===id) || {nome:"—",email:"—",doc:"—"};
+const cli = id => S.clientes.find(c=>c.id===id) || (S.cliExcl||{})[id] || {nome:"—",email:"—",doc:"—"};
+/* 02/10: cliente excluído — os chamados guardam nome, CNPJ/CPF e e-mail (S.cliExcl), para o histórico e para restaurar. */
 const tk = id => S.tickets.find(t=>t.id===id);
 const agora = () => Date.now() + (S.offset||0);          // relógio do protótipo (pode ser adiantado)
 const now = () => {const d=new Date(agora());return d.toTimeString().slice(0,5)};
@@ -1707,10 +1708,30 @@ document.addEventListener("click", e=>{
   const b=e.target.closest('[data-act="excluirCli"]'); if(!b) return;
   if(!pode("cliente.excluir")){toast("Você não tem permissão para excluir clientes");return}
   const c=S.clientes.find(x=>x.id===b.dataset.cid); if(!c) return;
-  const n=S.tickets.filter(t=>t.cliente===c.id).length;
-  if(n){ modal(`<h2>Não é possível excluir ${esc(c.nome)}</h2><p class="small">Este cliente tem <b>${n} chamado${n>1?"s":""}</b>. Para não perder o histórico, ele não pode ser excluído. Se for um cadastro duplicado, use <b>Unificar clientes</b> para juntar com o cadastro certo.</p>`,()=>{},"Entendi"); return; }
-  modal(`<h2>Excluir o cliente ${esc(c.nome)}?</h2><p class="small"><span class="mono">${esc(c.doc)}</span> · ${esc(c.email)}<br>O cadastro sai da lista e não aparece mais na abertura de chamado. Esta ação não pode ser desfeita.</p>`,
-    ()=>{S.clientes=S.clientes.filter(x=>x.id!==c.id); render(); toast("Cliente "+c.nome+" excluído")},"Excluir");
+  const dele=S.tickets.filter(t=>t.cliente===c.id), ativos=dele.filter(t=>!t.excluido), excl=dele.length-ativos.length;
+  const pl=(n,u,v)=>n+" "+(n>1?v:u);
+  const apagar=(motivo)=>{ const ref={id:c.id,nome:c.nome,doc:c.doc,email:c.email,tel:c.tel||"",excluidoCli:{por:me().nome,quando:stamp()}};
+    S.cliExcl=S.cliExcl||{}; S.cliExcl[c.id]=ref;
+    ativos.forEach(t=>{t.excluido={por:me().nome,quando:stamp(),motivo:"Cliente "+c.nome+" excluído · "+motivo};registrar(t,"Excluído por "+me().nome+" junto com o cliente "+c.nome+" · Motivo: "+motivo)});
+    dele.forEach(t=>registrar(t,"Cliente "+c.nome+" excluído do cadastro por "+me().nome+" (nome e CNPJ/CPF ficam guardados no chamado)"));
+    (S.exclusoesCli=S.exclusoesCli||[]).push({id:c.id, motivo, comChamados:ativos.length>0});
+    S.clientes=S.clientes.filter(x=>x.id!==c.id); render();
+    toast("Cliente "+c.nome+" excluído"+(ativos.length?" com "+pl(ativos.length,"chamado","chamados"):"")); };
+  const extra = excl ? `<br>${pl(excl,"chamado já excluído continua","chamados já excluídos continuam")} no histórico do Diamante, com o nome e o CNPJ/CPF do cliente, e ainda ${excl>1?"podem":"pode"} ser restaurado${excl>1?"s":""}.` : "";
+  if(ativos.length){
+    modal(`<h2>Excluir ${esc(c.nome)} e ${pl(ativos.length,"chamado","chamados")}?</h2>
+      <p class="small"><span class="mono">${esc(c.doc)}</span> · ${esc(c.email)}</p>
+      <p class="small">Este cliente tem <b>${pl(ativos.length,"chamado ativo","chamados ativos")}</b>: ${ativos.slice(0,6).map(t=>`<span class="mono">${t.id}</span>`).join(", ")}${ativos.length>6?"…":""}. ${ativos.length>1?"Eles serão excluídos":"Ele será excluído"} junto com o cadastro e ${ativos.length>1?"vão":"vai"} para o histórico do Diamante, de onde ainda dá para restaurar.${extra}</p>
+      <p class="small muted">Se for um cadastro duplicado, use <b>Unificar clientes</b>: os chamados passam para o cadastro certo e nada é excluído.</p>
+      <div class="field"><label for="mMotC">Motivo <i style="color:var(--atrasado)">*</i></label><input class="in" id="mMotC" placeholder="Ex.: cadastro de teste"></div>
+      <label class="row small" style="gap:8px"><input type="checkbox" id="mConfC"> Confirmo que quero excluir o cliente e ${pl(ativos.length,"chamado","chamados")}</label><span class="errtxt" id="mErr"></span>`,
+      w=>{const m=w.querySelector("#mMotC").value.trim();if(!m){w.querySelector("#mErr").textContent="Informe o motivo da exclusão.";return false}
+        if(!w.querySelector("#mConfC").checked){w.querySelector("#mErr").textContent="Marque a confirmação para excluir.";return false}
+        apagar(m)},"Excluir cliente e chamados");
+  } else {
+    modal(`<h2>Excluir o cliente ${esc(c.nome)}?</h2><p class="small"><span class="mono">${esc(c.doc)}</span> · ${esc(c.email)}<br>O cadastro sai da lista e não aparece mais na abertura de chamado. Esta ação não pode ser desfeita.${extra}</p>`,
+      ()=>apagar("sem chamados ativos"),"Excluir");
+  }
   document.querySelector(".modal [data-ok]")?.classList.add("danger-solid");
 });
 document.addEventListener("submit", e=>{ if(e.target.id==="fRC"){ e.preventDefault(); rcSalvar(); } });
@@ -2083,9 +2104,9 @@ function vClientes(){
   <div class="head"><div class="t"><h1>Clientes</h1><p class="muted">Cadastro usado na abertura de chamado e no retorno por e-mail. Todos do Suporte e do Comercial podem cadastrar; unificar: Prata ou acima (Suporte e Comercial). Editar: Ouro e Diamante do Suporte.</p></div>
     <div class="row">${pode("cliente.unificar")?`<button class="btn" data-act="unificar">Unificar clientes</button>`:""}<button class="btn primary" data-act="novoCli">+ Novo cliente</button></div></div>
   <section class="card"><div class="tbl-wrap"><table><thead><tr><th>Nome</th><th>CNPJ / CPF</th><th>E-mail</th><th>Telefone</th><th>Chamados</th>${pode("cliente.editar")||pode("cliente.excluir")?"<th></th>":""}</tr></thead><tbody>
-    ${S.clientes.map(c=>{const n=S.tickets.filter(t=>t.cliente===c.id).length; return `<tr><td>${esc(c.nome)}</td><td class="mono" style="white-space:nowrap">${c.doc.split(" · ").map(esc).join("<br>")}</td><td>${esc(c.email)}</td><td class="mono" style="white-space:nowrap">${esc(c.tel||"—")}</td><td class="mono">${n}</td>${pode("cliente.editar")||pode("cliente.excluir")?`<td style="text-align:right;white-space:nowrap">${pode("cliente.editar")?`<button class="btn sm" data-act="editarCli" data-cid="${esc(c.id)}">Editar</button> `:""}${pode("cliente.excluir")?`<button class="btn sm danger" data-act="excluirCli" data-cid="${esc(c.id)}" ${n?`title="Tem ${n} chamado${n>1?"s":""}: não pode ser excluído"`:""}>Excluir</button>`:""}</td>`:""}</tr>`}).join("")||`<tr><td colspan="6"><div class="empty">Nenhum cliente cadastrado.</div></td></tr>`}
+    ${S.clientes.map(c=>{const todos=S.tickets.filter(t=>t.cliente===c.id), n=todos.filter(t=>!t.excluido).length, nx=todos.length-n; return `<tr><td>${esc(c.nome)}</td><td class="mono" style="white-space:nowrap">${c.doc.split(" · ").map(esc).join("<br>")}</td><td>${esc(c.email)}</td><td class="mono" style="white-space:nowrap">${esc(c.tel||"—")}</td><td class="mono">${n}${nx&&pode("cliente.excluir")?` <span class="small muted" style="font-family:var(--sans)" title="Chamados excluídos (só o Diamante vê)">+${nx} excl.</span>`:""}</td>${pode("cliente.editar")||pode("cliente.excluir")?`<td style="text-align:right;white-space:nowrap">${pode("cliente.editar")?`<button class="btn sm" data-act="editarCli" data-cid="${esc(c.id)}">Editar</button> `:""}${pode("cliente.excluir")?`<button class="btn sm danger" data-act="excluirCli" data-cid="${esc(c.id)}" ${n?`title="Tem ${n} chamado${n>1?"s":""} ativo${n>1?"s":""}: ${n>1?"eles serão excluídos":"ele será excluído"} junto"`:""}>Excluir</button>`:""}</td>`:""}</tr>`}).join("")||`<tr><td colspan="6"><div class="empty">Nenhum cliente cadastrado.</div></td></tr>`}
   </tbody></table></div></section>
-  <div class="info">Excluir: só o Diamante, e só clientes sem chamados. Cliente com chamados não pode ser excluído, para não perder o histórico; se for um cadastro duplicado, use <b>Unificar clientes</b>. ${ad("cli_excluir")}</div>
+  <div class="info">Excluir: só o Diamante. Se o cliente tiver chamados ativos, eles são excluídos junto (com motivo e confirmação) e vão para o histórico do Diamante, de onde podem ser restaurados; os chamados guardam o nome e o CNPJ/CPF do cliente. Se for um cadastro duplicado, use <b>Unificar clientes</b>.</div>
   <div class="info">CNPJ/CPF já cadastrado é bloqueado e o sistema mostra o cadastro existente. Um cliente com mais de um CNPJ pode ter os cadastros unificados (Prata, Ouro e Diamante).</div><p class="hint">Retenção dos dados (LGPD): por enquanto, os dados são mantidos sem prazo de exclusão. Revisar com o jurídico antes de produção.</p>
   </div>`;
 }
