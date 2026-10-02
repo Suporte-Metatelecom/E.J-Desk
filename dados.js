@@ -95,6 +95,8 @@ document.addEventListener("submit", async e=>{
 /* ------------------------------------------------------------ carregar */
 async function q(p){ const {data,error}=await p; if(error) throw error; return data; }
 
+/* partes (Algar, Arqia, Links Field): o banco não guarda a ordem dos campos; volta na ordem da tela */
+const ordemPartes = (op, p) => { const nomes=(typeof PARTES_OP!=="undefined"&&PARTES_OP[op])||Object.keys(p); const o={}; nomes.forEach(n=>{ if(n in p) o[n]=p[n]; }); Object.keys(p).forEach(n=>{ if(!(n in o)) o[n]=p[n]; }); return o; };
 /* Registro de chamados: banco <-> tela */
 const rcDoBanco = r => ({ id:r.id, em:fmt(r.criado_em), usuario:r.usuario||"", cliente:r.cliente, doc:r.doc, operadora:r.operadora, chips:r.chips||[],
   rede:r.rede||"", equip:r.equipamento, sms:r.recebe_sms||"", regiao:r.regiao||"", comandos:r.comandos||"",
@@ -103,7 +105,7 @@ const rcParaBanco = r => ({ cliente:r.cliente, doc:r.doc, operadora:r.operadora,
   recebe_sms:r.sms||null, regiao:r.regiao||"", comandos:r.comandos||"" });
 
 async function carregar(){
-  const [perfis, cfg, clientes, chamados, hist, coms, anx, base, regs, rcs] = await Promise.all([
+  const [perfis, cfg, clientes, chamados, hist, coms, anx, base, regs, rcs, recs] = await Promise.all([
     q(sb.from("perfis").select("*").order("criado_em")),
     q(sb.from("config").select("*")),
     q(sb.from("clientes").select("*").order("nome")),
@@ -113,7 +115,8 @@ async function carregar(){
     q(sb.from("anexos").select("*").order("em")),
     q(sb.from("inc_base").select("*")),
     q(sb.from("inc_registros").select("*").order("dia")),
-    q(sb.from("registro_chamados").select("*").order("criado_em",{ascending:false})).catch(e=>{ console.warn("registro_chamados:", e); return []; })   // antes do 003: lista vazia
+    q(sb.from("registro_chamados").select("*").order("criado_em",{ascending:false})).catch(e=>{ console.warn("registro_chamados:", e); return []; }),   // antes do 003: lista vazia
+    q(sb.from("recados_comercial").select("*").order("id")).catch(e=>{ console.warn("recados_comercial:", e); return []; })           // antes do 007: sem recados
   ]);
   for(const k in nomePorId) delete nomePorId[k];
   for(const k in idPorNome) delete idPorNome[k];
@@ -132,7 +135,7 @@ async function carregar(){
   S.clientes = clientes.map(c=>({id:c.id, nome:c.nome, doc:c.doc, email:c.email, tel:c.tel||""}));
 
   const porCh = (lista) => { const m={}; lista.forEach(x=>{(m[x.chamado_id]=m[x.chamado_id]||[]).push(x)}); return m; };
-  const H=porCh(hist), CM=porCh(coms), AX=porCh(anx);
+  const H=porCh(hist), CM=porCh(coms), AX=porCh(anx), RC=porCh(recs);
   const caminhos = anx.map(a=>a.caminho);
   let assinadas = {};
   if(caminhos.length){
@@ -149,6 +152,7 @@ async function carregar(){
     vinculadoA:c.vinculado_a||undefined, unificados:(c.unificados&&c.unificados.length)?c.unificados:undefined, excluido:c.excluido||null,
     aberto:fmt(c.criado_em), criadoEmMs:ms(c.criado_em), resolvidoEmMs:ms(c.resolvido_em), resolvidoPor:nomePorId[c.resolvido_por]||"",
     hist:(H[c.id]||[]).map(h=>[fmt(h.em), h.texto]),
+    notasCom:(RC[c.id]||[]).map(m=>({a:m.autor_nome||nomePorId[m.autor]||"", t:fmt(m.em), txt:m.texto})),
     coments:(CM[c.id]||[]).map(m=>({a:m.autor_nome||nomePorId[m.autor]||"", t:fmt(m.em), txt:m.texto, anexos:m.anexos||[]})),
     anexos:(AX[c.id]||[]).map(a=>a.nome),
     arqs:(AX[c.id]||[]).map(a=>({id:a.id, nome:a.nome, tipo:tipoArq(a.nome), tam:a.tamanho||0, caminho:a.caminho, url:assinadas[a.caminho]||"", por:a.enviado_por||"", em:fmt(a.em), txt:null})),
@@ -159,7 +163,7 @@ async function carregar(){
   const ult = base.slice().sort((a,b)=>ms(b.atualizado_em)-ms(a.atualizado_em))[0];
   S.incBaseEm = ult ? fmt(ult.atualizado_em) : null; S.incBasePor = ult ? ult.atualizado_por : null;
   S.incidentes = regs.map(r=>({ id:r.id, dia:r.dia, turno:r.turno, em:fmt(r.em), operadora:r.operadora, linhas:r.linhas, base:r.base,
-    nivel:r.nivel||undefined, obs:r.obs||"", por:r.por||"", corr:r.correcoes||[] }));
+    nivel:r.nivel||undefined, obs:r.obs||"", por:r.por||"", corr:r.correcoes||[], ...(r.partes?{partes:ordemPartes(r.operadora, r.partes)}:{}) }));
   S.incPlat = [];
   S.regCham = rcs.map(rcDoBanco);
   calcularPainel();
@@ -222,6 +226,7 @@ async function salvarChamado(t, antes, tS){
     const row = linhaChamado(t, null); delete row.status; delete row.responsavel_id; delete row.vinculado_a; delete row.excluido;
     const novo = await q(sb.from("chamados").insert(row).select().single());
     const antigoId = t.id; eco({id:novo.id, aberto:fmt(novo.criado_em), criadoEmMs:ms(novo.criado_em)});
+    document.querySelectorAll(`[data-novo-id="${antigoId}"]`).forEach(el=>{ el.textContent=novo.id; el.removeAttribute("data-novo-id"); });   // aviso "Chamado aberto" mostra o número definitivo
     if(S.sel===antigoId){ S.sel=novo.id; S._skipHash=true; history.replaceState(null,"","#/chamado/"+novo.id); }
     if(S.retSel===antigoId) S.retSel=novo.id;
     if(t.hist.length) await q(sb.from("historico").insert(t.hist.map(h=>({chamado_id:t.id, texto:h[1].replace(antigoId,t.id)}))));
@@ -238,6 +243,8 @@ async function salvarChamado(t, antes, tS){
   }
   const novosH = t.hist.slice(antes.hist.length);
   if(novosH.length) await q(sb.from("historico").insert(novosH.map(h=>({chamado_id:t.id, texto:h[1]}))));
+  const novosRec = (t.notasCom||[]).slice((antes.notasCom||[]).length);
+  if(novosRec.length) await q(sb.from("recados_comercial").insert(novosRec.map(m=>({chamado_id:t.id, texto:m.txt}))));
   const novosC = t.coments.slice(antes.coments.length);
   if(novosC.length) await q(sb.from("comentarios").insert(novosC.map(m=>({chamado_id:t.id, autor_nome:m.a, texto:m.txt, anexos:m.anexos||[]}))));
   const ja = new Set((antes.arqs||[]).map(a=>a.id));
@@ -274,6 +281,12 @@ async function sincronizar(){
   salvando=true;
   const agoraS = foto(); const antesEco = JSON.stringify(agoraS); let mudouNoServidor = false;
   try{
+    // unificação de clientes: feita no servidor (Prata ou acima), que move os chamados e apaga os duplicados
+    if(S.unificacoes && S.unificacoes.length){
+      const fila=S.unificacoes.splice(0);
+      for(const u of fila) await q(sb.rpc("unificar_clientes", {principal:u.principal, duplicados:u.duplicados}));
+      await carregar(); mudouNoServidor=true; return;
+    }
     // usuários (convite, nível, setor, desativação, foto)
     const bu = Object.fromEntries(BASE.users.map(u=>[u.id,u]));
     for(const u of S.users){
@@ -316,10 +329,10 @@ async function sincronizar(){
     const br = Object.fromEntries(BASE.incidentes.map(r=>[r.id,r]));
     for(const r of S.incidentes){
       const a=br[r.id];
-      if(!a){ const n=await q(sb.from("inc_registros").insert({dia:r.dia, turno:r.turno, operadora:r.operadora, linhas:r.linhas??null, nivel:r.nivel||null, obs:r.obs||""}).select().single());
+      if(!a){ const n=await q(sb.from("inc_registros").insert({dia:r.dia, turno:r.turno, operadora:r.operadora, linhas:r.linhas??null, nivel:r.nivel||null, obs:r.obs||"", ...(r.partes?{partes:r.partes}:{})}).select().single());
         const rS=agoraS.incidentes.find(x=>x.id===r.id); const e={id:n.id, base:n.base, por:n.por, em:fmt(n.em)}; Object.assign(r,e); if(rS) Object.assign(rS,e); }
       else if(r.linhas!==a.linhas || (r.nivel||null)!==(a.nivel||null) || !igual(r.corr,a.corr))
-        await q(sb.from("inc_registros").update({linhas:r.linhas??null, nivel:r.nivel||null, correcoes:r.corr||[]}).eq("id",r.id));
+        await q(sb.from("inc_registros").update({linhas:r.linhas??null, nivel:r.nivel||null, correcoes:r.corr||[], ...(r.partes?{partes:r.partes}:{})}).eq("id",r.id));
     }
     // registro de chamados (Incidentes)
     const brc = Object.fromEntries((BASE.regCham||[]).map(r=>[r.id,r]));

@@ -102,6 +102,8 @@ p{margin:0}
 .nav .fcar{margin-left:auto;font-size:10px;color:var(--side-muted);transition:transform .15s}
 .nav button.fold:not(.open) .fcar{transform:rotate(-90deg)}
 .nav .foldbox{display:flex;flex-direction:column;gap:2px;margin-bottom:4px}
+/* 02/10: o atributo hidden sempre esconde (o display:flex acima fazia a pasta não fechar) */
+[hidden]{display:none!important}
 .nav .subcat{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--side-muted);padding:8px 10px 2px 30px;font-weight:600}
 .nav .subgrp{display:flex;align-items:center;gap:10px;padding:8px 10px 2px;color:var(--side-ink);font-size:13.5px}
 .nav button.child{padding-left:30px;font-size:13px}
@@ -135,6 +137,17 @@ p{margin:0}
 .anx-view video{max-width:100%;max-height:100%;border-radius:8px}
 .anx-view .anx-x{position:fixed;top:14px;right:18px;color:#fff;font-size:13px;opacity:.85}
 .anx-view img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+/* 02/10: visualizador de foto — cabe na tela, zoom pela roda/botões, arrastar para mover, sem rolar a página do fundo */
+html.anx-trava,html.anx-trava body{overflow:hidden!important}
+.anx-view{overscroll-behavior:contain}
+.anx-view pre,.anx-pdf{overscroll-behavior:contain}
+.anx-palco{position:fixed;inset:56px 24px 72px;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:auto}
+.anx-palco img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;transform-origin:center center;transition:transform .12s ease;user-select:none;-webkit-user-drag:none;cursor:default}
+.anx-palco.zoom img{cursor:grab}.anx-palco.arrastando img{cursor:grabbing;transition:none}
+.anx-zoom{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:4px;align-items:center;padding:6px;border-radius:999px;background:rgba(20,24,34,.92);box-shadow:0 6px 24px rgba(0,0,0,.4);cursor:auto}
+.anx-zoom button{border:0;background:transparent;color:#fff;font:600 14px/1 var(--sans);min-width:34px;height:32px;padding:0 10px;border-radius:999px;cursor:pointer}
+.anx-zoom button:hover{background:rgba(255,255,255,.14)}
+.anx-zoom output{color:#fff;font:600 12px/1 var(--mono);min-width:48px;text-align:center}
 .ico-xls{flex:none;vertical-align:-3px}
 .dd-card{display:flex;gap:16px;align-items:center;justify-content:space-between}
 .dd-card p{margin-top:4px;max-width:720px}
@@ -203,6 +216,18 @@ textarea.in{min-height:84px;resize:vertical}
 .lvl{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
 .lvl::before{content:"";width:9px;height:9px;transform:rotate(45deg);background:currentColor;border-radius:2px}
 .l-Bronze{color:var(--bronze)} .l-Prata{color:var(--prata)} .l-Ouro{color:var(--ouro)} .l-Diamante{color:var(--diamante)}
+/* 01/10: Ouro e Diamante brilham — reflexo que passa pelo texto e o losango pulsa */
+.lvl.l-Diamante,.lvl.l-Ouro{position:relative;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;background-size:250% 100%;animation:lvlBrilho 2.8s linear infinite}
+.lvl.l-Diamante{background-image:linear-gradient(100deg,var(--diamante) 0%,var(--diamante) 38%,#E8FBFF 50%,var(--diamante) 62%,var(--diamante) 100%)}
+.lvl.l-Ouro{background-image:linear-gradient(100deg,var(--ouro) 0%,var(--ouro) 38%,#FFF4C2 50%,var(--ouro) 62%,var(--ouro) 100%);animation-duration:3.6s}
+.lvl.l-Diamante::before{background:var(--diamante);animation:lvlPulso 1.8s ease-in-out infinite;--brilho:rgba(92,192,232,.95)}
+.lvl.l-Ouro::before{background:var(--ouro);animation:lvlPulso 2.4s ease-in-out infinite;--brilho:rgba(230,185,40,.9)}
+.lvl.l-Diamante::after{content:"";position:absolute;left:-1px;top:50%;width:11px;height:11px;margin-top:-5.5px;pointer-events:none;
+  background:radial-gradient(circle,#fff 0 1.2px,transparent 1.6px) 0 0/11px 11px no-repeat;animation:lvlFaisca 2.8s ease-in-out infinite;opacity:0}
+@keyframes lvlBrilho{from{background-position:120% 0}to{background-position:-120% 0}}
+@keyframes lvlPulso{0%,100%{box-shadow:0 0 0 0 transparent;transform:rotate(45deg) scale(1)}50%{box-shadow:0 0 7px 1px var(--brilho);transform:rotate(45deg) scale(1.15)}}
+@keyframes lvlFaisca{0%,60%,100%{opacity:0;transform:scale(.4) rotate(0)}70%{opacity:1;transform:scale(1.3) rotate(45deg)}80%{opacity:0;transform:scale(.6) rotate(90deg)}}
+@media (prefers-reduced-motion:reduce){.lvl.l-Diamante,.lvl.l-Ouro,.lvl.l-Diamante::before,.lvl.l-Ouro::before,.lvl.l-Diamante::after{animation:none}.lvl.l-Diamante,.lvl.l-Ouro{-webkit-text-fill-color:currentColor;background:none}}
 
 /* a decidir */
 .ad{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--decidir);background:var(--decidir-bg);border:1px dashed var(--decidir-line);padding:1px 7px;border-radius:4px;white-space:nowrap;cursor:pointer}
@@ -387,6 +412,22 @@ table.increg td{vertical-align:middle}
 .sb-txt::after{content:"Ocultar menu"}
 .app.collapsed .sb-txt::after{content:"Mostrar menu"}
 .app.collapsed .sidebar-bar{left:52px}
+.setor{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px 2px 7px;border-radius:999px;white-space:nowrap;color:var(--sc);background:var(--sb)}
+.setor::before{content:"";width:8px;height:8px;border-radius:3px;background:currentColor}
+/* 01/10: cores exatas dos setores — Suporte #800080, Comercial #00BFFF (texto escolhido para ficar legível sobre cada cor) */
+.s-roxo{--sc:#FFFFFF;--sb:#800080}.s-marinho{--sc:#06283D;--sb:#00BFFF}.s-cinza{--sc:var(--muted);--sb:var(--surface-2)}
+.setor.s-roxo::before,.setor.s-marinho::before{background:currentColor;opacity:.85}
+/* 01/10: seleção de cliente com busca (nome ou CNPJ/CPF) */
+.cbx{position:relative}
+.cbx .in{padding-right:30px}
+.cbx-car{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none}
+.cbx-lista{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:35;background:var(--surface);border:1px solid var(--line);border-radius:9px;box-shadow:0 12px 32px rgba(8,12,20,.16);max-height:280px;overflow-y:auto;padding:4px}
+.cbx-op{all:unset;box-sizing:border-box;display:flex;justify-content:space-between;gap:12px;width:100%;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13.5px}
+.cbx-op .mono{color:var(--muted);font-size:12px;white-space:nowrap}
+.cbx-op.on,.cbx-op:hover{background:var(--primary-soft)}
+.cbx-op mark{background:transparent;color:var(--primary);font-weight:600}
+.cbx-vazio{padding:10px;font-size:13px;color:var(--muted)}
+.cbx-sel{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
 .rail{display:none}
 .app.collapsed .rail{position:fixed;top:0;bottom:0;left:0;width:52px;z-index:27;background:var(--side);display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 0;overflow-y:auto;scrollbar-width:none}
 .app.collapsed .rail::-webkit-scrollbar{display:none}
@@ -491,7 +532,9 @@ const S = {
     {id:"u8", nome:"Patrick Moura", email:"patrick.moura@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
     {id:"u9", nome:"Alessa Sanchez", email:"alessa.sanchez@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
     {id:"u10", nome:"Julia Munhoz", email:"julia.munhoz@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
-    {id:"u11", nome:"Luis Amstalden", email:"luis.amstalden@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0}
+    {id:"u11", nome:"Luis Amstalden", email:"luis.amstalden@metatelecom.com.br", setor:"suporte", nivel:"Prata", ativo:true, cargo:"Suporte", acum:0},
+    // 01/10: primeira usuária do setor Comercial
+    {id:"u12", nome:"Ingred Baptista", email:"ingred.baptista@metatelecom.com.br", setor:"comercial", nivel:"Bronze", ativo:true, cargo:"Comercial", acum:0}
   ],
   clientes:[
     {id:"c1", nome:"Empresa XYZ Rastreamento", doc:"12.345.678/0001-90", email:"contato@empresaxyz.com.br", tel:"(11) 4002-1100"},
@@ -503,7 +546,7 @@ const S = {
   seq:1246,
   tickets:[]
 };
-function T(o){return Object.assign({linha:"", pausas:[], setor:"suporte", tipo:null, prioridade:"Normal", rascunho:null, encaminhamentos:[], bo:"", protAt:"", cep:"", equip:"", comandos:"", feito:"", caso:"", anexos:[], flags:{atrasado:false,atipico:false}, hist:[], coments:[], solucao:null, obs:"", excluido:null, retornos:[]}, o)}
+function T(o){return Object.assign({notasCom:[], linha:"", pausas:[], setor:"suporte", tipo:null, prioridade:"Normal", rascunho:null, encaminhamentos:[], bo:"", protAt:"", cep:"", equip:"", comandos:"", feito:"", caso:"", anexos:[], flags:{atrasado:false,atipico:false}, hist:[], coments:[], solucao:null, obs:"", excluido:null, retornos:[]}, o)}
 S.tickets = [
   T({id:"EJD-001245", titulo:"Problema de conexão — equipamento XYZ", cat:"Conectividade", resp:"Júnior", status:"Em análise", aberto:"17/09/2026 12:14", criadoPor:"Júnior", cliente:"c1", caso:"Vivo M2M",
     bo:"Equipamento XYZ perde conexão de dados várias vezes ao dia. Cliente relata quedas desde 15/09.", protAt:"VIVO-20260917-88123", cep:"04571-010", equip:"Rastreador XYZ-400, SIM Vivo M2M", comandos:"AT+CGATT? / AT+CSQ", feito:"Reset remoto do equipamento e reenvio de APN.", quemAbriu:"Júnior",
@@ -569,6 +612,8 @@ const NIVEIS_INC = [
 const NIVEL_COR = {normal:"#1C7A43", atencao:"#D4A017", possivel:"#EA7A3A", instab:"#C0262D"};
 const NIVEIS_HIST = ["possivel","instab"];      // o que entra no Histórico de instabilidades e nos alertas (a decidir)
 const isBL = o => /\sBL$/.test(o||"");
+/* 01/10: operadoras registradas em duas partes; o total de linhas online é a soma das duas */
+const PARTES_OP = {"Algar":["Algar Multi","Algar TIM"], "Arqia":["Arqia","Arqia TIM"], "Links Field":["Links Field BR","Links Field +"]};
 const baseDe = r => r.base!=null ? r.base : (S.incBase[r.operadora]||null);
 const pct = r => { const b=baseDe(r); return b && r.linhas!=null ? Math.round(r.linhas/b*1000)/10 : null; };
 const queda = r => { const p=pct(r); return p==null ? null : Math.max(0, Math.round((100-p)*10)/10); };
@@ -650,8 +695,21 @@ const DECISOES = [
   {id:"responsavel_nivel", g:"Já definido", t:"Responsável pelo chamado: só Ouro ou acima, com acesso ao setor do chamado (28/09)", st:"ok", o:[]},
   {id:"busca_linha", g:"Já definido", t:"Busca por linha no texto do chamado: MSISDN/ICCID, B.O, equipamentos e protocolo do atendimento (28/09)", st:"ok", o:[]},
   {id:"janela_uteis", g:"Já definido", t:"Encerramento automático do retorno: 1 dia útil sem resposta do cliente (29/09)", st:"ok", o:[]},
+  {id:"cli_excluir_quem", g:"Clientes (01/10)", t:"Excluir cliente: só o nível Diamante (01/10). Unificar clientes continua a partir de Prata", st:"ok", o:[]},
+  {id:"cli_excluir", g:"Clientes (01/10)", t:"Excluir cliente que tem chamados: o que acontece?", st:"d", nota:"Hoje a exclusão é bloqueada quando o cliente tem chamados, e a tela sugere Unificar clientes.", o:[["Bloquear (como está)","Protege o histórico dos chamados."],["Permitir","Os chamados guardariam o nome e o CNPJ/CPF do cliente no próprio chamado; exige mudança no banco."]]},
+  {id:"setor_comercial", g:"Setor Comercial (01/10)", t:"Novo setor Comercial. Cores dos setores: Suporte roxo #800080, Comercial azul #00BFFF. O Diamante convida usuários para o Comercial e muda o setor de qualquer pessoa em Usuários › Editar", st:"ok", o:[]},
+  {id:"comercial_telas", g:"Setor Comercial (01/10)", t:"O Comercial abre chamados para o Suporte (Abertura de chamado), acompanha em Chamados abertos cadastra clientes e, a partir de Prata, unifica clientes (Cadastro de cliente › Clientes). Não vê a fila, a Relação de Chamados nem Incidentes; não edita nem exclui clientes", st:"ok", o:[]},
+  {id:"comercial_nsend", g:"Setor Comercial (01/10)", t:"Na abertura feita pelo Comercial, o campo Protocolo do atendimento vira Link do NSend (obrigatório, começando com https://). Na página do chamado o link aparece clicável", st:"ok", o:[]},
+  {id:"comercial_abertos", g:"Setor Comercial (01/10)", t:"Comercial tem a aba Chamados › Chamados abertos: lista dos chamados que a pessoa abriu, com status, responsável e histórico, só para consulta", st:"ok", o:[]},
+  {id:"recados_comercial", g:"Setor Comercial (01/10)", t:"Recados para o Comercial: nos chamados abertos pelo Comercial, a equipe do Suporte (Prata ou acima) escreve recados; o Comercial só lê. São separados dos comentários internos", st:"ok", o:[]},
+  {id:"comercial_acomp", g:"Setor Comercial (01/10)", t:"Em Chamados abertos, o que mais o Comercial pode fazer?", st:"d", nota:"Hoje é só consulta dos chamados que a própria pessoa abriu.", o:[["Só consulta (como está)","Vê status, responsável e histórico."],["Responder os recados","Pode responder os recados do Suporte."],["Ver os do time","Vê também os chamados abertos pelos colegas do Comercial."]]},
+  {id:"restaurar_chamado", g:"Já definido", t:"Chamado excluído pode ser restaurado pelo Diamante (página do chamado ou menu ⋮ da lista). Volta com o mesmo status e responsável; fica registrado no histórico (01/10)", st:"ok", o:[]},
+  {id:"niveis_brilho", g:"Já definido", t:"Níveis Ouro e Diamante com animação de brilho onde aparecem (01/10)", st:"ok", o:[]},
   {id:"usuarios_foto", g:"Já definido", t:"Usuários: a lista mostra a foto de perfil de cada pessoa (ou as iniciais, quando não há foto) (01/10)", st:"ok", o:[]},
   {id:"abertura_opc", g:"Já definido", t:"Abertura de chamado: CEP da localização da linha, Quais equipamentos usa? e Comandos passam a ser opcionais (01/10)", st:"ok", o:[]},
+  {id:"inc_links_logo", g:"Painel de incidentes (02/10)", t:"Logos do Downdetector e do RD Station nos botões", st:"d", nota:"Os botões já abrem os sites numa nova guia. Por enquanto usam um ícone genérico, e há um espaço reservado para a logo oficial.", o:[["Enviar os arquivos oficiais","PNG ou SVG do kit de imprensa (ou aprovados pelo Marketing). Ficam guardados no próprio site."],["Manter os ícones genéricos","Não depende de arquivo de terceiros."]]},
+  {id:"inc_partes", g:"Já definido", t:"Registro de incidentes: Algar (Algar Multi + Algar TIM), Arqia (Arqia + Arqia TIM) e Links Field (Links Field BR + Links Field +) são registradas em dois campos; o total de linhas online é a soma e os dois valores ficam guardados no registro (01/10)", st:"ok", o:[]},
+  {id:"cliente_busca", g:"Já definido", t:"Abertura de chamado (Suporte e Comercial): o campo Cliente tem busca — digitando o nome ou o CNPJ/CPF, a lista filtra na hora (01/10)", st:"ok", o:[]},
   {id:"menu_icones", g:"Já definido", t:"Menu oculto mostra uma faixa com os ícones das abas, para navegar sem abrir o menu; o nome aparece ao passar o mouse (01/10)", st:"ok", o:[]},
   {id:"prio_desc", g:"Já definido", t:"Prioridade com exemplo na hora de escolher: Baixa — impacto pequeno ou pontual · Normal — instabilidade com impacto moderado · Alta — impacto significativo na operação · Urgente — operação parada ou grande quantidade de linhas afetadas (01/10)", st:"ok", o:[]},
   {id:"retorno_tela", g:"Já definido", t:"Aguardando retorno: o prazo continua 1 dia útil; a tela mostra quando o chamado encerra (ex.: \"amanhã às 10:23\"), e não mais as horas de expediente restantes (01/10, opção A)", st:"ok", o:[]},
@@ -687,7 +745,7 @@ const DECISOES = [
   {id:"reabrir_nivel", g:"Já definido", t:"Reabrir chamado: Ouro e Diamante", st:"ok", o:[]},
   {id:"prata", g:"Já definido", t:"Prata comenta dentro do chamado, sem alterar dados", st:"ok", o:[]},
   {id:"retorno_nivel", g:"Já definido", t:"Retorno ao cliente: enviado por Ouro e Diamante", st:"ok", o:[]},
-  {id:"cliente_cad", g:"Já definido", t:"Todos os níveis cadastram e editam clientes", st:"ok", o:[]},
+  {id:"cliente_cad", g:"Já definido", t:"Todos os níveis cadastram clientes; editar o cadastro: só Ouro e Diamante (01/10, antes todos editavam)", st:"ok", o:[]},
   {id:"ranking", g:"Já definido", t:"Ranking de gamificação visível para os 10 colaboradores", st:"ok", o:[]},
   {id:"categoria", g:"Já definido", t:"Categoria e prioridade podem ser escolhidas na abertura do chamado; Ouro/Diamante ajustam na triagem (29/09, substitui a decisão de 24/09)", st:"ok", o:[]},
   {id:"abertura_cat_prio", g:"Já definido", t:"Categoria e prioridade obrigatórias na abertura; qualquer nível pode escolher qualquer prioridade (30/09)", st:"ok", o:[]},
@@ -716,10 +774,12 @@ const can = n => LV[S.level] >= LV[n];
    Para criar um novo setor: 1) adicione em SETORES; 2) cadastre seus recursos em RECURSOS com area:"<id do setor>";
    3) adicione o grupo e os itens em NAV e as telas em VIEWS. Nada mais precisa mudar. */
 const SETORES_TODOS = {
-  suporte:    {nome:"Suporte",    email:null},
-  financeiro: {nome:"Financeiro", email:"financeiro@metatelecom.com.br"}   // oculto: projeto futuro
+  suporte:    {nome:"Suporte",    email:null, cor:"roxo"},                 // 01/10: cor #800080
+  comercial:  {nome:"Comercial",  email:null, cor:"marinho"},              // 01/10: novo setor, cor #00BFFF (telas: a decidir)
+  financeiro: {nome:"Financeiro", email:"financeiro@metatelecom.com.br", cor:"cinza"}   // oculto: projeto futuro
 };
 const SETORES = Object.fromEntries(Object.entries(SETORES_TODOS).filter(([k])=>k!=="financeiro"||FINANCEIRO_ATIVO));
+const setorTag = k => { const st=SETORES_TODOS[k]; return st ? `<span class="setor s-${st.cor||"cinza"}">${esc(st.nome)}</span>` : '<span class="muted">—</span>'; };
 const AREAS_GLOBAIS = ["conta","admin","prototipo"];   // não dependem do setor, só do nível
 const NIVEL_TODOS_SETORES = "Diamante";                 // Diamante acessa todos os setores
 const FIN_TIPOS = {
@@ -727,7 +787,8 @@ const FIN_TIPOS = {
 };
 const RECURSOS = {
   // Suporte — páginas
-  "abertura":{area:"suporte", min:"Bronze"},
+  "abertura":{area:["suporte","comercial"], min:"Bronze"},   // 01/10: o Comercial abre chamados para o Suporte
+  "com-abertos":{area:"comercial", min:"Bronze", exceto:"Diamante"},   // 01/10: Comercial acompanha os chamados que abriu (só leitura)
   "painel":{area:"suporte", min:"Prata"},
   "incidentes":{area:"suporte", min:"Bronze"},        // 29/09 (item 46): todos do Suporte veem
   "inc-chamados":{area:"suporte", min:"Bronze"},
@@ -743,9 +804,11 @@ const RECURSOS = {
   "meus":{area:"suporte", min:"Bronze", only:"Bronze"},
   "chamados":{area:"suporte", min:"Prata"},
   "retorno":{area:"suporte", min:"Ouro"},
-  "clientes":{area:"suporte", min:"Bronze"},
+  "clientes":{area:["suporte","comercial"], min:"Bronze"},   // 01/10: o Comercial também cadastra clientes
   // Suporte — ações que não dependem de um chamado
-  "cliente.unificar":{area:"suporte", min:"Prata"},
+  "cliente.unificar":{area:["suporte","comercial"], min:"Prata"},   // 01/10: o Comercial também unifica (mesmo nível: Prata ou acima)
+  "cliente.editar":{area:"suporte", min:"Ouro"},       // 01/10: só Ouro e Diamante editam o cadastro do cliente
+  "cliente.excluir":{area:"suporte", min:"Diamante"},  // 01/10: só o Diamante exclui cliente
   // Financeiro — páginas (visualizar chamados segue a regra existente: Prata ou acima)
   "fin-cancelamento":{area:"financeiro", min:"Prata"},
   "fin-contestacao":{area:"financeiro", min:"Prata"},
@@ -769,15 +832,17 @@ function temArea(area, u=ctx()){
 function pode(recurso, u=ctx()){
   const r = RECURSOS[recurso];
   if(!r) return false;                       // recurso não cadastrado = sem acesso
-  if(!temArea(r.area, u)) return false;      // filtro por setor
+  if(![].concat(r.area).some(a=>temArea(a, u))) return false;      // filtro por setor (um recurso pode valer para mais de um setor)
   if(LV[u.nivel] < LV[r.min]) return false;  // regra de nível existente
   if(r.only && u.nivel!==r.only) return false;
+  if(r.exceto && u.nivel===r.exceto) return false;
   return true;
 }
 /* Permissões sobre um chamado: a área é o SETOR RESPONSÁVEL do chamado, não a página onde ele aparece.
    Vale para lista, página do chamado, URL direta (#chamado-...) e cada ação. */
 const ACOES_CHAMADO = {ver:"Prata", comentar:"Prata", tratar:"Ouro", retorno:"Ouro", excluir:"Diamante", verExcluidos:"Diamante"};
 function podeChamado(acao, t, u=ctx()){
+  if(u.setor==="comercial" && u.nivel!=="Diamante") return acao==="ver" && (t.setor||"suporte")==="suporte" && t.criadoPor===me().nome && !t.excluido;   // 01/10: Comercial só consulta os que abriu
   if(!t || !ACOES_CHAMADO[acao]) return false;
   if(!temArea(t.setor||"suporte", u)) return false;
   if(acao==="ver" && u.nivel==="Bronze") return t.criadoPor===me().nome && !t.excluido;   // Bronze: só os próprios, só leitura
@@ -889,6 +954,7 @@ const NAV = [
   {r:"abertura", t:"Abertura de chamado", i:"abrir"},
   {r:"painel", t:"Painel de chamados", i:"grid"},
   {r:"meus", t:"Meus chamados", i:"list", novo:true},
+  {r:"com-abertos", t:"Chamados abertos", i:"list"},
   {r:"chamados", t:"Relação de Chamados", i:"relacao"},
   {r:"retorno", t:"Retorno", i:"mail"},
   {fold:"f-clientes", t:"Cadastro de cliente", e:"🖥️"},
@@ -985,19 +1051,53 @@ function vLogin(){
   </form></div>`;
 }
 
+/* 01/10: quem é do Comercial informa o link do NSend no lugar do protocolo (fica no mesmo campo do chamado) */
+const abComercial = () => S.setor==="comercial" && S.level!=="Diamante";
+const ehLink = v => /^https?:\/\/\S+$/i.test((v||"").trim());
+const protHTML = v => ehLink(v) ? `<a href="${esc(v.trim())}" target="_blank" rel="noopener noreferrer" style="color:var(--primary);word-break:break-all">${esc(v.trim())}</a>` : (v ? esc(v) : '<span class="muted">—</span>');
+/* Busca de cliente: filtra por nome ou CNPJ/CPF (com ou sem pontuação); o select escondido continua sendo o valor do formulário. */
+function cbxCliente(){
+  const inp=$("#abCliBusca"), lista=$("#abCliLista"), sel=$("#abCli"); if(!inp||!sel) return;
+  const dig=v=>(v||"").replace(/\D/g,""), norm=v=>(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  let itens=[], ativo=0;
+  const marca=(txt,q)=>{ if(!q) return esc(txt); const i=norm(txt).indexOf(norm(q)); return i<0?esc(txt):esc(txt.slice(0,i))+"<mark>"+esc(txt.slice(i,i+q.length))+"</mark>"+esc(txt.slice(i+q.length)); };
+  const desenha=()=>{ const q=inp.value.trim(), qd=dig(q);
+    itens=S.clientes.filter(c=>!q || norm(c.nome).includes(norm(q)) || (qd.length>=2 && dig(c.doc).includes(qd))).slice(0,50);
+    ativo=Math.min(ativo,Math.max(itens.length-1,0));
+    lista.innerHTML = itens.length ? itens.map((c,i)=>`<button type="button" role="option" class="cbx-op${i===ativo?" on":""}" data-cid="${esc(c.id)}" aria-selected="${i===ativo}"><span>${marca(c.nome,qd.length>=2&&!norm(c.nome).includes(norm(q))?"":q)}</span><span class="mono">${esc(c.doc)}</span></button>`).join("")
+      : `<div class="cbx-vazio">Nenhum cliente encontrado.${pode("clientes")?` <button type="button" class="linkbtn" style="color:var(--primary)" data-go="clientes">Cadastrar novo cliente</button>`:""}</div>`;
+    lista.hidden=false; inp.setAttribute("aria-expanded","true"); };
+  const fecha=()=>{ lista.hidden=true; inp.setAttribute("aria-expanded","false"); };
+  const escolhe=c=>{ sel.value=c?c.id:""; inp.value=c?`${c.nome} · ${c.doc}`:""; inp.classList.remove("err"); fecha(); sel.dispatchEvent(new Event("change",{bubbles:true})); };
+  inp.addEventListener("focus",()=>{ if(sel.value) inp.select(); ativo=0; desenha(); });
+  inp.addEventListener("input",()=>{ if(sel.value){ sel.value=""; sel.dispatchEvent(new Event("change",{bubbles:true})); } ativo=0; desenha(); });
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="ArrowDown"){e.preventDefault(); if(lista.hidden) desenha(); ativo=Math.min(ativo+1,itens.length-1); desenha();}
+    else if(e.key==="ArrowUp"){e.preventDefault(); ativo=Math.max(ativo-1,0); desenha();}
+    else if(e.key==="Enter"){ if(!lista.hidden && itens[ativo]){ e.preventDefault(); escolhe(itens[ativo]); } }
+    else if(e.key==="Escape"){ fecha(); }
+  });
+  lista.addEventListener("mousedown",e=>{ const b=e.target.closest(".cbx-op"); if(b){ e.preventDefault(); escolhe(S.clientes.find(c=>c.id===b.dataset.cid)); } });
+  inp.addEventListener("blur",()=>setTimeout(()=>{ fecha(); const c=S.clientes.find(x=>x.id===sel.value); inp.value=c?`${c.nome} · ${c.doc}`:inp.value; },120));
+  sel.addEventListener("change",()=>{ const c=S.clientes.find(x=>x.id===sel.value); if(c){ inp.value=`${c.nome} · ${c.doc}`; inp.classList.remove("err"); } });
+  const c0=S.clientes.find(x=>x.id===sel.value); if(c0) inp.value=`${c0.nome} · ${c0.doc}`;
+}
 function vAbertura(){
   const opts = S.clientes.map(c=>`<option value="${c.id}">${esc(c.nome)} · ${esc(c.doc)}</option>`).join("");
   return `<div class="page">
   <div class="head"><div class="t"><h1>Abertura de chamado</h1><p class="muted">Primeira tela do fluxo. Campos com <span style="color:var(--atrasado)">*</span> são obrigatórios.</p></div></div>
-  ${S.level==="Bronze"?`<div class="note"><div>Você está vendo como <b>Bronze</b>: abre chamados, mas não vê a fila. Os chamados que você abrir aparecem em <b>Meus chamados</b>, só para consulta.</div></div>`:""}
+  ${S.setor==="comercial"&&S.level!=="Diamante"?`<div class="info">Você é do setor <b>Comercial</b>: o chamado vai para a fila do <b>Suporte</b>. Depois de abrir, acompanhe em <b>Chamados abertos</b>.</div>`:""}${S.level==="Bronze"&&pode("meus")?`<div class="note"><div>Você está vendo como <b>Bronze</b>: abre chamados, mas não vê a fila. Os chamados que você abrir aparecem em <b>Meus chamados</b>, só para consulta.</div></div>`:""}
   <form class="card pad stack" id="fAbrir" novalidate>
     <div class="grid2">
       <div class="field" style="grid-column:1/-1"><label for="abCli">Cliente <i>*</i></label>
-        <select class="in" id="abCli" required><option value="">Selecione um cliente cadastrado</option>${opts}</select>
-        <div id="abCliInfo" class="hint">Os dados de contato vêm do cadastro do cliente. <button type="button" class="linkbtn" style="color:var(--primary)" data-go="clientes">Cadastrar novo cliente</button></div>
+        <div class="cbx" id="abCliBox"><input class="in" id="abCliBusca" role="combobox" aria-expanded="false" aria-controls="abCliLista" aria-autocomplete="list" autocomplete="off" placeholder="Digite o nome do cliente ou o CNPJ/CPF para buscar">
+          <span class="cbx-car" aria-hidden="true">▾</span><div class="cbx-lista" id="abCliLista" role="listbox" hidden></div></div>
+        <select class="in cbx-sel" id="abCli" required tabindex="-1" aria-hidden="true"><option value="">Selecione um cliente cadastrado</option>${opts}</select>
+        <div id="abCliInfo" class="hint">Os dados de contato vêm do cadastro do cliente. ${pode("clientes")?`<button type="button" class="linkbtn" style="color:var(--primary)" data-go="clientes">Cadastrar novo cliente</button>`:"Cliente não encontrado? Peça o cadastro ao Suporte."}</div>
       </div>
       <div class="field" style="grid-column:1/-1"><label for="abBo">Descreva o B.O <i>*</i></label><textarea class="in" id="abBo" required placeholder="O que está acontecendo, desde quando, qual o impacto para o cliente"></textarea></div>
-      <div class="field"><label for="abProt">Protocolo do atendimento <i>*</i></label><input class="in mono" id="abProt" required placeholder="Ex.: VIVO-20260923-00000"></div>
+      ${abComercial()?`<div class="field"><label for="abProt">Link do NSend <i>*</i></label><input class="in mono" id="abProt" required inputmode="url" placeholder="https://… (link da conversa no NSend)"><span class="hint">O Comercial não usa protocolo: cole o link do atendimento no NSend.</span></div>`
+        :`<div class="field"><label for="abProt">Protocolo do atendimento <i>*</i></label><input class="in mono" id="abProt" required placeholder="Ex.: VIVO-20260923-00000"></div>`}
       <div class="field"><label for="abCep">CEP da localização da linha <span class="small muted">(opcional)</span></label><input class="in mono" id="abCep" inputmode="numeric" maxlength="9" placeholder="00000-000"></div>
       <div class="field"><label for="abEq">Quais equipamentos usa? <span class="small muted">(opcional)</span></label><input class="in" id="abEq" placeholder="Modelo do equipamento e do SIM"></div>
       <div class="field"><label for="abFeito">O que já foi feito? <i>*</i></label><input class="in" id="abFeito" required placeholder="Testes e tentativas feitos antes de abrir"></div>
@@ -1217,7 +1317,7 @@ function linha(t, multiSetor){
     <td>${prioBadge(t.prioridade)}</td>
     <td>${trat && t.status!=="Encerrado"?`<button class="inl" data-pop="resp" data-id="${t.id}" aria-haspopup="menu">${esc(respNome(t))}<span class="car">▾</span></button>`:esc(respNome(t))}</td>
     <td><span class="stcell">${trat?`<button class="inl" data-pop="status" data-id="${t.id}" aria-haspopup="menu">${st}<span class="car">▾</span></button>`:st}<span class="flags">${flags(t)}</span></span>${t.status==="Aguardando retorno"&&t.encerraEm?`<div class="small muted">encerra ${quandoEnc(t.encerraEm)}</div>`:""}</td>
-    ${multiSetor?`<td>${esc(SETORES[t.setor]?.nome||"—")}</td>`:""}
+    ${multiSetor?`<td>${setorTag(t.setor)}</td>`:""}
     <td class="mono">${esc((t.aberto||"").slice(0,5))}</td>
     <td class="acoes"><button class="kebab" data-pop="acoes" data-id="${t.id}" aria-haspopup="menu" aria-label="Ações do chamado ${t.id}">⋮</button></td>
   </tr>`;
@@ -1253,6 +1353,7 @@ function abrirPop(btn){
     if(!ex&&!enc&&podeChamado("retorno",t)) itens.push(it("Preparar retorno ao cliente","retornoPrep"));
     itens.push(it("Extrair em PDF","pdf"));
     if(!ex&&podeChamado("excluir",t)) itens.push('<hr>',it("Excluir chamado","excluir",{cls:"danger"}));
+    if(ex&&podeChamado("excluir",t)) itens.push('<hr>',it("Restaurar chamado","restaurar",{hint:"Desfaz a exclusão"}));
   }
   const p=document.createElement("div"); p.className="pop"; p.setAttribute("role","menu"); p.innerHTML=itens.join("");
   document.body.appendChild(p);
@@ -1274,7 +1375,7 @@ function avisoTimer(t){
     <button class="btn sm" data-act="avancar24" title="Só existe no protótipo">Protótipo: avançar até o prazo</button></div></div>`;
 }
 
-const bronzeD = () => S.level==="Bronze";
+const bronzeD = () => S.level==="Bronze" || (S.setor==="comercial" && S.level!=="Diamante");   // consulta apenas
 function vDetalhe(){
   const t = tk(S.sel); if(!t) return vNegado();
   if(window.prepararTxt) prepararTxt(t);
@@ -1282,7 +1383,7 @@ function vDetalhe(){
   const ouro = !t.excluido && podeChamado("tratar",t), dia = podeChamado("excluir",t);
   const enc = t.status==="Encerrado";
   const acts = [];
-  if(t.excluido){ acts.push(`<div class="info">Excluído por ${esc(t.excluido.por)} em ${esc(t.excluido.quando)}. Motivo: ${esc(t.excluido.motivo)}</div>`) }
+  if(t.excluido){ acts.push(`<div class="info">Excluído por ${esc(t.excluido.por)} em ${esc(t.excluido.quando)}. Motivo: ${esc(t.excluido.motivo)}</div>`); if(dia) acts.push(`<button class="btn primary block" data-act="restaurar">Restaurar chamado</button><p class="hint">Desfaz a exclusão. O chamado volta com o mesmo status.</p>`) }
   else if(ouro){
     if(t.status==="Novo") acts.push(`<button class="btn block" data-act="assumir">Assumir chamado</button>`);
     if(t.status==="Em análise") acts.push(`<button class="btn primary block" data-act="resolver">Marcar como resolvido</button>`);
@@ -1296,7 +1397,7 @@ function vDetalhe(){
   acts.push(`<button class="btn block" data-act="pdf">Extrair em PDF</button>`);
   if(dia && !t.excluido) acts.push(`<button class="btn danger block" data-act="excluir">Excluir chamado</button>`);
 
-  const bronze = S.level==="Bronze";
+  const bronze = bronzeD();
   const podeComentar = podeChamado("comentar",t);
   const dups = (!t.excluido && !enc && !t.vinculadoA && !bronzeD()) ? duplicadosDe(t) : [];
   const uniBanner = t.vinculadoA ? `<div class="info">Este chamado foi unificado ao <button class="linkbtn" data-open="${esc(t.vinculadoA)}">${esc(t.vinculadoA)}</button>. Histórico, comentários e anexos foram levados para lá.</div>` : (t.unificados&&t.unificados.length ? `<div class="info">Chamados unificados neste: ${t.unificados.map(i=>`<button class="linkbtn" data-open="${esc(i)}">${esc(i)}</button>`).join(", ")}.</div>` : "");
@@ -1314,7 +1415,7 @@ function vDetalhe(){
           <div><span class="label">${t.setor==="financeiro"?"Subcategoria":"Categoria"}</span><span>${ouro?`<select class="in" id="detCat" style="padding:5px 8px;max-width:220px">${catOpts.map(x=>`<option ${x===t.cat?"selected":""}>${x}</option>`).join("")}</select>`:esc(t.cat)}</span></div>
           <div><span class="label">Classificação</span><span>${t.flags.atipico?`<span class="flag f-ati">Atípico</span>`:"Nenhuma"}${t.flags.atrasado?` <span class="flag f-atr">Atrasado</span>`:""}</span></div>
           <div><span class="label">Responsável</span><span>${esc(respNome(t))}</span></div>
-          <div><span class="label">Setor responsável</span><span>${esc(SETORES[t.setor]?.nome||"—")}</span></div>
+          <div><span class="label">Setor responsável</span><span>${setorTag(t.setor)}</span></div>
           <div><span class="label">Criado por</span><span>${val(t.criadoPor)}</span></div>
           <div><span class="label">Data de abertura</span><span class="mono">${val(t.aberto)}</span></div>
         </div>
@@ -1324,7 +1425,7 @@ function vDetalhe(){
           <div><span class="label">Cliente</span><span>${esc(c.nome)}</span></div>
           <div><span class="label">O caso é sobre</span><span>${val(t.caso)}</span></div>
           <div style="grid-column:1/-1"><span class="label">B.O</span><span>${val(t.bo)}</span></div>
-          <div><span class="label">Protocolo do atendimento</span><span class="mono">${val(t.protAt)}</span></div>
+          <div><span class="label">${ehLink(t.protAt)?"Link do NSend":"Protocolo do atendimento"}</span><span class="mono">${protHTML(t.protAt)}</span></div>
           <div><span class="label">CEP da linha</span><span class="mono">${val(t.cep)}</span></div>
           <div><span class="label">MSISDN ou ICCID</span><span class="mono">${val(t.linha)}</span></div>
           <div><span class="label">Equipamentos</span><span>${val(t.equip)}</span></div>
@@ -1346,7 +1447,7 @@ function vDetalhe(){
           <span class="hint">Imagens, PDF, Excel e TXT, até 10 MB por arquivo.</span><span class="errtxt" id="comErr"></span></form>` : ""}
       </section>`;
   return `<div class="page">
-  <div><button class="btn sm" data-go="${voltarPara(t)}">← Voltar para ${bronze?"meus chamados":"a lista"}</button></div>
+  <div><button class="btn sm" data-go="${voltarPara(t)}">← Voltar para ${bronze?(S.setor==="comercial"?"chamados abertos":"meus chamados"):"a lista"}</button></div>
   <div class="head"><div class="t"><div class="row"><span class="mono muted">${t.id}</span>${t.excluido?`<span class="pill s-Excluido">Excluído</span>`:pill(t.status)}${flags(t)}${prioBadge(t.prioridade)}<span class="small muted">${esc(SETORES[t.setor]?.nome||"")}</span></div><h1>${esc(t.titulo)}</h1></div></div>
   ${aviso}
   <div class="detail">
@@ -1355,6 +1456,7 @@ function vDetalhe(){
       ${corpo}
     </div>
     <aside class="stack">
+      ${painelComercial(t)}
       ${bronze?`<div class="info">Consulta apenas. Para qualquer ajuste, fale com a equipe de suporte.</div>`:`<section class="card pad stack"><h2>Ações</h2>${acts.join("")}
         <p class="hint">As ações seguem o setor do chamado e o seu nível de acesso. Reabertura é sempre manual, pela plataforma.</p></section>`}
       ${dups.length?`<section class="card pad stack"><h2>Possíveis duplicados · ${dups.length}</h2><p class="small muted">Chamados em aberto com o mesmo protocolo do atendimento ou do mesmo cliente.</p>
@@ -1362,8 +1464,42 @@ function vDetalhe(){
     </aside>
   </div></div>`;
 }
-const voltarPara = t => S.level==="Bronze" ? "meus" : (t.setor==="financeiro" && t.tipo && pode("fin-"+t.tipo) ? "fin-"+t.tipo : (pode("chamados")?"chamados":primeiraRota()));
+const voltarPara = t => (S.setor==="comercial" && S.level!=="Diamante") ? "com-abertos" : S.level==="Bronze" ? "meus" : (t.setor==="financeiro" && t.tipo && pode("fin-"+t.tipo) ? "fin-"+t.tipo : (pode("chamados")?"chamados":primeiraRota()));
 
+/* 01/10: Comercial › Chamados › Chamados abertos — os chamados que a pessoa abriu para o Suporte (só consulta) */
+function vComAbertos(){
+  const eu=me().nome, list=S.tickets.filter(t=>!t.excluido && t.criadoPor===eu && podeChamado("ver",t));
+  return `<div class="page">
+  <div class="head"><div class="t"><h1>Chamados abertos</h1><p class="muted">Chamados que você abriu para o Suporte. Acompanhe o status e o histórico. Só para consulta.</p></div><button class="btn primary" data-go="abertura">+ Abrir chamado</button></div>
+  <section class="card"><div class="tbl-wrap"><table><thead><tr><th>Chamado</th><th>Cliente</th><th>Link do NSend</th><th>Responsável</th><th>Status</th><th>Aberto em</th></tr></thead><tbody>
+  ${list.length?list.map(t=>`<tr class="click" data-open="${t.id}"><td class="mono">${t.id}</td><td>${esc(cli(t.cliente).nome)}</td><td class="small">${ehLink(t.protAt)?`<a href="${esc(t.protAt.trim())}" target="_blank" rel="noopener noreferrer" style="color:var(--primary)" onclick="event.stopPropagation()">abrir ↗</a>`:esc(t.protAt||"—")}</td><td>${esc(t.resp==="—"?"Fila do Suporte":t.resp)}</td><td>${pill(t.status)}</td><td class="mono">${t.aberto}</td></tr>`).join(""):`<tr><td colspan="6"><div class="empty">Você ainda não abriu chamados. <button class="linkbtn" style="color:var(--primary)" data-go="abertura">Abrir chamado</button></div></td></tr>`}
+  </tbody></table></div></section>
+  <p class="hint">Aparecem número, cliente, responsável, status, data e histórico. Comentários internos e ações ficam com a equipe do Suporte. ${ad("comercial_acomp","comentar?")}</p></div>`;
+}
+/* 01/10: Recados para o Comercial — o Suporte escreve, o Comercial (quem abriu) só lê. Aparece nos chamados abertos pelo Comercial. */
+const abertoPeloComercial = t => (S.users.find(u=>u.nome===t.criadoPor)||{}).setor==="comercial";
+const podeRecado = t => !t.excluido && podeChamado("comentar",t);     // equipe do Suporte (Prata ou acima)
+function painelComercial(t){
+  if(!abertoPeloComercial(t)) return "";
+  const notas=t.notasCom||[], leitor=S.setor==="comercial"&&S.level!=="Diamante";
+  return `<section class="card pad stack" style="border-left:4px solid #00BFFF">
+    <div class="row" style="justify-content:space-between"><h2>${leitor?"Recados do Suporte":"Recados para o Comercial"}</h2>${setorTag("comercial")}</div>
+    <p class="small muted">${leitor?"Mensagens da equipe do Suporte sobre este chamado.":`Visível para <b>${esc(t.criadoPor)}</b> (Comercial), que só lê. Os comentários internos continuam só para a equipe.`}</p>
+    ${notas.length?notas.map(n=>`<div class="comment">${avatarHTML(S.users.find(u=>u.nome===n.a),28)}<div class="bubble"><div class="row" style="justify-content:space-between"><b class="small">${esc(n.a)}</b><span class="small muted mono">${esc(n.t)}</span></div><div class="small" style="white-space:pre-wrap;margin-top:2px">${esc(n.txt)}</div></div></div>`).join(""):`<p class="small muted">${leitor?"Ainda não há recados do Suporte.":"Nenhum recado enviado ainda."}</p>`}
+    ${podeRecado(t)?`<form id="fRecado" class="stack" style="gap:8px"><textarea class="in" id="recTxt" placeholder="Escreva um recado para o Comercial (ex.: andamento, o que falta do cliente)" style="min-height:70px"></textarea><div class="row" style="justify-content:flex-end"><button class="btn primary sm">Enviar recado</button></div></form>`:""}
+  </section>`;
+}
+document.addEventListener("input", e=>{ const p=e.target.closest?.("[data-incp]"); if(!p) return; const op=p.dataset.incp;
+  const ps=[...document.querySelectorAll(`[data-incp="${CSS.escape(op)}"]`)], vals=ps.map(x=>x.value===""?null:parseInt(x.value,10));
+  const ok=vals.every(v=>v!=null&&v>=0), tot=ok?vals.reduce((a,b)=>a+b,0):"";
+  const h=document.querySelector(`[data-incl="${CSS.escape(op)}"]`); if(h) h.value=tot===""?"":String(tot);
+  const t=document.querySelector(`[data-inctot="${CSS.escape(op)}"]`); if(t) t.textContent=tot===""?"—":tot.toLocaleString("pt-BR");
+});
+document.addEventListener("submit", e=>{ if(e.target.id!=="fRecado") return; e.preventDefault();
+  const t=tk(S.sel); if(!t||!podeRecado(t)){toast("Você não tem permissão para enviar recados");return}
+  const txt=$("#recTxt").value.trim(); if(!txt){$("#recTxt").classList.add("err");return}
+  (t.notasCom||=[]).push({a:me().nome, t:stamp(), txt}); registrar(t,"Recado para o Comercial enviado por "+me().nome); render(); toast("Recado enviado para o Comercial");
+});
 function vMeus(){
   const eu=me().nome, list=S.tickets.filter(t=>!t.excluido && t.criadoPor===eu && podeChamado("ver",t));
   return `<div class="page">
@@ -1384,7 +1520,7 @@ function vNegado(){
   if(S.route==="detalhe") return `<div class="page"><section class="card pad stack" style="max-width:560px"><h1>Sem acesso a este chamado</h1>
     <p class="muted">O chamado não existe ou é de um setor que você não acessa. Seu acesso: setor ${esc(SETORES[S.setor].nome)} · nível ${esc(S.level)}.</p>
     <div><button class="btn primary" data-go="${primeiraRota()}">Ir para a minha página inicial</button></div></section></div>`;
-  const r=RECURSOS[S.route], area=r?(SETORES[r.area]?.nome||({admin:"Administração",conta:"Conta",prototipo:"Protótipo"})[r.area]):null;
+  const r=RECURSOS[S.route], area=r?(SETORES[[].concat(r.area)[0]]?.nome||({admin:"Administração",conta:"Conta",prototipo:"Protótipo"})[r.area]):null;
   return `<div class="page"><section class="card pad stack" style="max-width:560px">
     <h1>Sem acesso a esta página</h1>
     <p class="muted">${area?`Esta página é da área <b>${esc(area)}</b>${r.min!=="Bronze"?` e exige nível ${esc(r.min)} ou acima`:""}.`:"Esta página não existe."} Seu acesso: setor ${esc(SETORES[S.setor].nome)} · nível ${esc(S.level)}.</p>
@@ -1552,6 +1688,31 @@ document.addEventListener("click", e=>{
   if(ac.dataset.act==="rcLimpar"){S.rcEdit=null; render(); return}
   if(ac.dataset.act==="rcExcel"){rcExcel(); return}
 });
+document.addEventListener("click", e=>{
+  const b=e.target.closest('[data-act="editarCli"]'); if(!b) return;
+  if(!pode("cliente.editar")){toast("Só Ouro e Diamante editam clientes");return}
+  const c=S.clientes.find(x=>x.id===b.dataset.cid); if(!c) return;
+  modal(`<h2>Editar cliente</h2><div class="field"><label for="ecNome">Nome / razão social</label><input class="in" id="ecNome" value="${esc(c.nome)}"></div>
+    <div class="field"><label for="ecDoc">CNPJ ou CPF</label><input class="in mono" id="ecDoc" value="${esc(c.doc)}"><span class="hint">Cliente unificado com vários CNPJs: separe com " · ".</span></div>
+    <div class="field"><label for="ecMail">E-mail</label><input class="in" id="ecMail" type="email" value="${esc(c.email)}"><span class="hint">É para este e-mail que vai o retorno dos chamados.</span></div>
+    <div class="field"><label for="ecTel">Telefone (opcional)</label><input class="in mono" id="ecTel" value="${esc(c.tel||"")}"></div><span class="errtxt" id="mErr"></span>`,
+    w=>{const v=k=>w.querySelector(k).value.trim();
+      if(!v("#ecNome")||!v("#ecDoc")||!v("#ecMail").includes("@")){w.querySelector("#mErr").textContent="Nome, CNPJ/CPF e e-mail são obrigatórios.";return false}
+      const docs=v("#ecDoc").split(/\s*·\s*/).filter(Boolean), dig=d=>d.replace(/\D/g,"");
+      const dup=S.clientes.find(o=>o.id!==c.id && o.doc.split(" · ").some(d=>docs.some(x=>dig(x)&&dig(x)===dig(d))));
+      if(dup){w.querySelector("#mErr").innerHTML=`Esse CNPJ/CPF já está cadastrado para <b>${esc(dup.nome)}</b>. Para juntar os dois, use Unificar clientes.`;return false}
+      Object.assign(c,{nome:v("#ecNome"),doc:docs.join(" · "),email:v("#ecMail"),tel:v("#ecTel")});render();toast("Cliente "+c.nome+" atualizado")},"Salvar");
+});
+document.addEventListener("click", e=>{
+  const b=e.target.closest('[data-act="excluirCli"]'); if(!b) return;
+  if(!pode("cliente.excluir")){toast("Você não tem permissão para excluir clientes");return}
+  const c=S.clientes.find(x=>x.id===b.dataset.cid); if(!c) return;
+  const n=S.tickets.filter(t=>t.cliente===c.id).length;
+  if(n){ modal(`<h2>Não é possível excluir ${esc(c.nome)}</h2><p class="small">Este cliente tem <b>${n} chamado${n>1?"s":""}</b>. Para não perder o histórico, ele não pode ser excluído. Se for um cadastro duplicado, use <b>Unificar clientes</b> para juntar com o cadastro certo.</p>`,()=>{},"Entendi"); return; }
+  modal(`<h2>Excluir o cliente ${esc(c.nome)}?</h2><p class="small"><span class="mono">${esc(c.doc)}</span> · ${esc(c.email)}<br>O cadastro sai da lista e não aparece mais na abertura de chamado. Esta ação não pode ser desfeita.</p>`,
+    ()=>{S.clientes=S.clientes.filter(x=>x.id!==c.id); render(); toast("Cliente "+c.nome+" excluído")},"Excluir");
+  document.querySelector(".modal [data-ok]")?.classList.add("danger-solid");
+});
 document.addEventListener("submit", e=>{ if(e.target.id==="fRC"){ e.preventDefault(); rcSalvar(); } });
 
 /* ============ Painel de incidentes (protótipo da tela, 28/09) ============
@@ -1656,7 +1817,7 @@ function vIncidentes(modo="painel"){
   const regDia=(o)=>S.incidentes.find(r=>r.operadora===o&&r.dia===dia&&r.turno===turno);
   return `<div class="page">
   <div class="head"><div class="t"><span class="label">Incidentes</span><h1>${({painel:NOME_P1,registro:"Registro de incidentes",base:"Registro de base"})[modo]}</h1><p class="muted">${({painel:"Situação de cada operadora: linhas online comparadas com a base e chamados abertos.",registro:"Linhas M2M online de cada operadora, em 3 turnos por dia.",base:"Quantidade de linhas de cada operadora usada para apontar instabilidade."})[modo]}</p></div>
-    <span class="row" style="gap:8px;flex-wrap:nowrap">${modo==="painel"?botoesExport("op"):""}<a class="btn" href="https://downdetector.com.br/" target="_blank" rel="noopener" title="Relatos de usuários em tempo real: ajuda a saber se a falha é isolada ou geral">Abrir o Downdetector ↗</a></span></div>
+    <span class="row" style="gap:8px;flex-wrap:nowrap">${linkExterno("dd")}${linkExterno("rd")}</span></div>
   ${modo==="painel"?avisoRetencao("op"):""}
   ${modo==="painel"?`
   <div class="opgrid">${ops.map(o=>{const u=S.incidentes.filter(x=>x.operadora===o).sort(ordReg).pop(), n=porOp[o].length, nv=u&&nivelDe(u), inst=nv&&nv.k!=="normal";return `<button class="opcard ${(S.incFiltro||[]).includes(o)?"on":""}" data-incop="${esc(o)}" style="--c:${opCor(o)}" aria-pressed="${(S.incFiltro||[]).includes(o)}">
@@ -1674,7 +1835,8 @@ function vIncidentes(modo="painel"){
       <div class="tbl-wrap"><table class="increg"><thead><tr><th>Operadora</th><th>Base de linhas</th><th>Linhas online · ${TURNOS[turno].nome}</th><th>Situação</th></tr></thead><tbody>
         ${ops.map((o,i)=>{const r=regDia(o);return `<tr><td><span class="row" style="gap:8px;flex-wrap:nowrap">${opMarca(o,20)}${esc(o)}</span></td>
           <td class="mono">${isBL(o)?'<span class="muted" style="font-family:var(--sans)">manual</span>':S.incBase[o]?S.incBase[o].toLocaleString("pt-BR"):'<span class="muted">sem base</span>'}</td>
-          <td>${r?`${r.nivel?'<span class="small muted">—</span>':`<span class="mono">${r.linhas.toLocaleString("pt-BR")}</span>`} <span class="small muted">registrado por ${esc(r.por)}</span>`:isBL(o)?`<select class="in" data-incn="${esc(o)}" id="incN${i}" style="max-width:220px;padding:5px 8px"><option value="">— situação —</option>${NIVEIS_INC.map(n=>`<option value="${n.k}">${esc(n.nome)}</option>`).join("")}</select>`:`<input class="in mono" type="number" min="0" data-incl="${esc(o)}" id="incL${i}" placeholder="—" style="max-width:150px;padding:5px 8px">`}</td>
+          <td>${r?`${r.nivel?'<span class="small muted">—</span>':`<span class="mono">${r.linhas.toLocaleString("pt-BR")}</span>${r.partes?` <span class="small muted">(${Object.entries(r.partes).map(([k,v])=>esc(k)+" "+Number(v).toLocaleString("pt-BR")).join(" + ")})</span>`:""}`} <span class="small muted">registrado por ${esc(r.por)}</span>`:isBL(o)?`<select class="in" data-incn="${esc(o)}" id="incN${i}" style="max-width:220px;padding:5px 8px"><option value="">— situação —</option>${NIVEIS_INC.map(n=>`<option value="${n.k}">${esc(n.nome)}</option>`).join("")}</select>`:(PARTES_OP[o]?`<div class="row" style="gap:8px;flex-wrap:wrap;align-items:flex-end">${PARTES_OP[o].map((pn,k)=>`<label class="fsel" style="text-transform:none;letter-spacing:0"><span>${esc(pn)}</span><input class="in mono" type="number" min="0" data-incp="${esc(o)}" data-k="${k}" id="incP${i}_${k}" placeholder="—" style="width:120px;padding:5px 8px"></label>`).join('<span class="muted" style="padding-bottom:7px">+</span>')}<span class="small" style="padding-bottom:7px">= <b class="mono" data-inctot="${esc(o)}">—</b></span><input type="hidden" data-incl="${esc(o)}" id="incL${i}" value=""></div>`
+            :`<input class="in mono" type="number" min="0" data-incl="${esc(o)}" id="incL${i}" placeholder="—" style="max-width:150px;padding:5px 8px">`)}</td>
           <td>${r?situacao(r):'<span class="small muted">a registrar</span>'}</td></tr>`}).join("")}
       </tbody></table></div>
       <div class="row" style="justify-content:space-between"><span class="errtxt" id="incErr"></span><button class="btn primary">Registrar turno</button></div>
@@ -1757,11 +1919,11 @@ function avisoRetencao(escopo){
   return n ? `<div class="note warn-ret"><div><b>${n} incidente${n>1?"s":""} ${n>1?"completam":"completa"} 3 meses ${prox?`em ${new Date(prox).toLocaleDateString("pt-BR")}`:"em breve"}</b> e ${n>1?"serão apagados":"será apagado"} da plataforma. Exporte o histórico antes para guardar no Excel.</div><button class="btn sm primary" data-act="histExport" data-esc="${escopo==="plat"?"plat":escopo==="op"?"op":"tudo"}">${ICO_XLS}Exportar agora</button></div>`
     : `<p class="hint">A plataforma guarda o histórico dos últimos 3 meses (desde ${desde}). Os mais antigos são apagados; avisamos ${AVISO_DIAS} dias antes.</p>`;
 }
-function arquivoMensal(){
+function arquivoMensal(esc="op"){
   const d=new Date(agora()), meses=[];
   for(let i=0;i<=RET_MESES;i++){const m=new Date(d.getFullYear(),d.getMonth()-i,1);meses.push(m)}
   const lim=somaMeses(agora(),-RET_MESES);
-  return `<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Arquivo mensal em Excel</h2><span class="small muted">baixar todo dia 1</span></div>
+  return `<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Arquivo mensal em Excel</h2><span class="row" style="gap:10px;flex-wrap:nowrap"><span class="small muted">baixar todo dia 1</span>${botoesExport(esc)}</span></div>
     <p class="small muted">Todo dia 1, baixe aqui o Excel do mês anterior (${PLATAFORMAS_ATIVO?"Resumo, Operadoras e Plataformas":"Resumo e Operadoras"}) e salve na pasta compartilhada do Suporte. A gravação automática na pasta fica para quando houver integração com a Microsoft.</p>
     <div class="tbl-wrap"><table><thead><tr><th>Mês</th><th>Situação</th><th></th></tr></thead><tbody>
     ${meses.map((m,i)=>{const ini=m.getTime(), fim=new Date(m.getFullYear(),m.getMonth()+1,1).getTime(), rot=MESES[m.getMonth()]+"/"+m.getFullYear(), ger=new Date(fim).toLocaleDateString("pt-BR");
@@ -1772,6 +1934,15 @@ function arquivoMensal(){
     <p class="hint">O arquivo é montado na hora com os dados que ainda estão guardados.</p>
   </section>`;
 }
+/* 02/10: atalhos externos do Painel de incidentes. Abrem numa nova guia.
+   Logos: espaço reservado em "logo" (data:image/... ou arquivo na pasta do site). Enquanto vazio, usa um ícone genérico. */
+const LINKS_EXT = {
+  dd:{nome:"Downdetector", url:"https://downdetector.com.br/", dica:"Relatos de usuários em tempo real: ajuda a saber se a falha é isolada ou geral", logo:"",
+      ico:`<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M2 10h3.2l2-5 3.4 10 2.2-6.2 1.4 1.2H18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`},
+  rd:{nome:"RD Station", url:"https://accounts.rdstation.com/", dica:"Abrir o login do RD Station numa nova guia", logo:"",
+      ico:`<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.8 10h14.4M10 2.8c2.2 2 3.2 4.4 3.2 7.2s-1 5.2-3.2 7.2c-2.2-2-3.2-4.4-3.2-7.2s1-5.2 3.2-7.2z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>`}
+};
+const linkExterno = k => {const l=LINKS_EXT[k];return `<a class="btn" href="${l.url}" target="_blank" rel="noopener noreferrer" title="${l.dica}">${l.logo?`<img src="${l.logo}" alt="" width="16" height="16" style="object-fit:contain">`:l.ico}Abrir o ${l.nome} ↗</a>`};
 const ICO_XLS = `<svg class="ico-xls" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="3" fill="#1D7A45"/><path d="M5.5 7h9M5.5 10h9M5.5 13h9M9 5.5v9" stroke="#fff" stroke-width="1.3" opacity=".9"/></svg>`;
 const botoesExport = esc => !PLATAFORMAS_ATIVO ? `<button class="btn" data-act="histExport" data-esc="op" title="Resumo + aba Operadoras">${ICO_XLS}Exportar</button>` : `<button class="btn" data-pop="export" data-esc="${esc}" aria-haspopup="menu">${ICO_XLS}Exportar <span class="car">▾</span></button>`;
 
@@ -1842,7 +2013,7 @@ function vIncPlat(){
   const ativos=S.incPlat.filter(x=>!x.fim), hist=S.incPlat.filter(x=>x.fim).sort((a,b)=>platFim(b)-platFim(a));
   const nomeP=id=>PLATAFORMAS.find(p=>p.id===id)?.nome||id;
   return `<div class="page">
-  <div class="head"><div class="t"><span class="label">Incidentes</span><h1>Painel de incidentes 2</h1><p class="muted">Situação das plataformas usadas no atendimento. A equipe informa manualmente quando uma plataforma está instável ou fora do ar. Situações: Normal, Instabilidade e Fora do ar.</p></div><span class="row" style="gap:8px;flex-wrap:nowrap">${botoesExport("plat")}<a class="btn" href="https://downdetector.com.br/" target="_blank" rel="noopener" title="Relatos de usuários em tempo real: ajuda a saber se a falha é geral">Abrir o Downdetector ↗</a></span></div>
+  <div class="head"><div class="t"><span class="label">Incidentes</span><h1>Painel de incidentes 2</h1><p class="muted">Situação das plataformas usadas no atendimento. A equipe informa manualmente quando uma plataforma está instável ou fora do ar. Situações: Normal, Instabilidade e Fora do ar.</p></div><span class="row" style="gap:8px;flex-wrap:nowrap">${linkExterno("dd")}${linkExterno("rd")}</span></div>
   ${avisoRetencao("plat")}
   <div class="note"><div><b>Esboço</b> para visualizar a ideia. Níveis de situação, quem registra e se o incidente precisa de horário de fim ${ad("plat_regras","a decidir")}</div></div>
   <div class="opgrid">${PLATAFORMAS.map(p=>{const a=platAtiva(p.id), st=a?PSTATUS[a.status]:PSTATUS.normal;return `<div class="opcard platcard" style="--c:${a?(a.status==="fora"?"var(--atrasado)":"var(--analise)"):"var(--resolvido)"}">
@@ -1870,7 +2041,7 @@ function vIncPlat(){
     ${hist.map(x=>`<tr><td>${esc(nomeP(x.plat))}</td><td><span class="pill ${PSTATUS[x.status].cls}">${PSTATUS[x.status].nome}</span></td><td class="mono">${esc(x.inicio)}</td><td class="mono">${esc(x.fim)}</td><td>${esc(x.desc)}</td><td>${esc(x.por)}${x.exemplo?' <span class="small muted">(exemplo)</span>':""}</td><td class="mono small">${new Date(venceEm(refPlat(x))).toLocaleDateString("pt-BR")}</td></tr>`).join("")||`<tr><td colspan="7"><div class="empty">Nenhum incidente encerrado nos últimos 3 meses.</div></td></tr>`}
     </tbody></table></div>
   </section>
-  ${arquivoMensal()}
+  ${arquivoMensal("plat")}
   </div>`;
 }
 
@@ -1909,11 +2080,12 @@ function vRetorno(){
 function vClientes(){
   const edit = can("Ouro");
   return `<div class="page">
-  <div class="head"><div class="t"><h1>Clientes</h1><p class="muted">Cadastro usado na abertura de chamado e no retorno por e-mail. Qualquer nível pode cadastrar.</p></div>
+  <div class="head"><div class="t"><h1>Clientes</h1><p class="muted">Cadastro usado na abertura de chamado e no retorno por e-mail. Todos do Suporte e do Comercial podem cadastrar; unificar: Prata ou acima (Suporte e Comercial). Editar: Ouro e Diamante do Suporte.</p></div>
     <div class="row">${pode("cliente.unificar")?`<button class="btn" data-act="unificar">Unificar clientes</button>`:""}<button class="btn primary" data-act="novoCli">+ Novo cliente</button></div></div>
-  <section class="card"><div class="tbl-wrap"><table><thead><tr><th>Nome</th><th>CNPJ / CPF</th><th>E-mail</th><th>Telefone</th><th>Chamados</th></tr></thead><tbody>
-    ${S.clientes.map(c=>`<tr><td>${esc(c.nome)}</td><td class="mono">${c.doc.split(" · ").map(esc).join("<br>")}</td><td>${esc(c.email)}</td><td class="mono">${esc(c.tel||"—")}</td><td class="mono">${S.tickets.filter(t=>t.cliente===c.id).length}</td></tr>`).join("")}
+  <section class="card"><div class="tbl-wrap"><table><thead><tr><th>Nome</th><th>CNPJ / CPF</th><th>E-mail</th><th>Telefone</th><th>Chamados</th>${pode("cliente.editar")||pode("cliente.excluir")?"<th></th>":""}</tr></thead><tbody>
+    ${S.clientes.map(c=>{const n=S.tickets.filter(t=>t.cliente===c.id).length; return `<tr><td>${esc(c.nome)}</td><td class="mono" style="white-space:nowrap">${c.doc.split(" · ").map(esc).join("<br>")}</td><td>${esc(c.email)}</td><td class="mono" style="white-space:nowrap">${esc(c.tel||"—")}</td><td class="mono">${n}</td>${pode("cliente.editar")||pode("cliente.excluir")?`<td style="text-align:right;white-space:nowrap">${pode("cliente.editar")?`<button class="btn sm" data-act="editarCli" data-cid="${esc(c.id)}">Editar</button> `:""}${pode("cliente.excluir")?`<button class="btn sm danger" data-act="excluirCli" data-cid="${esc(c.id)}" ${n?`title="Tem ${n} chamado${n>1?"s":""}: não pode ser excluído"`:""}>Excluir</button>`:""}</td>`:""}</tr>`}).join("")||`<tr><td colspan="6"><div class="empty">Nenhum cliente cadastrado.</div></td></tr>`}
   </tbody></table></div></section>
+  <div class="info">Excluir: só o Diamante, e só clientes sem chamados. Cliente com chamados não pode ser excluído, para não perder o histórico; se for um cadastro duplicado, use <b>Unificar clientes</b>. ${ad("cli_excluir")}</div>
   <div class="info">CNPJ/CPF já cadastrado é bloqueado e o sistema mostra o cadastro existente. Um cliente com mais de um CNPJ pode ter os cadastros unificados (Prata, Ouro e Diamante).</div><p class="hint">Retenção dos dados (LGPD): por enquanto, os dados são mantidos sem prazo de exclusão. Revisar com o jurídico antes de produção.</p>
   </div>`;
 }
@@ -1922,7 +2094,7 @@ function vUsuarios(){
   return `<div class="page">
   <div class="head"><div class="t"><h1>Usuários</h1><p class="muted">Disponível apenas para o nível Diamante.</p></div><button class="btn primary" data-act="convidar">+ Convidar usuário</button></div>
   <section class="card"><div class="tbl-wrap"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Nível de acesso</th><th>Setor</th><th>Status</th><th></th></tr></thead><tbody>
-  ${S.users.map(u=>`<tr><td><span class="row" style="gap:10px;flex-wrap:nowrap">${avatarHTML(u,32,u.desativado?"filter:grayscale(1);opacity:.55":"")}<span>${esc(u.nome)}${u.id===S.me?' <span class="small muted">(você)</span>':""}</span></span></td><td>${esc(u.email)}</td><td>${lvl(u.nivel)}</td><td>${esc(SETORES[u.setor]?.nome||"—")}</td><td>${u.desativado?`<span class="pill s-Excluido" title="Desativado por ${esc(u.desativado.por)} em ${esc(u.desativado.em)}">Desativado</span>`:u.ativo?`<span class="pill s-Resolvido">Ativo</span>`:`<span class="pill s-Encerrado">Convite enviado</span>`}</td><td><button class="btn sm" data-act="editUser" data-uid="${u.id}">Editar</button></td></tr>`).join("")}
+  ${S.users.map(u=>`<tr><td style="white-space:nowrap"><span class="row" style="gap:10px;flex-wrap:nowrap">${avatarHTML(u,32,u.desativado?"filter:grayscale(1);opacity:.55":"")}<span>${esc(u.nome)}${u.id===S.me?' <span class="small muted">(você)</span>':""}</span></span></td><td>${esc(u.email)}</td><td>${lvl(u.nivel)}</td><td>${setorTag(u.setor)}</td><td>${u.desativado?`<span class="pill s-Excluido" title="Desativado por ${esc(u.desativado.por)} em ${esc(u.desativado.em)}">Desativado</span>`:u.ativo?`<span class="pill s-Resolvido">Ativo</span>`:`<span class="pill s-Encerrado">Convite enviado</span>`}</td><td><button class="btn sm" data-act="editUser" data-uid="${u.id}">Editar</button></td></tr>`).join("")}
   </tbody></table></div></section>
   <p class="hint">Níveis atribuídos aqui são ilustrativos. A distribuição real entre Bronze, Prata, Ouro e Diamante fica a critério do coordenador. ${S.users.length} de 10 colaboradores da equipe cadastrados neste protótipo.</p>
   <div class="info">O <b>Setor</b> define as áreas do menu e o <b>Nível de acesso</b> define o que a pessoa pode fazer dentro delas. Diamante acessa todos os setores; os demais níveis veem só o próprio setor, além de Conta.</div>
@@ -1971,11 +2143,12 @@ function vPerfil(){
   const u = me(), L = levelLevels(u.acum);
   return `<div class="page">
   <div class="head"><div class="t"><h1>Meu perfil</h1><p class="muted">Seus dados e sua evolução na plataforma.</p></div></div>
+  ${S.setor==="comercial"&&S.level!=="Diamante"?`<div class="info">O setor <b>Comercial</b> abre chamados para o Suporte em <b>Abertura de chamado</b> e acompanha em <b>Chamados abertos</b>.</div>`:""}
   <div class="grid2">
     <section class="card pad stack"><div class="row" style="gap:16px;align-items:center">${avatarHTML(u,72,u.foto?"":"background:var(--primary);color:var(--primary-ink);font-size:22px")}<div><h2>${esc(u.nome)}</h2><p class="small muted">${esc(u.cargo)}</p>
         <div class="foto-acoes"><label class="btn sm" for="fotoIn" tabindex="0">${u.foto?"Trocar foto":"Enviar foto"}</label><input type="file" id="fotoIn" accept="image/jpeg,image/png,image/webp" hidden>${u.foto?`<button class="btn sm" data-act="fotoRemover">Remover foto</button>`:""}</div>
         <p class="small muted" style="margin-top:4px">JPG, PNG ou WEBP até 5 MB.</p></div></div>
-      <dl class="kv"><dt>E-mail</dt><dd>${esc(u.email)}</dd><dt>Nível de acesso</dt><dd>${lvl(S.level)} ${S.level!==u.nivel?`<span class="small muted">(simulado)</span>`:""}</dd><dt>Setor</dt><dd>${esc(SETORES[S.setor].nome)} ${S.setor!==u.setor?`<span class="small muted">(simulado)</span>`:""}</dd><dt>Senha</dt><dd><button class="btn sm" data-act="senha">Alterar senha</button></dd></dl>
+      <dl class="kv"><dt>E-mail</dt><dd>${esc(u.email)}</dd><dt>Nível de acesso</dt><dd>${lvl(S.level)} ${S.level!==u.nivel?`<span class="small muted">(simulado)</span>`:""}</dd><dt>Setor</dt><dd>${setorTag(S.setor)} ${S.setor!==u.setor?`<span class="small muted">(simulado)</span>`:""}</dd><dt>Senha</dt><dd><button class="btn sm" data-act="senha">Alterar senha</button></dd></dl>
     </section>
     ${u.setor!=="suporte"?`<section class="card pad stack"><h2>Evolução</h2><p class="small muted">A gamificação conta chamados resolvidos do Suporte. Participação do ${esc(SETORES[u.setor].nome)} ${ad("fin_gamificacao")}</p></section>`:`<section class="card pad stack"><div class="row" style="justify-content:space-between"><h2>Evolução</h2><span class="small muted">Reinicia a cada ano</span></div>
       <div class="row" style="justify-content:space-between"><b>${L.nome}</b><span class="mono small">${u.acum} resolvidos · faltam ${L.ate-u.acum} para ${"Level "+(L.idx+1)}</span></div>
@@ -2002,7 +2175,7 @@ function vDecisoes(){
 }
 
 /* ============ Render ============ */
-const VIEWS = {abertura:vAbertura, painel:vPainel, chamados:vChamados, detalhe:vDetalhe, retorno:vRetorno, clientes:vClientes, meus:vMeus, incidentes:()=>vIncidentes("painel"), "inc-registro":()=>vIncidentes("registro"), "inc-base":()=>vIncidentes("base"), "inc-chamados":vRegCham, "inc-relacao":vRelCham, "inc-plataformas":vIncPlat, usuarios:vUsuarios, config:vConfig, perfil:vPerfil, decisoes:vDecisoes,
+const VIEWS = {abertura:vAbertura, painel:vPainel, chamados:vChamados, detalhe:vDetalhe, retorno:vRetorno, clientes:vClientes, meus:vMeus, incidentes:()=>vIncidentes("painel"), "inc-registro":()=>vIncidentes("registro"), "inc-base":()=>vIncidentes("base"), "inc-chamados":vRegCham, "com-abertos":vComAbertos, "inc-relacao":vRelCham, "inc-plataformas":vIncPlat, usuarios:vUsuarios, config:vConfig, perfil:vPerfil, decisoes:vDecisoes,
   "fin-cancelamento":()=>vFin("cancelamento"), "fin-contestacao":()=>vFin("contestacao"), "fin-boletos":()=>vFin("boletos"), "fin-reativacao":()=>vFin("reativacao")};
 
 function render(){
@@ -2047,6 +2220,7 @@ function wire(){
   const abDupUpd = () => { const box=$("#abDup"); if(!box) return; const d=duplicadosDe({cliente:$("#abCli").value, protAt:$("#abProt").value});
     box.innerHTML = d.length ? `<div class="note"><div><b>Possível chamado repetido.</b> Já existe${d.length>1?"m":""} ${d.length} chamado${d.length>1?"s":""} em aberto: ${d.slice(0,4).map(x=>`<button type="button" class="linkbtn" data-open="${x.t.id}">${x.t.id}</button> (${esc(x.motivo)}, ${esc(x.t.status)})`).join(" · ")}${d.length>4?" …":""}. Você pode abrir mesmo assim; depois, Ouro/Diamante podem juntar os chamados.</div></div>` : ""; };
   if($("#abCli")){ $("#abCli").addEventListener("change",abDupUpd); $("#abProt").addEventListener("input",abDupUpd); }
+  cbxCliente();
   const cliSel = $("#abCli");
   if(cliSel) cliSel.addEventListener("change",()=>{const c=S.clientes.find(x=>x.id===cliSel.value);$("#abCliInfo").innerHTML=c?`Retorno irá para <b>${esc(c.email)}</b> · ${esc(c.doc)}${c.tel?" · "+esc(c.tel):""}`:"Os dados de contato vêm do cadastro do cliente."});
   const bq=$("#busca");
@@ -2064,10 +2238,10 @@ function wire(){
 /* ============ Eventos ============ */
 document.addEventListener("click", e=>{
   if(!e.target.closest(".pop,[data-pop]")) fecharPop();
-  const zv=e.target.closest(".anx-view"); if(zv){zv.remove();return}
+  const zv=e.target.closest(".anx-view"); if(zv){if(!e.target.closest(".anx-palco img,.anx-zoom"))fecharAnexo();return}
   const za=e.target.closest("[data-anx]"); if(za){const t=tk(S.sel), a=(t?.arqs||[]).find(x=>x.id===za.dataset.anx); if(a){const v=document.createElement("div");v.className="anx-view";v.setAttribute("role","dialog");v.setAttribute("aria-label",a.nome);
-      const corpo=a.tipo==="img"?`<img src="${a.url}" alt="${esc(a.nome)}">`:a.tipo==="video"?`<video src="${a.url}" controls autoplay></video>`:a.tipo==="pdf"?`<div class="anx-pdf"><p class="small">Carregando PDF…</p></div>`:a.tipo==="xls"?`<div class="anx-pdf anx-xls"><p class="small">Carregando planilha…</p></div>`:`<pre>Carregando…</pre>`;
-      v.innerHTML=`<span class="anx-x">${esc(a.nome)} · clique fora ou Esc para fechar</span>${corpo}`;document.body.appendChild(v);
+      const corpo=a.tipo==="img"?`<div class="anx-palco"><img src="${a.url}" alt="${esc(a.nome)}" draggable="false"></div><div class="anx-zoom" role="toolbar" aria-label="Zoom"><button type="button" data-z="-" title="Diminuir (−)">−</button><output>100%</output><button type="button" data-z="+" title="Aumentar (+)">+</button><button type="button" data-z="0" title="Ajustar à tela (0)">Ajustar</button></div>`:a.tipo==="video"?`<video src="${a.url}" controls autoplay></video>`:a.tipo==="pdf"?`<div class="anx-pdf"><p class="small">Carregando PDF…</p></div>`:a.tipo==="xls"?`<div class="anx-pdf anx-xls"><p class="small">Carregando planilha…</p></div>`:`<pre>Carregando…</pre>`;
+      v.innerHTML=`<span class="anx-x">${esc(a.nome)} · ${a.tipo==="img"?"roda do mouse ou dois cliques para zoom · ":""}clique fora ou Esc para fechar</span>${corpo}`;document.body.appendChild(v);document.documentElement.classList.add("anx-trava");prenderRoda(v);if(a.tipo==="img")zoomFoto(v);
       if(a.tipo==="txt") blobDe(a).then(b=>b.text()).then(x=>{const pr=v.querySelector("pre");if(pr)pr.textContent=x});
       if(a.tipo==="pdf") mostrarPDF(a, v.querySelector(".anx-pdf"));
       if(a.tipo==="xls") mostrarPlanilha(a, v.querySelector(".anx-xls"));
@@ -2100,7 +2274,27 @@ document.addEventListener("click", e=>{
   if(el.dataset.ret){S.retSel=el.dataset.ret;render();return}
   if(el.dataset.act) act(el.dataset.act, el);
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelector(".anx-view")?.remove()});
+document.addEventListener("keydown",e=>{const v=document.querySelector(".anx-view");if(!v)return;if(e.key==="Escape"){fecharAnexo();return}
+  const z=v._zoom;if(z&&(e.key==="+"||e.key==="="))z.passo(1.25);if(z&&e.key==="-")z.passo(1/1.25);if(z&&e.key==="0")z.ajustar()});
+function fecharAnexo(){document.querySelectorAll(".anx-view").forEach(x=>x.remove());document.documentElement.classList.remove("anx-trava")}
+/* A roda do mouse nunca rola a página do fundo: só rola dentro do PDF/texto/planilha, ou dá zoom na foto. */
+function prenderRoda(v){v.addEventListener("wheel",ev=>{const sc=ev.target.closest("pre,.anx-pdf");if(!sc){ev.preventDefault();return}
+  const fim=ev.deltaY>0?sc.scrollTop+sc.clientHeight>=sc.scrollHeight-1:sc.scrollTop<=0;if(fim)ev.preventDefault()},{passive:false})}
+function zoomFoto(v){
+  const palco=v.querySelector(".anx-palco"), img=palco.querySelector("img"), out=v.querySelector(".anx-zoom output");
+  let k=1,x=0,y=0,arr=null;
+  const lim=()=>{const w=img.offsetWidth*k,h=img.offsetHeight*k,mx=Math.max(0,(w-palco.clientWidth)/2),my=Math.max(0,(h-palco.clientHeight)/2);x=Math.min(mx,Math.max(-mx,x));y=Math.min(my,Math.max(-my,y))};
+  const pinta=()=>{if(k<=1){k=Math.max(k,.25);if(k<=1){x=0;y=0}}lim();img.style.transform=`translate(${x}px,${y}px) scale(${k})`;out.textContent=Math.round(k*100)+"%";palco.classList.toggle("zoom",k>1)};
+  const z=v._zoom={passo:f=>{k=Math.min(8,Math.max(.25,k*f));pinta()},ajustar:()=>{k=1;x=0;y=0;pinta()}};
+  palco.addEventListener("wheel",ev=>{ev.preventDefault();const r=img.getBoundingClientRect(),cx=ev.clientX-(r.left+r.width/2),cy=ev.clientY-(r.top+r.height/2),f=ev.deltaY<0?1.15:1/1.15,n=Math.min(8,Math.max(.25,k*f)),q=n/k;
+    x-=cx*(q-1);y-=cy*(q-1);k=n;pinta()},{passive:false});
+  img.addEventListener("dblclick",ev=>{ev.stopPropagation();k>1?z.ajustar():z.passo(2)});
+  img.addEventListener("click",ev=>ev.stopPropagation());
+  img.addEventListener("pointerdown",ev=>{if(k<=1)return;arr={px:ev.clientX,py:ev.clientY,x,y};img._moveu=false;palco.classList.add("arrastando");img.setPointerCapture(ev.pointerId)});
+  img.addEventListener("pointermove",ev=>{if(!arr)return;x=arr.x+ev.clientX-arr.px;y=arr.y+ev.clientY-arr.py;if(Math.abs(ev.clientX-arr.px)+Math.abs(ev.clientY-arr.py)>3)img._moveu=true;pinta()});
+  const solta=()=>{arr=null;palco.classList.remove("arrastando")};img.addEventListener("pointerup",solta);img.addEventListener("pointercancel",solta);
+  v.querySelector(".anx-zoom").addEventListener("click",ev=>{ev.stopPropagation();const b=ev.target.closest("[data-z]");if(!b)return;b.dataset.z==="+"?z.passo(1.25):b.dataset.z==="-"?z.passo(1/1.25):z.ajustar()});
+  img.complete?pinta():img.addEventListener("load",pinta)}
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".ad[data-dec]")){e.preventDefault();e.target.click()}if(e.key==="Escape"){if(document.querySelector(".pop")){fecharPop();return}document.querySelector(".scrim")?.remove()}});
 window.addEventListener("resize",fecharPop);
 
@@ -2168,7 +2362,7 @@ async function gerarPDF(t){
   secao("Cliente");
   pares([["Nome",c.nome],["CNPJ/CPF",c.doc],["E-mail",c.email],["Telefone",c.tel||"—"]]);
   secao("Informações da abertura");
-  pares([["Protocolo do atendimento",t.protAt],["CEP da linha",t.cep],["MSISDN ou ICCID",t.linha],["Equipamentos",t.equip],["Comandos",t.comandos]]);
+  pares([[ehLink(t.protAt)?"Link do NSend":"Protocolo do atendimento",t.protAt],["CEP da linha",t.cep],["MSISDN ou ICCID",t.linha],["Equipamentos",t.equip],["Comandos",t.comandos]]);
   bloco("Descrição / B.O",t.bo); bloco("O que já foi feito",t.feito);
   if(t.anexos.length) bloco("Anexos",t.anexos.join(" · "));
   if(t.solucao){ secao("Resolução"); bloco("Solução aplicada",t.solucao); bloco("Observações finais",t.obs); }
@@ -2194,7 +2388,7 @@ async function gerarPDF(t){
 }
 
 /* Ações de chamado: toda execução confere podeChamado() no momento da ação, não só no menu. */
-const ACAO_CHAMADO = {abrir:"ver", pdf:"ver", assumir:"tratar", resolver:"tratar", atribuir:"tratar", setResp:"tratar", setStatus:"tratar", alterarStatus:"tratar",
+const ACAO_CHAMADO = {abrir:"ver", pdf:"ver", restaurar:"excluir", assumir:"tratar", resolver:"tratar", atribuir:"tratar", setResp:"tratar", setStatus:"tratar", alterarStatus:"tratar",
   atipico:"tratar", reabrir:"tratar", encerrarDireto:"tratar", unificarChamado:"tratar", clienteRespondeu:"tratar", retornoPrep:"retorno", excluir:"excluir"};
 const ACAO_RECURSO = {unificar:"cliente.unificar", convidar:"usuarios", editUser:"usuarios", salvarMail:"config"};
 function act(a, el){
@@ -2202,7 +2396,7 @@ function act(a, el){
   if(ACAO_RECURSO[a] && !pode(ACAO_RECURSO[a])){toast("Você não tem permissão para esta ação");return}
   const t = tk(el?.dataset?.id || S.sel);
   if(ACAO_CHAMADO[a]){
-    if(!t || !podeChamado(ACAO_CHAMADO[a],t) || (t.excluido && !["abrir","pdf"].includes(a))){toast("Você não tem permissão para esta ação");return}
+    if(!t || !podeChamado(ACAO_CHAMADO[a],t) || (t.excluido && !["abrir","pdf","restaurar"].includes(a)) || (a==="restaurar" && !t.excluido)){toast("Você não tem permissão para esta ação");return}
   }
   // Reconfere a permissão na confirmação (o estado pode ter mudado com o modal aberto)
   const ok = ()=> podeChamado(ACAO_CHAMADO[a],t) && !t.excluido;
@@ -2272,11 +2466,15 @@ function act(a, el){
     const pedeMotivo=!mesmoDia;
     modal(`<h2>Corrigir registro · ${esc(r.operadora)}</h2><p class="small">${esc(r.dia.split("-").reverse().join("/"))} · ${TURNOS[r.turno].nome} · registrado por ${esc(r.por)}. O valor anterior fica guardado no histórico do registro.</p>
       ${r.nivel?`<div class="field"><label for="cNv">Situação</label><select class="in" id="cNv">${NIVEIS_INC.map(n=>`<option value="${n.k}" ${n.k===r.nivel?"selected":""}>${esc(n.nome)}</option>`).join("")}</select></div>`
+        :r.partes?`<div class="row" style="gap:10px;flex-wrap:wrap">${Object.entries(r.partes).map(([k,v],i)=>`<div class="field" style="flex:1 1 140px"><label for="cPt${i}">${esc(k)}</label><input class="in mono" id="cPt${i}" data-cpt="${esc(k)}" type="number" min="0" value="${v}"></div>`).join("")}</div><p class="hint">O total de linhas online é a soma dos dois campos. A base usada continua a do dia do registro (${baseDe(r)?baseDe(r).toLocaleString("pt-BR"):"sem base"}).</p>`
         :`<div class="field"><label for="cLn">Linhas online</label><input class="in mono" id="cLn" type="number" min="0" value="${r.linhas}"></div><p class="hint">A base usada continua a do dia do registro (${baseDe(r)?baseDe(r).toLocaleString("pt-BR"):"sem base"}).</p>`}
       ${pedeMotivo?`<div class="field"><label for="cMot">Motivo <i>*</i></label><textarea class="in" id="cMot" placeholder="Por que o registro está sendo corrigido depois do dia"></textarea></div>`:""}<span class="errtxt" id="mErr"></span>`,
       w=>{const mot=pedeMotivo?w.querySelector("#cMot").value.trim():"";if(pedeMotivo&&!mot){w.querySelector("#mErr").textContent="Informe o motivo da correção.";return false}
         let de,para;
         if(r.nivel){const v=w.querySelector("#cNv").value;if(v===r.nivel)return;de=NIVEIS_INC.find(n=>n.k===r.nivel).nome;para=NIVEIS_INC.find(n=>n.k===v).nome;r.nivel=v}
+        else if(r.partes){const novo={};for(const x of w.querySelectorAll("[data-cpt]")){const v=parseInt(x.value,10);if(!(v>=0)){w.querySelector("#mErr").textContent="Use só números inteiros nos dois campos.";return false}novo[x.dataset.cpt]=v}
+          const fmtP=p=>Object.entries(p).map(([k,v])=>k+" "+v.toLocaleString("pt-BR")).join(" + "), tot=Object.values(novo).reduce((a,b)=>a+b,0);
+          if(JSON.stringify(novo)===JSON.stringify(r.partes))return;de=r.linhas.toLocaleString("pt-BR")+" ("+fmtP(r.partes)+")";para=tot.toLocaleString("pt-BR")+" ("+fmtP(novo)+")";r.partes=novo;r.linhas=tot}
         else{const v=parseInt(w.querySelector("#cLn").value,10);if(!(v>=0)){w.querySelector("#mErr").textContent="Use só números inteiros.";return false}if(v===r.linhas)return;de=r.linhas.toLocaleString("pt-BR");para=v.toLocaleString("pt-BR");r.linhas=v}
         (r.corr=r.corr||[]).push({em:stamp(),por:me().nome,de,para,motivo:mot});render();toast("Registro corrigido")},"Salvar correção");return}
   if(a==="avancar24"){const alvo=t&&t.encerraEm?t.encerraEm:agora()+86400000;S.offset=(S.offset||0)+(alvo-agora())+60000;const n=rotinaEncerramento();render();toast(n?`Relógio adiantado até o prazo: ${n} chamado(s) encerrado(s) pela rotina`:"Relógio adiantado");return}
@@ -2301,8 +2499,13 @@ function act(a, el){
       w=>{if(!ok())return;t.rascunho={assunto:w.querySelector("#pAss").value,corpo:w.querySelector("#pCorpo").value,por:me().nome,em:stamp()};registrar(t,"Retorno ao cliente preparado por "+me().nome);render();toast("Retorno salvo no chamado "+t.id)},"Salvar no chamado");
     const b=document.getElementById("pCopiar"); if(b) b.addEventListener("click",()=>{const ta=document.getElementById("pCorpo");copiarTexto("Assunto: "+document.getElementById("pAss").value+"\n\n"+ta.value,ta)});
     return}
+  if(a==="restaurar"){   /* 01/10: o Diamante desfaz a exclusão; o chamado volta com o mesmo status e responsável */
+    modal(`<h2>Restaurar o chamado ${t.id}?</h2><p class="small"><b>${esc(t.titulo)}</b><br>Excluído por ${esc(t.excluido.por)} em ${esc(t.excluido.quando)}. Motivo: ${esc(t.excluido.motivo)}</p><p class="small">O chamado volta para as listas com o mesmo status (${esc(t.status)}) e o mesmo responsável. A exclusão e a restauração ficam no histórico.</p>`,
+      ()=>{if(!podeChamado("excluir",t)||!t.excluido){toast("Você não tem permissão para esta ação");return}
+        t.excluido=null;registrar(t,"Exclusão desfeita: chamado restaurado por "+me().nome);render();toast("Chamado "+t.id+" restaurado")},"Restaurar chamado");
+    return}
   if(a==="excluir"){
-    modal(`<h2>Excluir chamado?</h2><p class="small"><b>${t.id}</b> · ${esc(t.titulo)}</p><p class="small"><b>Essa ação não poderá ser desfeita.</b> O chamado sai de todas as listas e só aparece para Diamante no histórico administrativo, com quem excluiu, quando e o motivo.</p>
+    modal(`<h2>Excluir chamado?</h2><p class="small"><b>${t.id}</b> · ${esc(t.titulo)}</p><p class="small">O chamado sai de todas as listas e só aparece para Diamante no histórico administrativo, com quem excluiu, quando e o motivo.</p>
       <div class="field"><label for="mMotE">Motivo <i style="color:var(--atrasado)">*</i></label><input class="in" id="mMotE" placeholder="Ex.: chamado duplicado"></div>
       <label class="row small" style="gap:8px"><input type="checkbox" id="mConf"> Confirmo que quero excluir o chamado ${t.id}</label><span class="errtxt" id="mErr"></span>`,
       w=>{if(!ok())return;const m=w.querySelector("#mMotE").value.trim();if(!m){w.querySelector("#mErr").textContent="Informe o motivo da exclusão.";return false}
@@ -2316,7 +2519,7 @@ function act(a, el){
       <div class="field"><label for="eSet">Setor</label><select class="in" id="eSet">${Object.entries(SETORES).map(([k,v])=>`<option value="${k}" ${k===u.setor?"selected":""}>${v.nome}</option>`).join("")}</select></div><p class="hint">Setor e nível são independentes.</p>
       <div class="field"><span class="label">Situação do usuário</span>${u.id===S.me?`<p class="small muted">Você não pode desativar o próprio usuário.</p>`:`<label class="row small" style="gap:8px;cursor:pointer"><input type="checkbox" id="eDes" ${u.desativado?"checked":""}> Desativar usuário</label>
         <p class="hint">Desativado não entra mais na plataforma e deixa de aparecer para ser responsável ou em "Quem abriu o ticket". O histórico e os chamados dele continuam. ${(()=>{const n=S.tickets.filter(t=>!t.excluido&&t.resp===u.nome&&!["Encerrado"].includes(t.status)).length;return n?`<b>${n} chamado${n>1?"s":""} em aberto</b> com ${esc(u.nome)} como responsável — continuam com ele até alguém reatribuir.`:""})()}</p>${u.desativado?`<p class="small muted">Desativado por ${esc(u.desativado.por)} em ${esc(u.desativado.em)}.</p>`:""}`}</div>`,
-      w=>{u.nivel=w.querySelector("#eNiv").value;u.setor=w.querySelector("#eSet").value;if(u.id===S.me){S.level=u.nivel;S.setor=u.setor}
+      w=>{u.nivel=w.querySelector("#eNiv").value;{const ns=w.querySelector("#eSet").value; if(ns!==u.setor && u.cargo===SETORES_TODOS[u.setor]?.nome) u.cargo=SETORES_TODOS[ns].nome; u.setor=ns;}if(u.id===S.me){S.level=u.nivel;S.setor=u.setor}
         const des=w.querySelector("#eDes"); let msg=u.nome+": "+SETORES[u.setor].nome+" · "+u.nivel;
         if(des){ if(des.checked&&!u.desativado){u.desativado={por:me().nome,em:stamp()};msg=u.nome+" desativado"} else if(!des.checked&&u.desativado){delete u.desativado;msg=u.nome+" reativado"} }
         render();toast(msg)},"Salvar");return}
@@ -2347,7 +2550,7 @@ function act(a, el){
         if(!ids.length){w.querySelector("#mErr").textContent="Marque ao menos um cadastro diferente do principal.";return false}
         const main=S.clientes.find(c=>c.id===m);
         ids.forEach(id=>{const c=S.clientes.find(x=>x.id===id);main.doc+=" · "+c.doc;S.tickets.forEach(t=>{if(t.cliente===id)t.cliente=m})});
-        S.clientes=S.clientes.filter(c=>!ids.includes(c.id));render();toast(ids.length+" cadastro(s) unificado(s) em "+main.nome)},"Unificar");return}
+        S.clientes=S.clientes.filter(c=>!ids.includes(c.id));(S.unificacoes||=[]).push({principal:m,duplicados:ids});render();toast(ids.length+" cadastro(s) unificado(s) em "+main.nome)},"Unificar");return}
   if(a==="salvarMail"){const v=$("#cfgMail").value.trim();if(!v.includes("@")){toast("Informe um e-mail válido");return}S.noreply=v;toast("Remetente atualizado");return}
 }
 
@@ -2364,7 +2567,9 @@ document.addEventListener("submit", e=>{
   if(f.id==="fAbrir"){
     const req=[...f.querySelectorAll("[required]")];let ok=true;
     req.forEach(i=>{const bad=!i.value.trim();i.classList.toggle("err",bad);if(bad)ok=false});
-    if(!ok){$("#abErr").textContent="Preencha os campos destacados para abrir o chamado.";f.querySelector(".err").focus();return}
+    $("#abCliBusca")?.classList.toggle("err",!$("#abCli").value);
+    if(!ok){$("#abErr").textContent="Preencha os campos destacados para abrir o chamado.";const pe=f.querySelector(".err");(pe&&pe.id==="abCli"?$("#abCliBusca"):pe).focus();return}
+    if(abComercial() && !ehLink($("#abProt").value)){$("#abProt").classList.add("err");$("#abErr").textContent="Cole o link do NSend completo, começando com https://";$("#abProt").focus();return}
     const casoOp=/\b(M2M|BL)$/.test($("#abCaso").value), linha=$("#abLinha").value.trim();
     if(casoOp && !linha){$("#abLinha").classList.add("err");$("#abErr").textContent="Informe o MSISDN ou ICCID da linha: o caso é de uma operadora M2M/BL.";$("#abLinha").focus();return}
     if(linha){ const nums=linha.split(/[\s,;]+/).filter(Boolean), ruins=nums.filter(n=>!/^\d+$/.test(n)||!([12,13,19,20].includes(n.length)));   // item 47
@@ -2376,7 +2581,9 @@ document.addEventListener("submit", e=>{
     S.tickets.unshift(T({criadoEmMs:agora(), id, titulo:bo.split(/[.\n]/)[0].slice(0,70), cat:catA, prioridade:prioA, resp:"—", status:"Novo", aberto:today()+" "+now(), criadoPor:quem, cliente:$("#abCli").value, caso:$("#abCaso").value,
       bo, protAt:$("#abProt").value, cep:$("#abCep").value, equip:$("#abEq").value, comandos:$("#abCmd").value, feito:$("#abFeito").value, linha, quemAbriu:quem, anexos:files.map(x=>x.name), arqs:guardarArquivos(files,quem), hist:[[stamp(),"Chamado aberto por "+quem+" · categoria "+catA+" · prioridade "+prioA],...files.map(x=>[stamp(),"Arquivo anexado: "+x.name])]}));
     if(pode("chamados")){go("detalhe",{sel:id});toast("Chamado "+id+" aberto")}
-    else{go("meus");toast("Chamado "+id+" aberto. Acompanhe em Meus chamados.")}
+    else if(pode("meus")){go("meus");toast("Chamado "+id+" aberto. Acompanhe em Meus chamados.")}
+    else if(pode("com-abertos")){go("com-abertos");modal(`<h2>Chamado aberto</h2><p class="small">O chamado foi enviado para a fila do <b>Suporte</b>. Número do chamado: <b class="mono" data-novo-id="${id}">${id}</b>. Acompanhe o andamento aqui em <b>Chamados abertos</b>.</p>`,()=>{},"OK")}
+    else{render();window.scrollTo(0,0);toast("Chamado "+id+" aberto")}
     return;
   }
   if(f.id==="fCom"){const t=tk(S.sel);if(!podeChamado("comentar",t)||t.excluido){toast("Você não tem permissão para comentar");return}
@@ -2390,6 +2597,8 @@ document.addEventListener("submit", e=>{
     const dia=$("#incDia").value, turno=S.incTurno||turnoAtual();
     if(!dia){$("#incErr").textContent="Escolha o dia do registro.";return}
     if(dia>diaISO(agora())){$("#incErr").textContent="Não é possível registrar um dia que ainda não chegou.";return}
+    for(const op of Object.keys(PARTES_OP)){ const ps=[...document.querySelectorAll(`[data-incp="${CSS.escape(op)}"]`)]; if(!ps.length) continue;
+      const cheios=ps.filter(x=>x.value!==""); if(cheios.length && cheios.length<ps.length){ const vz=ps.find(x=>x.value===""); $("#incErr").textContent=`${op}: preencha os dois campos (${PARTES_OP[op].join(" e ")}).`; vz.focus(); return } }
     const novos=[...document.querySelectorAll("[data-incl]")].filter(x=>x.value!=="");
     const manuais=[...document.querySelectorAll("[data-incn]")].filter(x=>x.value!=="");
     if(!novos.length&&!manuais.length){$("#incErr").textContent="Informe as linhas online (ou a situação, nas BL) de pelo menos uma operadora.";return}
@@ -2397,7 +2606,8 @@ document.addEventListener("submit", e=>{
     if(bad){$("#incErr").textContent="Use só números inteiros para as linhas online.";bad.focus();return}
     let n=0; const ja=op=>S.incidentes.some(r=>r.operadora===op&&r.dia===dia&&r.turno===turno);   // um registro por operadora em cada turno
     novos.forEach(x=>{const op=x.dataset.incl; if(ja(op)) return;
-      S.incidentes.push({id:ejdUid(),dia,turno,em:stamp(),operadora:op,linhas:parseInt(x.value,10),base:S.incBase[op]||null,obs:"",por:me().nome}); n++;});   // base do momento (item 59)
+      const partes=PARTES_OP[op]?Object.fromEntries(PARTES_OP[op].map((pn,k)=>[pn,parseInt(document.querySelector(`[data-incp="${CSS.escape(op)}"][data-k="${k}"]`).value,10)])):undefined;
+      S.incidentes.push({id:ejdUid(),dia,turno,em:stamp(),operadora:op,linhas:parseInt(x.value,10),base:S.incBase[op]||null,obs:"",por:me().nome,...(partes?{partes}:{})}); n++;});   // base do momento (item 59)
     manuais.forEach(x=>{const op=x.dataset.incn; if(ja(op)) return;
       S.incidentes.push({id:ejdUid(),dia,turno,em:stamp(),operadora:op,linhas:null,nivel:x.value,obs:"",por:me().nome}); n++;});
     S.incDia=dia; render(); const inst=S.incidentes.filter(r=>r.dia===dia&&r.turno===turno&&nivelDe(r)&&nivelDe(r).k!=="normal").map(r=>r.operadora+" ("+nivelDe(r).nome+")");
