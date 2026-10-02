@@ -124,12 +124,13 @@ async function carregar(){
   const ano=new Date().getFullYear();
   S.users = perfis.map(p=>({ id:p.id, nome:p.nome, email:p.email, setor:p.setor, nivel:p.nivel, ativo:true, cargo:p.cargo||"Suporte",
     acum: chamados.filter(c=>c.resolvido_por===p.id && c.resolvido_em && new Date(c.resolvido_em).getFullYear()===ano).length,
-    foto: p.foto||undefined, desativado: p.desativado_em ? {por:p.desativado_por||"", em:fmt(p.desativado_em)} : undefined }));
+    foto: p.foto||undefined, ...(p.admissao?{admissao:String(p.admissao).slice(0,10)}:{}), ...(p.status?{status:p.status, statusEm:fmt(p.status_em)}:{}), desativado: p.desativado_em ? {por:p.desativado_por||"", em:fmt(p.desativado_em)} : undefined }));
 
   const cf = Object.fromEntries(cfg.map(r=>[r.chave, r.valor]));
   if(Array.isArray(cf.casos)) CASOS.splice(0, CASOS.length, ...cf.casos);
   if(Array.isArray(cf.categorias)) CATEGORIAS.splice(0, CATEGORIAS.length, ...cf.categorias);
   S.sla = cf.sla || {};
+  S.insModelo = typeof cf.insignias==="string" ? cf.insignias : "original";   // 02/10: modelo das insígnias (Diamante escolhe)
   if(cf.email){ S.noreply = cf.email.noreply || S.noreply; S.replyTo = cf.email.replyTo || S.replyTo; }
 
   S.clientes = clientes.map(c=>({id:c.id, nome:c.nome, doc:c.doc, email:c.email, tel:c.tel||""}));
@@ -194,7 +195,7 @@ function calcularPainel(){
 
 function foto(){
   return clone({ users:S.users, casos:CASOS, categorias:CATEGORIAS, sla:S.sla||{}, email:{noreply:S.noreply, replyTo:S.replyTo},
-    clientes:S.clientes, tickets:S.tickets, incBase:S.incBase, incidentes:S.incidentes, regCham:S.regCham||[] });
+    insModelo:S.insModelo||"original", clientes:S.clientes, tickets:S.tickets, incBase:S.incBase, incidentes:S.incidentes, regCham:S.regCham||[] });
 }
 
 /* --------------------------------------------------------------- salvar */
@@ -259,7 +260,7 @@ async function salvarChamado(t, antes, tS){
   // retorno enviado: fica na fila de e-mails até o endereço só de envio existir (item 37)
   const novosR = (t.retornos||[]).slice((antes.retornos||[]).length);
   if(novosR.length){
-    await q(sb.from("emails_pendentes").insert(novosR.map(r=>({chamado_id:t.id, para:r.para, assunto:r.assunto, corpo:r.corpo}))));
+    await q(sb.from("emails_pendentes").insert(novosR.map(r=>({chamado_id:t.id, para:r.para, cc:r.cc||null, cco:r.cco||null, assunto:r.assunto, corpo:r.corpo}))));   // 02/10: Cc e Cco
     enviarFila();        // envia na hora (sem travar a tela); se falhar, fica na fila e é tentado de novo no próximo envio
   }
 }
@@ -304,6 +305,8 @@ async function sincronizar(){
       if(u.nivel!==a.nivel) row.nivel=u.nivel;
       if(u.setor!==a.setor) row.setor=u.setor;
       if(!igual(u.foto||null, a.foto||null)) row.foto=u.foto||null;
+      if((u.admissao||null)!==(a.admissao||null)) row.admissao=u.admissao||null;
+      if((u.status||null)!==(a.status||null)) row.status=u.status||null;   // 02/10: status (só a própria pessoa; o servidor grava a data)   // 02/10: data de entrada (insígnias) — só o Diamante
       if(!!u.desativado!==!!a.desativado){ row.desativado_em = u.desativado ? new Date().toISOString() : null; row.desativado_por = u.desativado ? (u.desativado.por||"") : null; }
       if(Object.keys(row).length) await q(sb.from("perfis").update(row).eq("id",u.id));
     }
@@ -313,6 +316,7 @@ async function sincronizar(){
     if(!igual(CATEGORIAS, BASE.categorias)) cfg.push({chave:"categorias", valor:CATEGORIAS});
     if(!igual(S.sla||{}, BASE.sla)) cfg.push({chave:"sla", valor:S.sla||{}});
     if(S.noreply!==BASE.email.noreply || S.replyTo!==BASE.email.replyTo) cfg.push({chave:"email", valor:{noreply:S.noreply, replyTo:S.replyTo}});
+    if((S.insModelo||"original")!==BASE.insModelo) cfg.push({chave:"insignias", valor:S.insModelo||"original"});
     if(cfg.length) await q(sb.from("config").upsert(cfg));
     // clientes
     const bc = Object.fromEntries(BASE.clientes.map(c=>[c.id,c]));
