@@ -57,7 +57,7 @@ function telaLogin(msg, modo){
       <span class="errtxt" id="lgErr">${msg?esc(msg):""}</span><button class="btn primary" style="justify-content:center">Salvar senha e entrar</button>`
   }[modo];
   document.getElementById("root").innerHTML = `<div class="login"><form class="card stack" id="fEjdLogin" data-modo="${modo}" novalidate>
-    <div class="brand" style="padding:0"><div class="mark">EJ</div><div><b style="color:var(--ink)">E.J. Desk</b><small style="color:var(--muted)">Central de chamados e suporte técnico</small></div></div>
+    <div class="brand" style="padding:0"><div class="mark" style="width:40px;height:40px">${typeof LOGO_ICO!=="undefined"?LOGO_ICO:"EJ"}</div><div><b class="wm" style="color:var(--ink)"><span>EJ</span> Desk</b><small style="color:var(--muted)">Central de chamados e suporte técnico</small></div></div>
     ${t}</form></div>`;
   setTimeout(()=>document.querySelector("#fEjdLogin input")?.focus(),0);
 }

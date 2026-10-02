@@ -8,6 +8,7 @@
 /* Produção: esconde o que só existe no protótipo */
 .sim,[data-act="baseExemplo"],[data-act="avancar24"],.ad,[data-go="decisoes"]{display:none!important}</style>
 <title>E.J. Desk</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%231E4FD6%22/%3E%3Cpath%20d%3D%22M38%2015.5H14.5a3%203%200%200%200-3%203v21a3%203%200%200%200%203%203h33a3%203%200%200%200%203-3V27%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M31%2042.5v6M23%2049.5h16%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223.6%22%20stroke-linecap%3D%22round%22/%3E%3Ccircle%20cx%3D%2231%22%20cy%3D%2225.5%22%20r%3D%224.6%22%20fill%3D%22%23fff%22/%3E%3Cpath%20d%3D%22M22.2%2038.2c.6-4.8%204.3-7.4%208.8-7.4s8.2%202.6%208.8%207.4z%22%20fill%3D%22%23fff%22/%3E%3Cg%20fill%3D%22%238FA8FF%22%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%280%2047%2016%29%22/%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%2845%2047%2016%29%22/%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%2890%2047%2016%29%22/%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%28135%2047%2016%29%22/%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%28180%2047%2016%29%22/%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%28225%2047%2016%29%22/%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%28270%2047%2016%29%22/%3E%3Crect%20x%3D%2245.3%22%20y%3D%227.6%22%20width%3D%223.4%22%20height%3D%224.2%22%20rx%3D%22.7%22%20transform%3D%22rotate%28315%2047%2016%29%22/%3E%3Ccircle%20cx%3D%2247%22%20cy%3D%2216%22%20r%3D%226.4%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2247%22%20cy%3D%2216%22%20r%3D%222.5%22%20fill%3D%22%231E4FD6%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
@@ -85,7 +86,13 @@ p{margin:0}
 .side:hover::-webkit-scrollbar-thumb{background:#2A3649}
 .side::-webkit-scrollbar-thumb:hover{background:var(--side-muted)}
 .brand{display:flex;align-items:center;gap:10px;padding:0 6px}
-.mark{width:30px;height:30px;border-radius:7px;background:var(--primary);color:var(--primary-ink);display:grid;place-items:center;font-family:var(--mono);font-weight:500;font-size:12px}
+.mark{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;flex:none;line-height:0}
+.mark svg{width:100%;height:100%;display:block}
+/* 02/10: logo nova — ícone + "EJ Desk" (EJ em azul) */
+.brand .wm{font-size:16px;font-weight:700;letter-spacing:-.2px}.brand .wm span{color:#7B9BFF}
+.login .brand .wm span{color:#1E4FD6}
+:root[data-theme="dark"] .login .brand .wm span{color:#7B9BFF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .login .brand .wm span{color:#7B9BFF}}
 .brand b{font-size:15px;font-weight:600;color:#fff}
 .brand small{display:block;font-size:11px;color:var(--side-muted)}
 .nav{display:flex;flex-direction:column;gap:2px}
@@ -569,6 +576,7 @@ function horasUteisEntre(a, b){           // minutos úteis entre dois instantes
   return min/60;
 }
 
+const LOGO_ICO = `<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#1E4FD6"/><path d="M38 15.5H14.5a3 3 0 0 0-3 3v21a3 3 0 0 0 3 3h33a3 3 0 0 0 3-3V27" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 42.5v6M23 49.5h16" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/><circle cx="31" cy="25.5" r="4.6" fill="#fff"/><path d="M22.2 38.2c.6-4.8 4.3-7.4 8.8-7.4s8.2 2.6 8.8 7.4z" fill="#fff"/><g fill="#8FA8FF"><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(0 47 16)"/><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(45 47 16)"/><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(90 47 16)"/><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(135 47 16)"/><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(180 47 16)"/><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(225 47 16)"/><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(270 47 16)"/><rect x="45.3" y="7.6" width="3.4" height="4.2" rx=".7" transform="rotate(315 47 16)"/><circle cx="47" cy="16" r="6.4"/></g><circle cx="47" cy="16" r="2.5" fill="#1E4FD6"/></svg>`;   // 02/10: logo nova do E.J. Desk
 const S = {
   logged:false, q:"", sla:null, route:"abertura", navOpen:{}, lf:{}, tab:"info", level:"Diamante", setor:"suporte", me:"u1", wanted:null, week:"37", filter:null, sel:null, retSel:null,
   noreply:"suporte.noreply@metatelecom.com.br", replyTo:"suporte@metatelecom.com.br",   // 29/09: envio só de saída + "Responder para" o hub (a criar com a TI)
@@ -1098,7 +1106,7 @@ function railHTML(cur){
     if(sep && out.length) out.push('<span class="rsep" aria-hidden="true"></span>'); sep=false;
     out.push(`<button data-go="${n.r}" class="${cur===n.r?"on":""}" style="--i:${out.length}" data-nome="${esc(n.t)}" aria-label="${esc(n.t)}"${cur===n.r?' aria-current="page"':""}>${IC[n.i]||""}</button>`);
   });
-  return `<nav class="rail" aria-label="Menu compacto"><div class="mark" aria-hidden="true">EJ</div>${out.join("")}</nav>`;
+  return `<nav class="rail" aria-label="Menu compacto"><div class="mark" aria-hidden="true">${LOGO_ICO}</div>${out.join("")}</nav>`;
 }
 
 (function railDock(){
@@ -1129,7 +1137,7 @@ function railHTML(cur){
 /* ============ Telas ============ */
 function vLogin(){
   return `<div class="login"><form class="card stack" id="fLogin" novalidate>
-    <div class="brand" style="padding:0"><div class="mark">EJ</div><div><b style="color:var(--ink)">E.J. Desk</b><small style="color:var(--muted)">Central de chamados e suporte técnico</small></div></div>
+    <div class="brand" style="padding:0"><div class="mark" style="width:40px;height:40px">${LOGO_ICO}</div><div><b class="wm" style="color:var(--ink)"><span>EJ</span> Desk</b><small style="color:var(--muted)">Central de chamados e suporte técnico</small></div></div>
     <div class="field"><label for="lgEmail">E-mail corporativo</label><input class="in" id="lgEmail" type="email" value="ely.junior@metatelecom.com.br"></div>
     <div class="field"><label for="lgPass">Senha</label><input class="in" id="lgPass" type="password" value="••••••••"></div>
     <span class="errtxt" id="lgErr"></span><button class="btn primary" style="justify-content:center">Entrar</button>
@@ -2414,7 +2422,7 @@ function render(){
   const cur = S.route==="detalhe" && !negado ? voltarPara(tk(S.sel)) : S.route;
   root.innerHTML = `<div class="app${S.sideHidden?" collapsed":""}"><button class="sidebar-bar" data-side="toggle" aria-label="${S.sideHidden?"Mostrar menu":"Ocultar menu"}" title="${S.sideHidden?"Mostrar menu":"Ocultar menu"}" aria-expanded="${!S.sideHidden}"><span class="sb-grip" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg><span class="sb-txt"></span></span></button>${railHTML(cur)}
     <aside class="side" aria-label="Menu">
-      <div class="brand"><div class="mark">EJ</div><div><b>E.J. Desk</b><small>Meta Telecom</small></div></div>
+      <div class="brand"><div class="mark" style="width:34px;height:34px">${LOGO_ICO}</div><div><b class="wm"><span>EJ</span> Desk</b><small>Meta Telecom</small></div></div>
       <div class="sim"><span class="label" style="color:var(--side-muted)">Ver protótipo como</span>
         <select class="in" id="simUser" aria-label="Usuário simulado" style="background:#1B2638;border-color:#243047;color:#fff;padding:5px 8px;font-size:12.5px">${S.users.filter(u=>!u.desativado||u.id===S.me).map(u=>`<option value="${u.id}" ${u.id===S.me?"selected":""}>${esc(u.nome)} · ${esc(SETORES[u.setor]?.nome||"")}</option>`).join("")}</select>
         ${Object.keys(SETORES).length<2?"":`<div class="seg" role="group" aria-label="Setor simulado">${Object.entries(SETORES).map(([k,v])=>`<button data-setor="${k}" class="${k===S.setor?"on":""}">${v.nome}</button>`).join("")}</div>`}
